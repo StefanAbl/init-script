@@ -1,0 +1,36 @@
+---
+- hosts: all
+  vars_files:
+
+  tasks:
+  - name: install zsh packages
+    action: >
+      {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes
+    with_items:
+      - zsh
+      - git
+      - tar
+    become: yes
+    when: false
+  - name: check if git repo present
+    stat:
+      path: "{{ ansible_env.HOME }}/.config/powerlevel10k"
+    register: p10k_present
+  - name: Download p10k
+    git: 
+     repo: https://github.com/romkatv/powerlevel10k.git
+     dest: "{{ ansible_env.HOME }}/.config/"
+    when: p10k_present.stat.exists == false
+  - name: Copy config files
+    copy:
+      dest: "{{ ansible_env.HOME }}"
+      src: "{{ item }}"
+    with_items:
+    - "{{ lookup('env','HOME') }}/.zshrc"
+    - "{{ lookup('env','HOME') }}/.zshrc.zni"
+    - "{{ lookup('env','HOME') }}/.p10k.zsh"
+  - name: update .bash_profile to start zsh on login
+    lineinfile:
+      dest: "{{ ansible_env.HOME }}/.bash_profile"
+      line: 'exec zsh'
+      regexp: '^exec\s zsh'
