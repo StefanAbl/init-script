@@ -29,6 +29,24 @@
     - "{{ lookup('env','HOME') }}/.zshrc"
     - "{{ lookup('env','HOME') }}/.zshrc.zni"
     - "{{ lookup('env','HOME') }}/.p10k.zsh"
+  - name: make fonts directory
+    file:
+      path: "{{ lookup('env','HOME') }}/.local/share/fonts"
+      state: directory
+  - name: download fonts
+    get_url:
+      url: "{{ item }}"
+      dest: "{{ lookup('env','HOME') }}/.local/share/fonts/"
+    with_items:
+      - "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf"
+      - "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf"
+      - "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf"
+      - "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf"
+  - name: update fonts
+    shell:
+     command: "fc-cache -f -v"
+      
+  
   - name: update .bash_profile to start zsh on login
     lineinfile:
       dest: "{{ ansible_env.HOME }}/.bash_profile"
