@@ -1,6 +1,8 @@
 ---
 - hosts: all
-  vars_files:
+  vars:
+    - installFonts: false
+    - installPackages: false
 
   tasks:
   - name: install zsh packages
@@ -11,7 +13,7 @@
       - git
       - tar
     become: yes
-    when: false
+    when: installPackages
   - name: check if git repo present
     stat:
       path: "{{ ansible_env.HOME }}/.config/powerlevel10k"
@@ -29,14 +31,17 @@
     - "{{ lookup('env','HOME') }}/.zshrc"
     - "{{ lookup('env','HOME') }}/.zshrc.zni"
     - "{{ lookup('env','HOME') }}/.p10k.zsh"
+
   - name: make fonts directory
     file:
       path: "{{ lookup('env','HOME') }}/.local/share/fonts"
       state: directory
+    when: installFonts
   - name: download fonts
     get_url:
       url: "{{ item }}"
       dest: "{{ lookup('env','HOME') }}/.local/share/fonts/"
+    when: installFonts
     with_items:
       - "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf"
       - "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf"
@@ -44,10 +49,16 @@
       - "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf"
   - name: update fonts
     command: fc-cache -f -v
+    when: installFonts
       
   
   - name: update .bash_profile to start zsh on login
-    lineinfile:
+    blockinfile:
       dest: "{{ ansible_env.HOME }}/.bash_profile"
-      line: 'exec zsh'
+      block: |
+        if [ "$SHELL" != "/usr/bin/zsh" -a -n "$SSH_TTY" -a -x /usr/bin/zsh ]; then
+          export SHELL="/usr/bin/zsh"
+          exec $SHELL -l
+        fi
+
       regexp: '^exec\s zsh'
