@@ -43,8 +43,7 @@
       - "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf"
       - "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf"
   - name: update fonts
-    shell:
-     command: "fc-cache -f -v"
+    command: fc-cache -f -v
       
   
   - name: update .bash_profile to start zsh on login
