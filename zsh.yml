@@ -2,7 +2,7 @@
 - hosts: all
   vars:
     - installFonts: false
-    - installPackages: false
+    - installPackages: true
     - extensionsDir: "{{ ansible_env.HOME }}/.zsh/"
 
   tasks:
@@ -53,6 +53,11 @@
     command: fc-cache -f -v
     when: installFonts
 
+
+  - name: Make sure .bash_profile exists
+    file:
+      path: "{{ ansible_env.HOME }}/.bash_profile"
+      state: touch
 
   - name: update .bash_profile to start zsh on login
     blockinfile:
