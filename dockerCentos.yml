@@ -1,0 +1,32 @@
+---
+- hosts: all
+  vars:
+    - installFonts: false
+    - installPackages: true
+    - extensionsDir: "{{ ansible_env.HOME }}/.zsh/"
+
+  tasks:
+  - name: Add repository
+    yum_repository:
+     name: docker
+     description: Docker Repo
+     baseurl: https://download.docker.com/linux/centos/7/x86_64/stable/
+     gpgkey: https://download.docker.com/linux/centos/gpg
+
+    #become: yes
+  - name: install docker install Docker packages
+    dnf:
+      name:
+       - docker-ce
+       - docker-ce-cli
+       - containerd.io
+      state: latest
+    when: false
+
+  - name: install docker packages using commandline
+    command: dnf install -y --nobest docker-ce docker-ce-cli containerd.io
+
+  - name: Start docker
+    systemd:
+      state: started
+      name: docker
