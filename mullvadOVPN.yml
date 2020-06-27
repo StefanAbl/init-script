@@ -1,0 +1,62 @@
+---
+- hosts: all
+  vars:
+    - openvpnConfigDir: "/etc/openvpn/"
+    - extra_servers:
+      - { ip: '217.138.204.66', port: '1195' }
+      - { ip: '116.206.230.98', port: '1195' }
+      - { ip: '116.206.229.98', port: '1195' }
+      - { ip: '116.206.228.242', port: '1195' }
+      - { ip: '43.245.162.130', port: '1195' }
+      - { ip: '103.77.232.146', port: '1195' }
+      - { ip: '116.206.231.58', port: '1195' }
+      - { ip: '217.138.204.82', port: '1195' }
+      - { ip: '103.77.235.66', port: '1195' }
+      - { ip: '43.245.160.162', port: '1195' }
+      - { ip: '116.206.228.202', port: '1195' }
+      - { ip: '217.138.204.98', port: '1195' }
+
+
+  tasks:
+  - name: install epel-release
+    dnf:
+      name: epel-release
+  - name: install openvpn and unzip
+    dnf:
+      name:
+        - openvpn
+        - unzip
+
+  - name: Unpack mullvad config zip
+    unarchive:
+      src: "{{ mullvadArchive | default('./mullvad.zip') }}"
+      dest: "{{ openvpnConfigDir }}"
+      list_files: true
+    register: zipFiles
+
+  - name: Move files to "{{ openvpnConfigDir }}"
+    shell:
+      cmd: mv {{ openvpnConfigDir }}{{ zipFiles.files[0] }}* {{ openvpnConfigDir }}
+  - name: remove now empty firectory
+    file:
+      path: "{{ openvpnConfigDir }}{{ zipFiles.files[0] }}"
+      state: absent
+
+  - name: find config files
+    find:
+      path: "{{ openvpnConfigDir }}"
+      patterns: 'mullvad_*.conf'
+    register: configFile
+
+  - name: make sure remote random is present
+    lineinfile:
+      path: "{{ configFile.files[0].path }}"
+      regexp: '^remote random'
+      line: remote random
+
+  - name: add extra servers to config File {{ configFile.files[0].path }}
+    lineinfile:
+      path: "{{ configFile.files[0].path }}"
+      line: "remote {{ item.ip }} {{ item.port }}"
+    with_items:
+      - "{{ extra_servers }}"
