@@ -24,7 +24,7 @@
     when: false
 
   - name: install docker packages using commandline
-    command: dnf install -y --nobest docker-ce docker-ce-cli containerd.io
+    command: dnf install -4 -q -y --nobest docker-ce docker-ce-cli containerd.io
 
   - name: Start docker
     systemd:
