@@ -21,7 +21,8 @@
     - mullvad_files_dir: "./mullvad/"
     - config_file: "mullvad.conf"
     - service_file: "openvpn@.service"
-    - ks: false
+    - ks: true
+    - flush: false
 
 
   tasks:
@@ -61,12 +62,12 @@
         chain: "{{ item }}"
         policy: ACCEPT
     with_items: [ 'INPUT', 'OUTPUT', 'FORWARD']
-    when: "{{ ks }}"
+    when: "{{ flush }}"
 
   - name: flush iptables
     iptables:
       flush: yes
-    when: "{{ ks }}"
+    when: "{{ flush }}"
 
   - name: Allow new incoming SYN packets on TCP port 22 (SSH).
     iptables:
