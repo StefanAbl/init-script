@@ -11,3 +11,4 @@
         - ipa-client
         - sudo
         - net-tools
+        - nano
