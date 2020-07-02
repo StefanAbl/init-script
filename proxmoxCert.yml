@@ -1,0 +1,22 @@
+---
+- hosts: proxmox
+  vars:
+    - ipa_host:
+    - realm:
+  tasks:
+    - debug: var=ansible_facts.hostname
+    - debug: var=ansible_facts.fqdn
+    - ipa_service:
+        name: "HTTP/{{ ansible_facts.fqdn }}"
+        state: present
+        ipa_host: "{{ ipa_host }}"
+        ipa_user: "{{ user }}"
+        ipa_pass: "{{ pass }}"
+    - shell:
+        cmd: ipa-getcert request -r -f pveproxy-ssl.pem -k pveproxy-ssl.key -N CN="{{ ansible_facts.fqdn }}" -K "HTTP/{{ ansible_facts.fqdn }}@"{{ realm }}""
+        chdir: "/etc/pve/nodes/{{ ansible_facts.hostname }}/"
+      become: yes
+    - systemd:
+        name: pveproxy
+        state: restarted
+      become: yes
