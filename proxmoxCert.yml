@@ -1,8 +1,8 @@
 ---
 - hosts: proxmox
   vars:
-    - ipa_host:
-    - realm:
+    - ipa_host: ipa.i.stabl.one
+    - realm: I.STABL.ONE
   tasks:
     - debug: var=ansible_facts.hostname
     - debug: var=ansible_facts.fqdn

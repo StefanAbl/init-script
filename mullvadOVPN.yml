@@ -17,22 +17,32 @@
       - { ip: '116.206.228.202', port: '1195' }
       - { ip: '217.138.204.98', port: '1195' }
     - local_interface: "ens18"
-    - local_network: "192.168.2.0/24"
+    - local_networks: ["10.13.2.0/24", "192.168.2.0/24"]
     - mullvad_files_dir: "./mullvad/"
     - config_file: "mullvad.conf"
     - service_file: "openvpn@.service"
     - ks: true
     - flush: false
 
-
+  become: yes
+  become_method: sudo
   tasks:
   - name: install epel-release
     dnf:
       name: epel-release
+    when: ansible_distribution == "CentOS"
   - name: install openvpn and unzip
     dnf:
       name:
         - openvpn
+    when: ansible_distribution == "CentOS"
+
+  - name: install openvpn and iptables-persistent
+    apt:
+      name:
+        - openvpn
+        - iptables-persistent
+    when: ansible_distribution == "Ubuntu"
 
   - name: copy mullvad.cert and mullvad_userpass.txt
     copy:
@@ -62,12 +72,12 @@
         chain: "{{ item }}"
         policy: ACCEPT
     with_items: [ 'INPUT', 'OUTPUT', 'FORWARD']
-    when: "{{ flush }}"
+    when: flush
 
   - name: flush iptables
     iptables:
       flush: yes
-    when: "{{ flush }}"
+    when: flush
 
   - name: Allow new incoming SYN packets on TCP port 22 (SSH).
     iptables:
@@ -77,39 +87,39 @@
       jump: ACCEPT
       in_interface: "{{ local_interface }}"
       comment: Accept new SSH connections.
-    when: "{{ ks }}"
+    when: ks
 
   - iptables:
       action: append
       chain: OUTPUT
       out_interface: tun+
       jump: ACCEPT
-    when: "{{ ks }}"
+    when: ks
 
   - iptables:
       action: append
       chain: INPUT
       in_interface: lo
       jump: ACCEPT
-    when: "{{ ks }}"
+    when: ks
   - iptables:
       action: append
       chain: OUTPUT
       out_interface: lo
       jump: ACCEPT
-    when: "{{ ks }}"
+    when: ks
   - iptables:
       action: append
       chain: OUTPUT
       destination: 255.255.255.255
       jump: ACCEPT
-    when: "{{ ks }}"
+    when: ks
   - iptables:
       action: append
       chain: INPUT
       source: 255.255.255.255
       jump: ACCEPT
-    when: "{{ ks }}"
+    when: ks
   - iptables:
       action: append
       chain: OUTPUT
@@ -119,7 +129,7 @@
       destination_port: "{{ item.port }}"
       destination: "{{ item.ip }}"
       jump: ACCEPT
-    when: "{{ ks }}"
+    when: ks
     with_items:
       - "{{ vpn_servers }}"
   - name: iptables allow to local network
@@ -127,8 +137,10 @@
       action: insert
       chain: OUTPUT
       out_interface: "{{ local_interface }}"
-      destination: "{{ local_network }}"
-    when: "{{ ks }}"
+      destination: "{{ item }}"
+      jump: ACCEPT
+    with_items: "{{local_networks}}"
+    when: ks
 
   - name: Allow related and established connections
     iptables:
@@ -136,7 +148,7 @@
       ctstate: ESTABLISHED,RELATED
       jump: ACCEPT
     become: yes
-    when: "{{ ks }}"
+    when: ks
 
   - name: Allow related and established connections
     iptables:
@@ -144,18 +156,44 @@
       ctstate: ESTABLISHED,RELATED
       jump: ACCEPT
     become: yes
-    when: "{{ ks }}"
+    when: ks
 
   - name: default to drop output
     iptables:
       chain: OUTPUT
       policy: DROP
-    when: "{{ ks }}"
+    when: ks
   - name: default drop INPUT
     iptables:
       chain: INPUT
       policy: DROP
-    when: "{{ ks }}"
+    when: ks
+
+  - name: set mullvad internal dns server
+    shell: resolvectl dns {{item}} 10.9.0.1
+    with_items:
+      - "{{ local_interface }}"
+      - tun0
+
+  - name: no local dns
+    iptables:
+      action: insert
+      chain: OUTPUT
+      out_interface: "{{ local_interface }}"
+      destination: "{{ item }}"
+      destination_port: 53
+      protocol: udp
+      jump: DROP
+    with_items: "{{ local_networks }}"
+
+  - name: add routes to reach local local_networks
+    shell: ip route add 192.168.2.0/24 dev "{{ local_interface }}" via 10.13.2.1
+    register: ret
+    failed_when: >
+      (ret.stderr != '') and
+      ("RTNETLINK answers: File exists" not in ret.stderr)
+
+
 
   - name: disable ipv6
     sysctl:
