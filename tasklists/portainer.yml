@@ -1,0 +1,22 @@
+
+    - name: create portainer volume
+      docker_volume:
+        name: portainer_data
+    - name: pull image
+      docker_image:
+        name: portainer/portainer
+        source: pull
+    - name: create container
+      docker_container:
+        name: portainer
+        image: "portainer/portainer"
+        state: started
+        detach: true
+        recreate: no
+        restart_policy: unless-stopped
+        published_ports:
+          - "127.0.0.1:9000:9000"
+        volumes:
+          - "portainer_data:/data"
+          - "/var/run/docker.sock:/var/run/docker.sock"
+        command: "-H unix:///var/run/docker.sock"

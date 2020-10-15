@@ -1,0 +1,219 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+  vars_files:
+    - test-vars.yml
+  vars_prompt:
+    - name: otpClient
+      prompt: "Please provide OTP Token for IPA client install of docker host"
+  tasks:
+    # Firewall
+    # - name: allow ssh
+    #   iptables:
+    #     chain: INPUT
+    #     protocol: tcp
+    #     destination_port: 22
+    #     jump: ACCEPT
+    #     comment: Accept new SSH connections.
+    # - iptables:
+    #     chain: INPUT
+    #     in_interface: lo
+    #     jump: ACCEPT
+    #     when: false
+    # - iptables:
+    #     chain: OUTPUT
+    #     out_interface: lo
+    #     jump: ACCEPT
+    # - iptables:
+    #     chain: INPUT
+    #     ctstate: ESTABLISHED,RELATED
+    #     jump: ACCEPT
+    # - name: Set the policy for the INPUT chain to DROP
+    #   iptables:
+    #     chain: INPUT
+    #     policy: DROP
+    - shell: |
+        for tables in iptables ip6tables ; do
+          # Flush existing rules
+
+          # Default policy
+          $tables -P INPUT DROP
+          $tables -P FORWARD DROP
+          $tables -P OUTPUT ACCEPT
+
+          # Allow established inbound connections
+          $tables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+          # Allow icmp
+          $tables -A INPUT -p icmp -j ACCEPT
+
+          # Allow all loopback traffic
+          $tables -A INPUT -i lo -j ACCEPT
+
+          # Allow inbound SSH connection
+          $tables -A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
+        done
+
+    - name: allow necessary ports
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: "{{item}}"
+        action: append
+        jump: ACCEPT
+      with_items:
+        - 25
+        - 465
+        - 587
+    - name: install packages
+      apt:
+        name:
+          - openvpn
+          - resolvconf
+          - freeipa-client
+          - git
+          - iptables-persistent
+        state: latest
+        update_cache: yes
+      when: false
+    - name: install docker
+      include: ../tasklists/install_docker.yml
+      when: need_ovpn_setup
+
+
+    - name: install portainer
+      include: ../tasklists/portainer.yml
+
+    - name: copy openvpn config_file
+      template:
+        src: ./cloud.ovpn
+        dest: /etc/openvpn/cloud.conf
+    - name: add option to set DNS
+      lineinfile:
+        path: /etc/openvpn/cloud.conf
+        state: present
+        line: "{{ item }}"
+      with_items:
+        - "script-security 2"
+        - "up /etc/openvpn/update-resolv-conf"
+        - "down /etc/openvpn/update-resolv-conf"
+    - name: start openvpn service
+      service:
+        name: openvpn@cloud
+        state: restarted
+      when: "{{ need_ovpn_setup }}"
+    - name: wait
+      pause:
+        seconds: 30
+      when: "{{ need_ovpn_setup}}"
+    - name: set ipa dns server on openvpn interface
+      shell: resolvectl dns tun0 "{{dns_server}}"
+
+#ENROLL IN DOMAIN
+    - name: set hostname
+      hostname: name=mail.{{domain_name}}
+  #  - shell: exit 1
+    - name: remove duplicate user
+      shell: userdel -rf stefan
+      when: false
+    - name: adopt into IPA realm
+      shell: ipa-client-install -dU --enable-dns-updates --mkhomedir --no-ntp --password '{{otpClient}}' --domain {{domain_name}} --hostname mail.{{domain_name}}
+      register: result
+      failed_when: result.rc == 1
+      changed_when: result.rc == 0
+      when: otpClient != ""
+    - name: get svc_mail uid
+      shell: "id -u {{bindUser}}"
+      register: bindUserUID
+
+    - name: get svc_mail gid
+      shell: "id -g {{bindUser}}"
+      register: bindUserGID
+#DOCKER
+    - name: create docker network
+      docker_network:
+        name: primary
+#REPLICA
+    - name: create replica directory
+      file:
+        path: "{{ freeipa_dir }}"
+        state: directory
+      when: replica
+    - name: clone freeipa docker directory
+      git:
+        repo: https://github.com/freeipa/freeipa-container.git
+        dest: ~/freeipa-container
+      when: replica
+    - name: build docker image
+      shell: "cd ~/freeipa-container && docker build -t freeipa-server . "
+      when: replica
+    - name: remove leftover repo
+      shell: "rm -rf ~/freeipa-container"
+      when: replica
+    - name: start freeipa replica docker
+      docker_container:
+        name: replica
+        image: "freeipa-server"
+        state: started
+        detach: true
+        recreate: yes
+        restart_policy: no
+        hostname: "{{replica_name}}"
+        sysctls: "net.ipv6.conf.all.disable_ipv6=0"
+        networks:
+          - name: primary
+        published_ports:
+          - "127.0.0.1:53:53/udp"
+          - "127.0.0.1:53:53"
+          - "127.0.0.1:80:80"
+          - "127.0.0.1:443:443"
+          - "127.0.0.1:389:389"
+          - "127.0.0.1:636:636"
+          - "127.0.0.1:88:88"
+          - "127.0.0.1:464:464"
+          - "127.0.0.1:88:88/udp"
+          - "127.0.0.1:464:464/udp"
+          - "127.0.0.1:123:123/udp"
+        volumes:
+          - "{{freeipa_dir}}:/data"
+          - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+        command: "echo {{hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2]}} {{replica_name}} >> /etc/hosts && ipa-replica-install -U --no-ntp --password {{otp}} --setup-dns --forwarder {{dns_server}} --forwarder 9.9.9.9 --setup-ca"
+      when: replica
+
+#POSTFIX
+
+    - name: deploy postfix
+      include:  postfix/postfix.yml
+    - name: start acme.sh container
+      docker_container:
+        name: acme.sh
+        image: neilpang/acme.sh
+        state: started
+        detach: true
+        recreate: no
+        restart_policy: always
+        volumes:
+          - "{{docker_dir}}/mail/ssl/:/acme.sh"
+        command: daemon
+        env:
+          DYNV6_TOKEN: "{{DYNV6_TOKEN}}"
+# REMOVE STAGING
+    - name: wait for container to be ready
+      shell: |
+        until [ "`/usr/bin/docker inspect -f {{ '{{' }}.State.Running{{ '}}' }} acme.sh`"=="true" ]; do
+          sleep 0.1;
+        done;
+    - name: get cert
+      shell: |
+        export DYNV6_TOKEN="{{DYNV6_TOKEN}}" && \
+        docker exec acme.sh --issue -d mail.{{domain_name}} --dns dns_dynv6 \
+        --cert-file      /acme.sh/cert.pem  \
+        --key-file       /acme.sh/key.pem  \
+        --fullchain-file /acme.sh/fullchain.pem
+      register: result
+      failed_when: result.rc == 1
+      changed_when: result.rc == 0
+# Dovecot
+    - name: dovecot
+      include: dovecot/dovecot.yml

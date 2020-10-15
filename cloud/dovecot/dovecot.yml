@@ -1,0 +1,55 @@
+- file:
+    path: ~/dovecot
+    state: directory
+- template:
+    src: Dockerfile
+    dest: ~/dovecot/
+- shell: "cd ~/dovecot/ && docker build -t dovecot ."
+- file:
+    path: "{{item}}"
+    state: directory
+    owner: "{{bindUser}}"
+    group: "{{bindUser}}"
+  with_items:
+    - "{{docker_dir}}/dovecot/config/conf.d"
+    - "{{docker_dir}}/mail/vhosts"
+    - "{{docker_dir}}/mail/attachments"
+
+- name: template conf.d directory
+  template:
+    src: "{{ item }}"
+    dest: "{{docker_dir}}/dovecot/config/conf.d/"
+    owner: "{{bindUser}}"
+    group: "{{bindUser}}"
+  with_fileglob:
+    - conf.d/*
+- name: template ldap.conf.ext and dovecot.conf
+  template:
+    src: "{{item}}"
+    dest: "{{docker_dir}}/dovecot/config"
+    owner: "{{bindUser}}"
+    group: "{{bindUser}}"
+  with_items:
+    - ldap.conf.ext
+    - dovecot.conf
+
+
+
+- docker_container:
+    name: dovecot
+    image: dovecot
+    state: started
+    detach: true
+    recreate: true
+    restart_policy: no
+    sysctls: "net.ipv6.conf.all.disable_ipv6=0"
+    networks:
+      - name: primary
+    published_ports:
+      - "993:993"
+    volumes:
+      - "{{docker_dir}}/dovecot/config:/config"
+      - "/etc/ipa/ca.crt:/etc/ipa/ca.crt:ro"
+      - "{{docker_dir}}/mail:/data"
+    hostname: "mail.{{domain_name}}"
+    dns_servers: "{{dns_server}}"

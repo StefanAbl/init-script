@@ -1,9 +1,10 @@
 ---
 - hosts: all
   vars:
-    - installFonts: true
+    - installFonts: false
     - installPackages: true
     - extensionsDir: "{{ ansible_env.HOME }}/.zsh/"
+    - rootExtensionDir: "/root/.zsh/"
 
   tasks:
   - name: install zsh packages
@@ -67,3 +68,44 @@
           export SHELL="/usr/bin/zsh"
           exec $SHELL -l
         fi
+        export BASH_ENV=~/.bash_profile
+
+  # Repeat as root
+  - name: Download p10k for root
+    git:
+     repo: https://github.com/romkatv/powerlevel10k.git
+     dest: "{{ rootExtensionDir }}powerlevel10k"
+    become: yes
+    become_method: sudo
+  - name: Download zsh-autosuggestions for root
+    git:
+      repo: https://github.com/zsh-users/zsh-autosuggestions
+      dest: "{{ rootExtensionDir }}zsh-autosuggestions"
+    become: yes
+    become_method: sudo
+  - name: Copy config files for root
+    copy:
+      dest: "/root/"
+      src: "{{ item }}"
+    with_items:
+    - "{{ lookup('env','HOME') }}/.zshrc"
+    - "{{ lookup('env','HOME') }}/.zshrc.zni"
+    - "{{ lookup('env','HOME') }}/.p10k.zsh"
+    become: yes
+    become_method: sudo
+  - name: Make sure .bash_profile exists for root
+    file:
+      path: "/root/.bash_profile"
+      state: touch
+    become: yes
+    become_method: sudo
+  - name: update .bash_profile to start zsh on login for root
+    blockinfile:
+      dest: "/root/.bash_profile"
+      block: |
+        if [ "$SHELL" != "/usr/bin/zsh" -a -n "$SSH_TTY" -a -x /usr/bin/zsh ]; then
+          export SHELL="/usr/bin/zsh"
+          exec $SHELL -l
+        fi
+    become: yes
+    become_method: sudo

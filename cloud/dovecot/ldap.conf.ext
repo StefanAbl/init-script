@@ -1,0 +1,14 @@
+hosts = {{ldapHost}}
+auth_bind = yes
+auth_bind_userdn = uid=%n,cn=users,cn=accounts,{{baseDN}}
+pass_attrs = uid=user
+pass_filter = (&(uid=%n)(mail=%u)(memberOf=cn=mail,cn=groups,cn=accounts,{{baseDN}}))
+ldap_version = 3
+dn = uid={{ bindUser }},cn=users,cn=accounts,{{baseDN}}
+dnpass = {{ bindPw }}
+tls = yes
+tls_ca_cert_file = /etc/ipa/ca.crt
+tls_require_cert = hard
+debug_level = 3
+base = {{baseDN}}
+scope = subtree

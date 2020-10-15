@@ -1,3 +1,4 @@
 mullvad.zip
 *.crt
 mullvad_userpass.txt
+*.ovpn

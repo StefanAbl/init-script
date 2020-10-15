@@ -1,0 +1,13 @@
+server_host = ldaps://{{ ldapHost }}:636
+server_port = 636
+search_base = {{baseDN}}
+query_filter = (mail=%s)
+result_attribute = uid
+bind = yes
+bind_dn = uid={{ bindUser }},cn=users,cn=accounts,{{baseDN}}
+bind_pw = {{ bindPw }}
+version = 3
+tls_require_cert = yes
+tls_ca_cert_file = /etc/ipa/ca.crt
+#add cache
+#tls cert file

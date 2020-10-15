@@ -1,0 +1,60 @@
+- name: create directory to build postfix container
+  file:
+    path: ~/postfix
+    state: directory
+- name: template Dockerfile
+  template:
+    src: Dockerfile
+    dest: ~/postfix/
+- name: build postfix container
+  shell: "cd ~/postfix/ && docker build -t postfix ."
+
+- name: make directories for postfix
+  file:
+    path: "{{docker_dir}}/{{item}}"
+    state: directory
+    owner: "{{bindUser}}"
+    group: "{{bindUser}}"
+  with_items:
+    - /postfix/config
+    - mail/mail/local
+    - mail/ssl/dhparams
+- name: template config files
+  template:
+    src: "{{ item }}"
+    dest: "{{ docker_dir }}/postfix/config/{{ item }}"
+  with_items:
+    - ldap-virtual-alias-maps.cf
+    - ldap-virtual-mailbox-maps.cf
+    - main.cf
+    - master.cf
+
+- name: make DH params
+  openssl_dhparam:
+    path: "{{docker_dir}}/mail/ssl/dhparams/dh{{item}}.pem"
+    size: "{{item}}"
+    owner: "{{bindUser}}"
+    group: "{{bindUser}}"
+  with_items:
+    - 512
+    - 2048
+- shell: "chown -R {{bindUser}}:{{bindUser}} /var/docker"
+- name: deploy postfix container
+  docker_container:
+    name: postfix
+    image: postfix
+    state: started
+    detach: true
+    recreate: true
+    restart_policy: no
+    networks:
+      - name: primary
+    published_ports:
+      - "25:25"
+      - "587:587"
+    volumes:
+      - "{{docker_dir}}/postfix/config:/config"
+      - "/etc/ipa/ca.crt:/etc/ipa/ca.crt:ro"
+      - "{{docker_dir}}/mail:/data"
+    hostname: "mail.{{domain_name}}"
+    dns_servers: "{{dns_server}}"
