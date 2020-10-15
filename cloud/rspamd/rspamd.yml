@@ -1,0 +1,9 @@
+- name: Make necessary Directories
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+  with_items:
+    - {{docker_dir}}/rspamd

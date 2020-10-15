@@ -2,6 +2,13 @@
 - hosts: all
   become: yes
   become_method: sudo
+  vars:
+    need_ovpn_setup: true
+    replica: false
+    replica_name: "replica.{{domain_name}}"
+    docker_dir: /var/docker
+    freeipa_dir: "{{docker_dir}}/replica"
+
   vars_files:
     - test-vars.yml
   vars_prompt:
