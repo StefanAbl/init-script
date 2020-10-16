@@ -3,12 +3,13 @@ This will setup a container running postfix with ldap userlookup
 
 # To do
 - remove excess packages when done
-- Test wihch things in master.cf can be chrotted
+- Test wihch things in master.cf can be chrooted
 
 ## Setup
 ### Setupt DNS
 1. Setup mail.domain in dynv6
 2. Setup reverse DNS
+3. Make sure correct timezone is set
 
 ## Linode with full disk encryption
 Follow [this guide](https://www.linode.com/docs/tools-reference/custom-kernels-distros/install-a-custom-distribution-on-a-linode/)

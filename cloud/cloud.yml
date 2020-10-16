@@ -226,3 +226,8 @@
 # Dovecot
     - name: dovecot
       include: dovecot/dovecot.yml
+
+    - name: debug
+      debug: msg=debug
+    - name: include rspamd.yml
+      include: rspamd/rspamd.yml

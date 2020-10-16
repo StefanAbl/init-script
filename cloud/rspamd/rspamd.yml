@@ -3,7 +3,8 @@
     image: redis
     state: started
     recreate: no
-    network: primary
+    networks:
+      - name: primary
     command: redis-server --maxmemory 512mb --maxmemory-policy volatile-lru
 - file:
     path: ~/rspamd
@@ -13,7 +14,7 @@
     dest: ~/rspamd
   with_items:
     - Dockerfile
-    - setup.sh
+    - start.sh
 - shell: "cd ~/rspamd && docker build -t rspamd ."
 
 
@@ -24,27 +25,30 @@
     owner: root
     group: root
     mode: 0700
-    with_items:
-    - "{{docker_dir}}/rspamd"
+  with_items:
+    - "{{docker_dir}}/rspamd/config"
+    - "{{docker_dir}}/rspamd/dkim"
 - template:
     src: "{{item}}"
-    dest: "{{docker_dir}}/rspamd"
+    dest: "{{docker_dir}}/rspamd/config"
   with_fileglob:
-    - local.d/
+    - local.d/*
 - name: remove canary file
   file:
-    path: "{{docker_dir}}/rspamd/done"
+    path: "{{docker_dir}}/rspamd/config/done"
     state: absent
 
 - name: start rspamd
   docker_container:
     name: rspamd
     image: rspamd
-    state: restarted
+    state: started
     recreate: yes
-    network: primary
-    volume:
-      - "{{docker_dir}}/rspamd:/etc/rspamd/local.d:rw"
+    networks:
+      - name: primary
+    volumes:
+      - "{{docker_dir}}/rspamd/config:/etc/rspamd/local.d/:rw"
+      - "{{docker_dir}}/rspamd/dkim:/dkim/:rw"
 
 - name: edit postfix configuration
   blockinfile:
@@ -53,9 +57,9 @@
       milter_protocol = 6
       # if rspamd is down, don't reject mail
       milter_default_action = accept
-      smtpd_milters = unix:/var/run/rspamd/milter.sock
+      smtpd_milters = inet:rspamd:11332
       milter_mail_macros = i {mail_addr} {client_addr} {client_name} {auth_authen}
 - name: restart postfix
   docker_container:
     name: postfix
-    state: restarted
+    restart: yes

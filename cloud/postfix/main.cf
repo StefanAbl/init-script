@@ -4,7 +4,7 @@ compatibility_level = 2
 maillog_file = /dev/stdout
 
 debug_peer_level = 10
-debug_peer_list = 172.0.0.1 95.208.221.126
+debug_peer_list = 172.17.0.1
 
 # disable "new mail" notifications for local unix users
 biff = no
@@ -51,7 +51,7 @@ swap_bangpath = no
 recipient_delimiter = +
 
 # path to the SSL certificate for the mail server
-smtpd_tls_cert_file = /data/ssl/cert.pem
+smtpd_tls_cert_file = /data/ssl/fullchain.pem
 smtpd_tls_key_file = /data/ssl/key.pem
 
 # I have two certificates - one is RSA, the other uses the newer ECC. ECC is
@@ -64,7 +64,7 @@ smtpd_tls_key_file = /data/ssl/key.pem
 
 # Path to your trusted certificates file. Usually provided by a
 # ca-certificates package or similar.
-smtp_tls_CAfile=/etc/ssl/cert.pem
+#smtp_tls_CAfile=/etc/ssl/cert.pem
 
 # These two lines define how postfix will connect to other mail servers.
 # DANE is a stronger form of opportunistic TLS. You can read about it here:
