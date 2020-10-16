@@ -10,6 +10,7 @@ This will setup a container running postfix with ldap userlookup
 1. Setup mail.domain in dynv6
 2. Setup reverse DNS
 3. Make sure correct timezone is set
+4. Add Dkim record and dmarc record to domain see https://www.c0ffee.net/blog/mail-server-guide/ for more
 
 ## Linode with full disk encryption
 Follow [this guide](https://www.linode.com/docs/tools-reference/custom-kernels-distros/install-a-custom-distribution-on-a-linode/)

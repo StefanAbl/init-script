@@ -24,11 +24,13 @@ EOF
     if [ ! -f "/dkim/$domain.dkim.key" ]; then
       dkim_record="$(rspamadm dkim_keygen -k "/dkim/$domain.dkim.key" -b 2048 -s dkim -d "$domain")"
 
-      chown rspamd:rspamd /dkim/$domain.dkim.key
+
       echo "$dkim_record" >> "/dkim/addto$domain"
       echo "please add the following dkim record to this domain: $domain"
       echo "$dkim_record"
     fi
+    chown rspamd:rspamd /dkim/$domain.dkim.key
+    chmod 0600 /dkim/$domain.dkim.key
   done
   chown rspamd:rspamd /dkim
 

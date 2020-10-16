@@ -15,7 +15,7 @@
   with_items:
     - Dockerfile
     - start.sh
-- shell: "cd ~/rspamd && docker build -t rspamd ."
+- shell: "cd ~/rspamd && docker build -t rspamd . && rm * && cd .. && rmdir rspamd"
 
 
 - name: Make necessary Directories

@@ -7,7 +7,7 @@
     src: Dockerfile
     dest: ~/postfix/
 - name: build postfix container
-  shell: "cd ~/postfix/ && docker build -t postfix ."
+  shell: "cd ~/postfix/ && docker build -t postfix . && rm * && cd .. && rmdir postfix"
 
 - name: make directories for postfix
   file:
@@ -15,6 +15,7 @@
     state: directory
     owner: "{{bindUser}}"
     group: "{{bindUser}}"
+    mode: 0700
   with_items:
     - /postfix/config
     - mail/mail/local
@@ -23,6 +24,9 @@
   template:
     src: "{{ item }}"
     dest: "{{ docker_dir }}/postfix/config/{{ item }}"
+    owner: "{{bindUser}}"
+    group: "{{bindUser}}"
+    mode: 0700
   with_items:
     - ldap-virtual-alias-maps.cf
     - ldap-virtual-mailbox-maps.cf
@@ -35,6 +39,7 @@
     size: "{{item}}"
     owner: "{{bindUser}}"
     group: "{{bindUser}}"
+    mode: 0644
   with_items:
     - 512
     - 2048

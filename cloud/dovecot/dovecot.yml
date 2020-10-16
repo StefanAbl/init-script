@@ -4,12 +4,13 @@
 - template:
     src: Dockerfile
     dest: ~/dovecot/
-- shell: "cd ~/dovecot/ && docker build -t dovecot ."
+- shell: "cd ~/dovecot/ && docker build -t dovecot . && rm * && cd .. && rmdir dovecot"
 - file:
     path: "{{item}}"
     state: directory
     owner: "{{bindUser}}"
     group: "{{bindUser}}"
+    mode: 0700
   with_items:
     - "{{docker_dir}}/dovecot/config/conf.d"
     - "{{docker_dir}}/mail/vhosts"
@@ -21,6 +22,7 @@
     dest: "{{docker_dir}}/dovecot/config/conf.d/"
     owner: "{{bindUser}}"
     group: "{{bindUser}}"
+    mode: 0600
   with_fileglob:
     - conf.d/*
 - name: template ldap.conf.ext and dovecot.conf
@@ -29,6 +31,7 @@
     dest: "{{docker_dir}}/dovecot/config"
     owner: "{{bindUser}}"
     group: "{{bindUser}}"
+    mode: 0600
   with_items:
     - ldap.conf.ext
     - dovecot.conf
