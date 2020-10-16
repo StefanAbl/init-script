@@ -9,6 +9,8 @@
     docker_dir: /var/docker
     freeipa_dir: "{{docker_dir}}/replica"
 
+    rspamdPw: password
+
   vars_files:
     - test-vars.yml
   vars_prompt:

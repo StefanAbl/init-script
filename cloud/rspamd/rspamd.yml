@@ -1,3 +1,22 @@
+- docker_container:
+    name: redis
+    image: redis
+    state: started
+    recreate: no
+    network: primary
+    command: redis-server --maxmemory 512mb --maxmemory-policy volatile-lru
+- file:
+    path: ~/rspamd
+    state: directory
+- template:
+    src: "{{item}}"
+    dest: ~/rspamd
+  with_items:
+    - Dockerfile
+    - setup.sh
+- shell: "cd ~/rspamd && docker build -t rspamd ."
+
+
 - name: Make necessary Directories
   file:
     path: "{{item}}"
@@ -5,5 +24,38 @@
     owner: root
     group: root
     mode: 0700
-  with_items:
-    - {{docker_dir}}/rspamd
+    with_items:
+    - "{{docker_dir}}/rspamd"
+- template:
+    src: "{{item}}"
+    dest: "{{docker_dir}}/rspamd"
+  with_fileglob:
+    - local.d/
+- name: remove canary file
+  file:
+    path: "{{docker_dir}}/rspamd/done"
+    state: absent
+
+- name: start rspamd
+  docker_container:
+    name: rspamd
+    image: rspamd
+    state: restarted
+    recreate: yes
+    network: primary
+    volume:
+      - "{{docker_dir}}/rspamd:/etc/rspamd/local.d:rw"
+
+- name: edit postfix configuration
+  blockinfile:
+    path: "{{docker_dir}}/postfix/config/main.cf"
+    block: |
+      milter_protocol = 6
+      # if rspamd is down, don't reject mail
+      milter_default_action = accept
+      smtpd_milters = unix:/var/run/rspamd/milter.sock
+      milter_mail_macros = i {mail_addr} {client_addr} {client_name} {auth_authen}
+- name: restart postfix
+  docker_container:
+    name: postfix
+    state: restarted
