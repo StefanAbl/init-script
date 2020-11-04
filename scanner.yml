@@ -1,0 +1,38 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: install rkhunter
+      apt:
+        name:
+          - rkhunter
+      when: ansible_distribution == "Ubuntu"
+    - name: install epel-release
+      dnf:
+        name: epel-release
+      when: ansible_distribution == "CentOS"
+    - name: install rkhunter
+      dnf:
+        name:
+          - rkhunter
+      when: ansible_distribution == "CentOS"
+
+    - name: run rkhunter
+      shell: rkhunter -c --sk --pkgmgr DPKG --rwo
+      when: ansible_distribution == "Ubuntu"
+      register: result
+      failed_when: false
+    - name: run rkhunter
+      shell: rkhunter -c --sk --pkgmgr RPM --rwo
+      when: ansible_distribution == "CentOS"
+      register: result
+      failed_when: false
+
+    - debug: var=result
+      when: result.rc != 0
+    - pause:
+        prompt: "Take note of the warnings above"
+      when: result.rc != 0
+    - debug: msg="rkhunter detected nothing on this host"
+      when: result.rc == 0

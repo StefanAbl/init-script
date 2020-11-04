@@ -3,6 +3,10 @@ jellyfin.i.stabl.one
 nextcloud.i.stabl.one
 plex.i.stabl.one
 
+[docker]
+docker0.i.stabl.one
+docker1.i.stabl.one
+
 [proxmox]
 proxmox0.i.stabl.one
 
