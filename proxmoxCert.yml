@@ -10,8 +10,8 @@
         name: "HTTP/{{ ansible_facts.fqdn }}"
         state: present
         ipa_host: "{{ ipa_host }}"
-        ipa_user: "{{ user }}"
-        ipa_pass: "{{ pass }}"
+        ipa_admin_user: "{{ user }}"
+        ipa_admin_user_password: "{{ pass }}"
     - shell:
         cmd: ipa-getcert request -r -f pveproxy-ssl.pem -k pveproxy-ssl.key -N CN="{{ ansible_facts.fqdn }}" -K "HTTP/{{ ansible_facts.fqdn }}@"{{ realm }}""
         chdir: "/etc/pve/nodes/{{ ansible_facts.hostname }}/"

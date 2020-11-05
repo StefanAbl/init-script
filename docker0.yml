@@ -1,0 +1,45 @@
+---
+- hosts: docker0.i.stabl.one
+  vars_files:
+    - secrets.yml
+  vars_prompt:
+    - name: ipa_admin_user_password
+      prompt: "Please enter password for IPA user {{ ipa_admin_user }}"
+      private: yes
+  vars:
+    - recreate: yes
+  roles:
+    #- docker
+    - authelia_docker
+    - portainer
+    - internal_nginx_docker_proxy
+  tasks:
+    - include: tasklists/add_internal_proxy_site/makeNginxProxy.yml
+      vars:
+        - server_name: "{{ internal_authelia_fqdn }}"
+        - upstream: "http://{{authelia_container_name}}"
+        - record: authelia
+        - protected: false
+    - include: tasklists/add_internal_proxy_site/makeNginxProxy.yml
+      vars:
+        - server_name: "portainer.{{ansible_facts.fqdn}}"
+        - upstream: "http://portainer:9000"
+        - record: "portainer.{{ansible_facts.hostname}}"
+        - protected: false
+    - name: start nginx docker container
+      become: yes
+      docker_container:
+        name: nginx
+        image: nginx
+        state: started
+        detach: yes
+        recreate: "{{recreate}}"
+        networks:
+          - name: primary
+        published_ports:
+          - "80:80"
+          - "443:443"
+        volumes:
+          - "{{ nginx_config_dir }}nginx.conf:/etc/nginx/nginx.conf:ro"
+          - "{{ nginx_sites_dir }}:/etc/nginx/sites/:ro"
+          - "/etc/ipa/ca.crt:/etc/ipa/ca.crt:ro"

@@ -1,0 +1,13 @@
+---
+docker_config_dir: /var/docker/
+user: svc_docker0
+
+
+#container names
+authelia_container_name: authelia
+authelia_svc_user: svc_authelia
+
+#NGINX
+nginx_config_dir: "{{ docker_config_dir}}nginx/"
+nginx_sites_dir: "{{nginx_config_dir}}sites/"
+nginx_conf: nginx.conf
