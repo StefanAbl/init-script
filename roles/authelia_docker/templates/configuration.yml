@@ -203,9 +203,7 @@ access_control:
   rules:
 
     - domain:
-      - heimdall.docker1.i.stabl.one
-      - jackett.docker1.i.stabl.one
-      - deluge.docker1.i.stabl.one
+      - "*.i.stabl.one"
       policy: one_factor
       subject: "user:stefan"
 

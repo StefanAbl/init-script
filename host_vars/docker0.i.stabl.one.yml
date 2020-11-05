@@ -3,6 +3,11 @@ docker_config_dir: /var/docker/
 user: svc_docker0
 
 
+#This is needed since we have to differentiate if the authelia endpoint is local
+# to the nginx server or not in the authelia.conf file
+authelia_local: True
+
+
 #container names
 authelia_container_name: authelia
 authelia_svc_user: svc_authelia

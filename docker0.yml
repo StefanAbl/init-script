@@ -7,13 +7,47 @@
       prompt: "Please enter password for IPA user {{ ipa_admin_user }}"
       private: yes
   vars:
-    - recreate: yes
+    - recreate: no
   roles:
     #- docker
-    - authelia_docker
+    #- authelia_docker
     - portainer
     - internal_nginx_docker_proxy
   tasks:
+
+    - name: get "{{user}}" uid
+      shell: "id -u {{user}}"
+      register: userUID
+      changed_when: False
+
+    - name: get "{{user}}" gid
+      shell: "id -g {{user}}"
+      register: userGID
+      changed_when: False
+
+
+    - name: create docker volume for speedtracker
+      docker_volume:
+        name: speedtracker
+      become: yes
+
+    - name: create docker container
+      become: yes
+      docker_container:
+        name: speedtracker
+        image: henrywhitaker3/speedtest-tracker
+        state: started
+        recreate: true
+        detach: true
+        restart_policy: unless-stopped
+        env:
+          OOKLA_EULA_GDPR=true
+        networks:
+          - name: primary
+        volumes:
+          - "speedtracker:/config"
+
+
     - include: tasklists/add_internal_proxy_site/makeNginxProxy.yml
       vars:
         - server_name: "{{ internal_authelia_fqdn }}"
@@ -26,6 +60,12 @@
         - upstream: "http://portainer:9000"
         - record: "portainer.{{ansible_facts.hostname}}"
         - protected: false
+    - include: tasklists/add_internal_proxy_site/makeNginxProxy.yml
+      vars:
+        - server_name: "speedtracker.{{internal_domain}}"
+        - upstream: "http://speedtracker"
+        - record: "speedtracker"
+        - protected: true
     - name: start nginx docker container
       become: yes
       docker_container:

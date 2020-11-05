@@ -14,13 +14,9 @@
       - protected: "{{protected}}"
       - upstream: "{{ upstream }}"
 
-  - name: check if cert already present
-    stat:
-      path: "{{ nginx_sites_dir }}{{ server_name}}.crt"
-    register: stat_result
+  
   - name: make A record and get ssl_certificate
     become_user: "{{user}}"
     include: getCerts.yml
     vars:
        path: "{{ nginx_sites_dir }}{{ server_name}}"
-    when: not stat_result.stat.exists

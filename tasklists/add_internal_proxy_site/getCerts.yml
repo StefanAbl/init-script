@@ -7,11 +7,11 @@
 - debug:
     msg: "Full path to cert: {{ path }}. Will append .crt and .key"
 
-- name: add A record to IPA
+- name: add record to IPA
   ipa_dnsrecord:
     ipa_host: "{{ ipa_server }}"
-    ipa_admin_user: "{{ ipa_admin_user }}"
-    ipa_admin_user_password: "{{ ipa_admin_user_password }}"
+    ipa_user: "{{ ipa_admin_user }}"
+    ipa_pass: "{{ ipa_admin_user_password }}"
     state: present
     zone_name: "{{ internal_domain }}"
     record_name: "{{ record }}"
@@ -22,27 +22,36 @@
   ipa_service:
     name: "HTTP/{{ record }}.{{ internal_domain }}"
     ipa_host: "{{ ipa_server }}"
-    ipa_admin_user: "{{ ipa_admin_user }}"
-    ipa_admin_user_password: "{{ ipa_admin_user_password }}"
+    ipa_user: "{{ ipa_admin_user }}"
+    ipa_pass: "{{ ipa_admin_user_password }}"
     hosts:
       - "{{ host }}"
   when: false
   # this module can not add a service if the host does not exist; need to do via comandline
 
 - name: check if service alrady exists
-  shell: echo "{{ ipa_admin_user_password }}" | kinit "{{ ipa_admin_user }}" -l 1m && ipa service-find | grep "HTTP/{{ record }}.{{ internal_domain }}"
-  register: ret
-  failed_when: ret.rc != 1 and ret.rc != 0
+  shell: |
+    echo "{{ ipa_admin_user_password }}" | kinit "{{ ipa_admin_user }}" -l 1m &&\
+    ipa service-find | grep "HTTP/{{ record }}.{{ internal_domain }}" ||\
+    ipa service-add "HTTP/{{ record }}.{{ internal_domain }}" --skip-host-check
 
-- debug: var=ret
-
-- name: add service to ipa via comandline
-  shell: echo "{{ ipa_admin_user_password }}" | kinit "{{ ipa_admin_user }}" -l 1m && ipa service-add "HTTP/{{ record }}.{{ internal_domain }}" --skip-host-check
-  when: ret.rc == 1
 
 - name: allow this host to manage the service
-  shell: echo "{{ ipa_admin_user_password }}" | kinit "{{ ipa_admin_user }}" -l 1m && ipa service-add-host --hosts="{{ host }}" "HTTP/{{ record }}.{{ internal_domain }}"
-  when: ret.rc == 1
+  shell: |
+    echo "{{ ipa_admin_user_password }}" | kinit "{{ ipa_admin_user }}" -l 1m &&\
+    ipa service-show "HTTP/{{ record }}.{{ internal_domain }}" | grep -i "Managed by: {{ ansible_facts.fqdn }}" ||\
+    ipa service-add-host --hosts="{{ ansible_facts.fqdn }}" "HTTP/{{ record }}.{{ internal_domain }}"
 
-- shell:
-    cmd: ipa-getcert request -r -f {{path}}.crt -k {{path}}.key -N CN="{{ record }}.{{ internal_domain }}" -K "HTTP/{{ record }}.{{ internal_domain }}"@"{{ realm }}"
+- name: check if cert already present
+  stat:
+    path: "{{path}}.crt"
+  register: stat_result
+
+- debug: var=stat_result
+
+- name: get certificate
+  become: yes
+  become_user: root
+  shell:
+    cmd: id; ipa-getcert request -r -f {{path}}.crt -k {{path}}.key -N CN="{{ record }}.{{ internal_domain }}" -K "HTTP/{{ record }}.{{ internal_domain }}"@"{{ internal_domain|upper }}"
+  when: stat_result.stat.exists == False

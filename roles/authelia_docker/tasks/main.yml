@@ -2,10 +2,12 @@
 - name: get "{{user}}" uid
   shell: "id -u {{user}}"
   register: userUID
+  changed_when: False
 
 - name: get "{{user}}" gid
   shell: "id -g {{user}}"
   register: userGID
+  changed_when: False
 - name: make directories
   become_user: "{{user}}"
   become: yes
@@ -66,9 +68,6 @@
       MYSQL_USER="{{ db_user }}"
       MYSQL_PASSWORD="{{ authelia_db_user_pass }}"
 
-- name: wait for sql to start up
-  pause:
-    minutes: 2
 
 - name: deploy authelia
   become: yes

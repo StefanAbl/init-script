@@ -4,6 +4,7 @@
   become_method: sudo
   roles:
     - docker
+    - portainer
   vars:
     need_ovpn_setup: true
     replica: true
@@ -72,10 +73,6 @@
         state: latest
         update_cache: yes
       when: false
-
-
-    - name: install portainer
-      include: ../tasklists/portainer.yml
 
     - name: copy openvpn config_file
       template:
