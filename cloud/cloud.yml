@@ -3,14 +3,16 @@
   become: yes
   become_method: sudo
   roles:
-    - docker
-    - portainer
+    - ../roles/docker
+    - ../roles/portainer
   vars:
     need_ovpn_setup: true
     replica: true
-    replica_name: "replica-cloud.{{domain_name}}"
+    replica_container_name: replica
     docker_dir: /var/docker
     freeipa_dir: "{{docker_dir}}/replica"
+
+    openvpn_interface: tap0
 
     rspamdPw: password
 
@@ -19,8 +21,9 @@
   vars_prompt:
     - name: otpClient
       prompt: "Please provide OTP Token for IPA client install of docker host"
-    - name: otp
-      prompt: "Please provide OTP token for REPLICA install"
+    - name: ipa_admin_user_password
+      prompt: "Please provide the password for user IPA user {{ipa_admin_user}}"
+      private: yes
   tasks:
     # Firewall
     - name: allow ssh
@@ -97,7 +100,7 @@
         seconds: 30
       when: "{{ need_ovpn_setup}}"
     - name: set ipa dns server on openvpn interface
-      shell: resolvectl dns tun0 "{{dns_server}}"
+      shell: resolvectl dns "{{openvpn_interface}}" "{{dns_server}}"
 
 #ENROLL IN DOMAIN
     - name: set hostname
@@ -112,13 +115,16 @@
       failed_when: result.rc == 1
       changed_when: result.rc == 0
       when: otpClient != ""
+
     - name: get svc_mail uid
       shell: "id -u {{bindUser}}"
       register: bindUserUID
+      changed_when: False
 
     - name: get svc_mail gid
       shell: "id -g {{bindUser}}"
       register: bindUserGID
+      changed_when: False
 #DOCKER
     - name: create docker network
       docker_network:
@@ -129,46 +135,11 @@
     - name: debug
       debug: msg=debug
 #REPLICA
-    - name: create replica directory
-      file:
-        path: "{{ freeipa_dir }}"
-        state: directory
-      when: replica
-    - name: clone freeipa docker directory
-      git:
-        repo: https://github.com/freeipa/freeipa-container.git
-        dest: ~/freeipa-container
-      when: replica
-    - name: build docker image
-      shell: "cd ~/freeipa-container && docker build -t freeipa-server . "
-      when: replica
-    # - name: remove leftover repo
-    #   shell: "rm -rf ~/freeipa-container"
-    #   when: false
-
-    - name: start freeipa replica docker
-      docker_container:
-        name: replica
-        image: "freeipa/freeipa-server:centos-8"
-        state: started
-        detach: true
-        recreate: yes
-        restart_policy: no
-        hostname: "{{replica_name}}"
-        sysctls: "net.ipv6.conf.all.disable_ipv6=0"
-        env:
-          DEBUG_NO_EXIT: "1"
-          DEBUG_TRACE: "1"
-        networks:
-          - name: primary
-        published_ports:
-          - "127.0.0.1:443:443"
-        volumes:
-          - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
-        command: "ipa-replica-install -U --no-ntp --password {{otp}} --no-ssh --no-sshd --skip-conncheck"
-      when: replica
-#    Add back to volumes      - "{{freeipa_dir}}:/data"
-    - shell: exit 1
+    - include: replica/replica.yml
+    - name: get ip address for replica in primary network
+      shell: "docker inspect -f {{ '{{' }}.NetworkSettings.Networks.primary.IPAddress{{ '}}' }} {{replica_container_name}}"
+      register: replica_container_primary_ip
+      become: yes
 #POSTFIX
 
     - name: deploy postfix

@@ -52,6 +52,8 @@
     detach: true
     recreate: true
     restart_policy: no
+    etc_hosts:
+      "{{replica_name}}={{replica_container_primary_ip.stdout}}"
     networks:
       - name: primary
     published_ports:

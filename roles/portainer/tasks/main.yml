@@ -9,7 +9,7 @@
     image: "portainer/portainer"
     state: started
     detach: true
-    recreate: "{{recreate}}"
+    recreate: "{{ recreate | default('false') }}"
     restart_policy: unless-stopped
     networks:
       - name: primary

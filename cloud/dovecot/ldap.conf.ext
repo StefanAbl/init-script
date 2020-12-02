@@ -1,4 +1,5 @@
-hosts = {{ldapHost}}
+hosts = {% for ldap_host in ldap_hosts_for_cloud_containers %} {{ ldap_host }} {% endfor %}
+
 auth_bind = yes
 auth_bind_userdn = uid=%n,cn=users,cn=accounts,{{baseDN}}
 pass_attrs = uid=user

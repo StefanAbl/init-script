@@ -1,6 +1,6 @@
-server_host = ldaps://{{ ldapHost }}:636
+server_host = {% for ldap_host in ldap_hosts_for_cloud_containers %} ldaps://{{ ldap_host }}:636 {% endfor %}
+
 search_base = cn=users,cn=accounts,{{baseDN}}
-server_port = 636
 version = 3
 bind = yes
 bind_dn = uid={{ bindUser }},cn=users,cn=accounts,{{baseDN}}

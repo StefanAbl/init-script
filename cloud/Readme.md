@@ -12,7 +12,29 @@ This will setup a container running postfix with ldap userlookup
   - if previously configured different users will then see a different mailbox, but new mail is delivered properly
   - userdb in 10-auth.conf could then be configured without %d for domain
 
+## Fix mailrouting
+- Config:
+  - alias maps
+    - query: mail=%s
+    - result: mail
+  - mailbox maps
+    - query: (&(memberOf=cn=mail,cn=groups,...)(mail=%s))
+    - result: uid
+  - 10-auth.conf
+    - userdb: home=/data/vhosts/%n
+  - ldap.conf.ext
+    - pass_filter: (&(uid=%n)(mail=%u)(memberOf=cn=mail,cn=groups,...))
+- Result:
+  - groups not working
+  - external mails working
+  - sign in with full mail
+  - local mailboxes working
+  
+
 ## Setup
+### Difficulties when setting up replica
+1. The master needs to be able to directly access the replica and not just vice versa
+  1. Create a docker macvlan network, which attaches the containers directly to the network `sudo docker network create -d macvlan --subnet=10.13.10.0/24 --gateway=10.13.10.1 -o parent=tap0 macvlan`
 ### Setupt DNS
 1. Setup mail.domain in dynv6
 2. Setup reverse DNS
