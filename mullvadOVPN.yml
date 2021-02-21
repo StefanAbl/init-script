@@ -19,9 +19,9 @@
     - local_interface: "ens18"
     - local_networks: ["10.13.2.0/24", "192.168.2.0/24"]
     - mullvad_files_dir: "./mullvad/"
-    - config_file: "mullvad.conf"
-    - service_file: "openvpn@.service"
-    - ks: true
+    - config_file: "{{mullvad_files_dir}}mullvad.conf"
+    - service_file: "{{mullvad_files_dir}}openvpn@.service"
+    - ks: true #killswitch
     - flush: false
 
   become: yes
