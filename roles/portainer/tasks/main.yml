@@ -2,6 +2,9 @@
   docker_volume:
     name: portainer_data
   become: yes
+- name: Create a network
+  docker_network:
+    name: primary
 - name: create container
   become: yes
   docker_container:

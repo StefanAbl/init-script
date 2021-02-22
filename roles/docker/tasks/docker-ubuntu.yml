@@ -27,9 +27,17 @@
   become: yes
   become_method: sudo
 
-- name: Install Docker Module for Python
+- name: Make sure old docker module is absent
   pip:
     name:
       - docker-py
+    state: absent
+  become: yes
+  become_method: sudo
+
+- name: Install Docker Module for Python
+  pip:
+    name:
+      - docker
   become: yes
   become_method: sudo
