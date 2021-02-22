@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: docker1.i.stabl.one
   vars:
     - openvpnConfigDir: "/etc/openvpn/client/"
     # also add the original server from the mullvad zip file
@@ -43,6 +43,10 @@
         - openvpn
         - iptables-persistent
     when: ansible_distribution == "Ubuntu"
+  - name: copy fix route script
+    copy:
+      src:  "{{ mullvad_files_dir }}fix-routes.sh"
+      dest: "/etc/openvpn/"
 
   - name: copy mullvad.cert and mullvad_userpass.txt
     copy:
