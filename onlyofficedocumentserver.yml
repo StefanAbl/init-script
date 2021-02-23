@@ -1,0 +1,14 @@
+---
+- hosts: docker0.i.stabl.one
+  tasks:
+    - name: start docker container
+      docker_container:
+        name: onlyofficeDocumentserver
+        image: onlyoffice/documentserver
+        state: started
+        recreate: true
+        detach: true
+        restart_policy: unless-stopped
+        published_ports:
+          - "5000:80"
+      become: yes
