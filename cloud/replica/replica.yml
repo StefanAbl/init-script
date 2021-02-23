@@ -12,6 +12,17 @@
     state: directory
   when: replica
 
+- name: create tempfile for password
+  tempfile:
+    state: file
+  register: tempfile
+
+- name: write password to tempfile
+  lineinfile:
+    path: "{{tempfile.path}}"
+    line: "PW={{ipa_admin_user_password}}"
+
+
 - name: start freeipa replica docker
   docker_container:
     name: replica
@@ -31,7 +42,14 @@
       - name: macvlan
     published_ports:
       - "127.0.0.1:443:443"
+      - "127.0.0.1:53:53"
     volumes:
       - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
       - "{{freeipa_dir}}:/data:Z"
-    command: "ipa-replica-install -U --no-ntp -P {{ipa_admin_user}} -w {{ipa_admin_user_password}}"
+      - "{{tempfile.path}}:/password:ro"
+    command: "ipa-replica-install -U --no-ntp -P {{ipa_admin_user}} -w $(cat /password)"
+
+- name: remove password file
+  file:
+      path: "{{tempfile.path}}" # required. Path to the file being managed.
+      state: absent
