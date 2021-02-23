@@ -31,7 +31,7 @@
         name: speedtracker
       become: yes
 
-    - name: create docker container
+    - name: create docker speedtracker container
       become: yes
       docker_container:
         name: speedtracker
