@@ -20,7 +20,7 @@
 - name: write password to tempfile
   lineinfile:
     path: "{{tempfile.path}}"
-    line: "PW={{ipa_admin_user_password}}"
+    line: "{{ipa_admin_user_password}}"
 
 
 - name: start freeipa replica docker
