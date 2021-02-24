@@ -41,6 +41,7 @@
       - name: primary
         ipv4_address: "172.18.0.3/16"
       - name: macvlan
+        ipv4_address: "{{replica_container_macvaln_ip}}"
     published_ports:
       - "127.0.0.1:443:443"
       - "127.0.0.1:53:53"
