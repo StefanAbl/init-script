@@ -129,6 +129,8 @@
     - name: create docker network
       docker_network:
         name: primary
+        ipam_config:
+          - subnet: "172.18.0.0/16"
 
 
 

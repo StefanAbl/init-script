@@ -39,6 +39,7 @@
       DEBUG_TRACE: "1"
     networks:
       - name: primary
+        ipv4_address: "172.18.0.3/16"
       - name: macvlan
     published_ports:
       - "127.0.0.1:443:443"
