@@ -6,6 +6,9 @@ RUN mkdir -p /config /data &&\
     adduser --system --disabled-password --no-create-home \
       --ingroup {{bindUser}} --firstuid {{bindUserUID.stdout}} --lastuid {{bindUserUID.stdout}} {{bindUser}}
 
+RUN echo "NETWORK_TIMEOUT 3" >> /etc/ldap/ldap.conf &&\
+    echo "TIMEOUT 3" >> /etc/ldap/ldap.conf
+
 
 
 SHELL ["/bin/bash", "-c"]
