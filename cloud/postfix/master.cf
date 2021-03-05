@@ -9,13 +9,13 @@
 # service type  private unpriv  chroot  wakeup  maxproc command + args
 #               (yes)   (yes)   (no)    (never) (100)
 # ==========================================================================
-smtp      inet  n       -       n       -       -       smtpd -v
+smtp      inet  n       -       n       -       -       smtpd
   -o smtpd_sasl_auth_enable=no
 #smtp      inet  n       -       n       -       1       postscreen
 #smtpd     pass  -       -       n       -       -       smtpd
 #dnsblog   unix  -       -       n       -       0       dnsblog
 #tlsproxy  unix  -       -       n       -       0       tlsproxy
-submission inet n       -       n       -       -       smtpd -v
+submission inet n       -       n       -       -       smtpd
   -o smtpd_tls_security_level=encrypt
   -o tls_preempt_cipherlist=yes
 pickup    unix  n       -       n       60      1       pickup

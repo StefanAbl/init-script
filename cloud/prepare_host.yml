@@ -1,0 +1,111 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+  roles:
+    - ../roles/docker
+  vars:
+    need_ovpn_setup: true
+    replica: true
+    replica_container_name: replica
+    docker_dir: /var/docker
+    freeipa_dir: "{{docker_dir}}/replica"
+
+    openvpn_interface: tap0
+
+  vars_files:
+    - test-vars.yml
+  vars_prompt:
+    - name: otpClient
+      prompt: "Please provide OTP Token for IPA client install of docker host"
+    - name: ipa_admin_user_password
+      prompt: "Please provide the password for user IPA user {{ipa_admin_user}}"
+      private: yes
+  tasks:
+    # Firewall
+    - name: allow ssh
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: 22
+        jump: ACCEPT
+        comment: Accept new SSH connections.
+    - shell: |
+        for tables in iptables ip6tables ; do
+          # Flush existing rules
+
+          # Default policy
+          $tables -P INPUT DROP
+          $tables -P FORWARD DROP
+          $tables -P OUTPUT ACCEPT
+
+          # Allow established inbound connections
+          $tables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+          # Allow icmp
+          $tables -A INPUT -p icmp -j ACCEPT
+
+          # Allow all loopback traffic
+          $tables -A INPUT -i lo -j ACCEPT
+
+          # Allow inbound SSH connection
+          $tables -A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
+        done
+    - name: allow necessary ports
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: "{{item}}"
+        action: append
+        jump: ACCEPT
+      with_items:
+        - 25
+        - 465
+        - 587
+    - name: install packages
+      apt:
+        name:
+          - openvpn
+          - resolvconf
+          - freeipa-client
+          - git
+          - iptables-persistent
+        state: latest
+        update_cache: yes
+      when: false
+
+    - name: copy openvpn config_file
+      template:
+        src: ./cloud.ovpn
+        dest: /etc/openvpn/cloud.conf
+    - name: add option to set DNS
+      lineinfile:
+        path: /etc/openvpn/cloud.conf
+        state: present
+        line: "{{ item }}"
+      with_items:
+        - "script-security 2"
+        - "up /etc/openvpn/update-resolv-conf"
+        - "down /etc/openvpn/update-resolv-conf"
+    - name: start openvpn service
+      service:
+        name: openvpn@cloud
+        state: restarted
+      when: "{{ need_ovpn_setup }}"
+    - name: wait
+      pause:
+        seconds: 30
+      when: "{{ need_ovpn_setup}}"
+    - name: set ipa dns server on openvpn interface
+      shell: resolvectl dns "{{openvpn_interface}}" "{{ipa_server_ip}}"
+
+#ENROLL IN DOMAIN
+    - name: set hostname
+      hostname: name=mail.{{domain_name}}
+
+    #DOCKER
+    - name: create docker network
+      docker_network:
+        name: primary
+        ipam_config:
+          - subnet: "172.18.0.0/16"

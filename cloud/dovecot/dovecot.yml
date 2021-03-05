@@ -2,14 +2,17 @@
     path: ~/dovecot
     state: directory
 - template:
-    src: Dockerfile
+    src: "{{item}}"
     dest: ~/dovecot/
+  with_items:
+    - "Dockerfile"
+    - "start.sh"
 - shell: "cd ~/dovecot/ && docker build -t dovecot . && rm * && cd .. && rmdir dovecot"
 - file:
     path: "{{item}}"
     state: directory
-    owner: "{{bindUser}}"
-    group: "{{bindUser}}"
+    owner: "{{mailserver_bindUser}}"
+    group: "{{mailserver_bindUser}}"
     mode: 0700
   with_items:
     - "{{docker_dir}}/dovecot/config/conf.d"
@@ -20,8 +23,8 @@
   template:
     src: "{{ item }}"
     dest: "{{docker_dir}}/dovecot/config/conf.d/"
-    owner: "{{bindUser}}"
-    group: "{{bindUser}}"
+    owner: "{{mailserver_bindUser}}"
+    group: "{{mailserver_bindUser}}"
     mode: 0600
   with_fileglob:
     - conf.d/*
@@ -29,8 +32,8 @@
   template:
     src: "{{item}}"
     dest: "{{docker_dir}}/dovecot/config"
-    owner: "{{bindUser}}"
-    group: "{{bindUser}}"
+    owner: "{{mailserver_bindUser}}"
+    group: "{{mailserver_bindUser}}"
     mode: 0600
   with_items:
     - ldap.conf.ext
@@ -47,7 +50,7 @@
     restart_policy: no
     sysctls: "net.ipv6.conf.all.disable_ipv6=0"
     etc_hosts:
-      "{{replica_name}}={{replica_container_primary_ip.stdout}}"
+      "{{mailserver_replica_name}}={{replica_container_primary_ip.stdout}}"
     networks:
       - name: primary
     published_ports:
@@ -57,4 +60,4 @@
       - "/etc/ipa/ca.crt:/etc/ipa/ca.crt:ro"
       - "{{docker_dir}}/mail:/data"
     hostname: "mail.{{domain_name}}"
-    dns_servers: "{{dns_server}}"
+    dns_servers: "{{ipa_server_ip}}"

@@ -3,126 +3,23 @@
   become: yes
   become_method: sudo
   roles:
-    - ../roles/docker
     - ../roles/portainer
   vars:
-    need_ovpn_setup: true
     replica: true
     replica_container_name: replica
     docker_dir: /var/docker
     freeipa_dir: "{{docker_dir}}/replica"
 
-    openvpn_interface: tap0
-
-    rspamdPw: password
-
   vars_files:
     - test-vars.yml
-  vars_prompt:
-    - name: otpClient
-      prompt: "Please provide OTP Token for IPA client install of docker host"
-    - name: ipa_admin_user_password
-      prompt: "Please provide the password for user IPA user {{ipa_admin_user}}"
-      private: yes
   tasks:
-    # Firewall
-    - name: allow ssh
-      iptables:
-        chain: INPUT
-        protocol: tcp
-        destination_port: 22
-        jump: ACCEPT
-        comment: Accept new SSH connections.
-    - shell: |
-        for tables in iptables ip6tables ; do
-          # Flush existing rules
-
-          # Default policy
-          $tables -P INPUT DROP
-          $tables -P FORWARD DROP
-          $tables -P OUTPUT ACCEPT
-
-          # Allow established inbound connections
-          $tables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
-
-          # Allow icmp
-          $tables -A INPUT -p icmp -j ACCEPT
-
-          # Allow all loopback traffic
-          $tables -A INPUT -i lo -j ACCEPT
-
-          # Allow inbound SSH connection
-          $tables -A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
-        done
-    - name: allow necessary ports
-      iptables:
-        chain: INPUT
-        protocol: tcp
-        destination_port: "{{item}}"
-        action: append
-        jump: ACCEPT
-      with_items:
-        - 25
-        - 465
-        - 587
-    - name: install packages
-      apt:
-        name:
-          - openvpn
-          - resolvconf
-          - freeipa-client
-          - git
-          - iptables-persistent
-        state: latest
-        update_cache: yes
-      when: false
-
-    - name: copy openvpn config_file
-      template:
-        src: ./cloud.ovpn
-        dest: /etc/openvpn/cloud.conf
-    - name: add option to set DNS
-      lineinfile:
-        path: /etc/openvpn/cloud.conf
-        state: present
-        line: "{{ item }}"
-      with_items:
-        - "script-security 2"
-        - "up /etc/openvpn/update-resolv-conf"
-        - "down /etc/openvpn/update-resolv-conf"
-    - name: start openvpn service
-      service:
-        name: openvpn@cloud
-        state: restarted
-      when: "{{ need_ovpn_setup }}"
-    - name: wait
-      pause:
-        seconds: 30
-      when: "{{ need_ovpn_setup}}"
-    - name: set ipa dns server on openvpn interface
-      shell: resolvectl dns "{{openvpn_interface}}" "{{dns_server}}"
-
-#ENROLL IN DOMAIN
-    - name: set hostname
-      hostname: name=mail.{{domain_name}}
-  #  - shell: exit 1
-    - name: remove duplicate user
-      shell: userdel -rf stefan
-      when: false
-    - name: adopt into IPA realm
-      shell: ipa-client-install -dU --enable-dns-updates --mkhomedir --no-ntp --password '{{otpClient}}' --domain {{domain_name}} --hostname mail.{{domain_name}}
-      register: result
-      failed_when: result.rc == 1
-      changed_when: result.rc == 0
-      when: otpClient != ""
-
     - name: get svc_mail uid
-      shell: "id -u {{bindUser}}"
+      shell: "id -u {{mailserver_bindUser}}"
       register: bindUserUID
       changed_when: False
 
     - name: get svc_mail gid
-      shell: "id -g {{bindUser}}"
+      shell: "id -g {{mailserver_bindUser}}"
       register: bindUserGID
       changed_when: False
 #DOCKER
@@ -131,13 +28,7 @@
         name: primary
         ipam_config:
           - subnet: "172.18.0.0/16"
-
-
-
-    - name: debug
-      debug: msg=debug
 #REPLICA
-    - include: replica/replica.yml
     - name: get ip address for replica in primary network
       shell: "docker inspect -f {{ '{{' }}.NetworkSettings.Networks.primary.IPAddress{{ '}}' }} {{replica_container_name}}"
       register: replica_container_primary_ip
@@ -158,7 +49,7 @@
           - "{{docker_dir}}/mail/ssl/:/acme.sh"
         command: daemon
         env:
-          DYNV6_TOKEN: "{{DYNV6_TOKEN}}"
+          DYNV6_TOKEN: "{{mailserver_dynv6_token}}"
 # REMOVE STAGING
     - name: wait for container to be ready
       shell: |
@@ -167,7 +58,7 @@
         done;
     - name: get cert
       shell: |
-        export DYNV6_TOKEN="{{DYNV6_TOKEN}}" && \
+        export DYNV6_TOKEN="{{mailserver_dynv6_token}}" && \
         docker exec acme.sh --issue -d mail.{{domain_name}} --dns dns_dynv6 \
         --cert-file      /acme.sh/cert.pem  \
         --key-file       /acme.sh/key.pem  \

@@ -1,12 +1,13 @@
 server_host = {% for ldap_host in ldap_hosts_for_cloud_containers %} ldaps://{{ ldap_host }}:636 {% endfor %}
 
-search_base = {{baseDN}}
+search_base = {{base_dn}}
 version = 3
 bind = yes
-bind_dn = uid={{ bindUser }},cn=users,cn=accounts,{{baseDN}}
-bind_pw = {{ bindPw }}
-query_filter = (mail=%s)
-result_attribute = uid
+bind_dn = uid={{ mailserver_bindUser}},cn=users,cn=accounts,{{base_dn}}
+bind_pw = {{ mailserver_bindUser_pw }}
+query_filter = (cn=%u)
+special_result_attribute = member #expand groups
+result_attribute = mail #should be mail
 
 
 tls_require_cert = yes

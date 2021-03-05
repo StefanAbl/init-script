@@ -10,7 +10,6 @@ if [ -z "$(ls "$dir"| grep done)" ]; then
   pw="$(cat "$file" | grep password)"
   pw=${pw/password = \"/}
   pw=${pw/\";/}
-  echo "rspamd password: '$pw'"
   pw="$(rspamadm pw -p "$pw")"
   cat "$file" | grep -v password > "$file"
   echo "password = \"$pw\";" >> "$file"

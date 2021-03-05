@@ -1,15 +1,15 @@
 hosts = {% for ldap_host in ldap_hosts_for_cloud_containers %} {{ ldap_host }} {% endfor %}
 
 auth_bind = yes
-auth_bind_userdn = uid=%n,cn=users,cn=accounts,{{baseDN}}
+auth_bind_userdn = uid=%n,cn=users,cn=accounts,{{base_dn}}
 pass_attrs = uid=user
-pass_filter = (&(uid=%n)(mail=%u)(memberOf=cn=mail,cn=groups,cn=accounts,{{baseDN}}))
+pass_filter = (&(uid=%n)(mail=%u)(memberOf=cn=mail,cn=groups,cn=accounts,{{base_dn}}))
 ldap_version = 3
-dn = uid={{ bindUser }},cn=users,cn=accounts,{{baseDN}}
-dnpass = {{ bindPw }}
+dn = uid={{ mailserver_bindUser}},cn=users,cn=accounts,{{base_dn}}
+dnpass = {{ mailserver_bindUser_pw }}
 tls = yes
 tls_ca_cert_file = /etc/ipa/ca.crt
 tls_require_cert = hard
 debug_level = 3
-base = {{baseDN}}
+base = {{base_dn}}
 scope = subtree

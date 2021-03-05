@@ -4,8 +4,11 @@
     state: directory
 - name: template Dockerfile
   template:
-    src: Dockerfile
+    src: "{{item}}"
     dest: ~/postfix/
+  with_items:
+    - "Dockerfile"
+    - "start.sh"
 - name: build postfix container
   shell: "cd ~/postfix/ && docker build -t postfix . && rm * && cd .. && rmdir postfix"
 
@@ -13,8 +16,8 @@
   file:
     path: "{{docker_dir}}/{{item}}"
     state: directory
-    owner: "{{bindUser}}"
-    group: "{{bindUser}}"
+    owner: "{{mailserver_bindUser}}"
+    group: "{{mailserver_bindUser}}"
     mode: 0700
   with_items:
     - /postfix/config
@@ -24,9 +27,10 @@
   template:
     src: "{{ item }}"
     dest: "{{ docker_dir }}/postfix/config/{{ item }}"
-    owner: "{{bindUser}}"
-    group: "{{bindUser}}"
+    owner: "{{mailserver_bindUser}}"
+    group: "{{mailserver_bindUser}}"
     mode: 0700
+  become: yes
   with_items:
     - ldap-virtual-alias-maps.cf
     - ldap-virtual-mailbox-maps.cf
@@ -37,13 +41,13 @@
   openssl_dhparam:
     path: "{{docker_dir}}/mail/ssl/dhparams/dh{{item}}.pem"
     size: "{{item}}"
-    owner: "{{bindUser}}"
-    group: "{{bindUser}}"
+    owner: "{{mailserver_bindUser}}"
+    group: "{{mailserver_bindUser}}"
     mode: 0644
   with_items:
     - 512
     - 2048
-- shell: "chown -R {{bindUser}}:{{bindUser}} /var/docker"
+#- shell: "chown -R {{mailserver_bindUser}}:{{mailserver_bindUser}} /var/docker"
 - name: deploy postfix container
   docker_container:
     name: postfix
@@ -53,7 +57,7 @@
     recreate: true
     restart_policy: no
     etc_hosts:
-      "{{replica_name}}={{replica_container_primary_ip.stdout}}"
+      "{{mailserver_replica_name}}={{replica_container_primary_ip.stdout}}"
     networks:
       - name: primary
     published_ports:
@@ -64,4 +68,4 @@
       - "/etc/ipa/ca.crt:/etc/ipa/ca.crt:ro"
       - "{{docker_dir}}/mail:/data"
     hostname: "mail.{{domain_name}}"
-    dns_servers: "{{dns_server}}"
+    dns_servers: "{{ipa_server_ip}}"

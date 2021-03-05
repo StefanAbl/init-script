@@ -1,0 +1,64 @@
+---
+- hosts: all
+  become: yes
+  vars_files:
+    - test-vars.yml
+  vars:
+    replica: true
+    replica_container_name: replica
+    docker_dir: /var/docker
+    freeipa_dir: "{{docker_dir}}/replica"
+  vars_prompt:
+    - name: ipa_admin_user_password
+      prompt: "Please provide the password for user IPA user {{ipa_admin_user}}"
+      private: yes
+  tasks:
+    - name: create macvlan network
+      docker_network:
+        name: "macvlan"
+        driver: macvlan
+        ipam_config:
+          - subnet: "{{local_subnet}}"
+            gateway: "{{local_subnet_gateway}}"
+
+    - name: create replica directory
+      file:
+        path: "{{ freeipa_dir }}"
+        state: directory
+
+
+    - name: create options file
+      file:
+        path:  "{{ freeipa_dir }}/ipa-replica-install-options"
+        state: touch
+
+    - name: write options to file
+      lineinfile:
+        path: "{{ freeipa_dir }}/ipa-replica-install-options"
+        line: "-U --no-ntp -d -P {{ipa_admin_user}} -w {{ipa_admin_user_password}}"
+
+    - name: start freeipa replica docker
+      docker_container:
+        name: replica
+        image: "freeipa/freeipa-server:centos-8-4.8.7"
+        state: started
+        detach: true
+        recreate: no
+        restart_policy: no
+        hostname: "{{mailserver_replica_name}}"
+        sysctls: "net.ipv6.conf.all.disable_ipv6=0"
+        dns_servers: "{{ipa_server_ip}}"
+        env:
+          DEBUG_NO_EXIT: "1"
+        networks:
+          - name: primary
+            ipv4_address: "172.18.0.17"
+          - name: macvlan
+            ipv4_address: "{{mailserver_replica_container_macvlan_ip}}"
+        published_ports:
+          - "127.0.0.1:443:443"
+          - "127.0.0.1:53:53"
+        volumes:
+          - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+          - "{{freeipa_dir}}:/data:Z"
+        #command: "ipa-replica-install -U --no-ntp -P {{ipa_admin_user}} -w $(cat /password)"
