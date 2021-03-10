@@ -3,6 +3,7 @@
 #set -e
 interface_name="eth0"
 local_ip="$(ip -4 addr show dev "$interface_name" | grep inet | sed 's/\/.*//g' | tr -d 'inet ')"
+local_ip="10.13.2.107"
 public_address="thorn.dynv6.net"
 local_netmask="255.255.255.0"
 local_broadcast="${local_ip%.*}.255"
@@ -168,7 +169,7 @@ ifconfig-pool-persist $SERVER_IPP
 client-config-dir $SERVER_CCD
 status $SERVER_LOG
 verb 4
-server-bridge 10.13.10.1 255.255.255.0 10.13.10.200 10.13.10.254
+server-bridge $local_gateway 255.255.255.0 ${local_ip%.*}.200 ${local_ip%.*}.254
 EOF
 
 cat > /etc/openvpn/start.sh <<EOF
@@ -211,7 +212,7 @@ ip route add default via \$eth_gateway
 systemctl start openvpn@server
 EOF
 
-echo '@reboot  root  /etc/openvpn/start.sh' >> /etc/crontab
+echo '@reboot  root  bash /etc/openvpn/start.sh' >> /etc/crontab
 
 if ! ip addr show dev br0 ; then
   #Brdige interface does not exist yet

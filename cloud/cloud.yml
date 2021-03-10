@@ -11,7 +11,7 @@
     freeipa_dir: "{{docker_dir}}/replica"
 
   vars_files:
-    - test-vars.yml
+    - ../secrets.yml
   tasks:
     - name: get svc_mail uid
       shell: "id -u {{mailserver_bindUser}}"

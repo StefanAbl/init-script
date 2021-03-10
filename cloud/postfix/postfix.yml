@@ -63,6 +63,8 @@
     published_ports:
       - "25:25"
       - "587:587"
+    env:
+      TZ: "Europe/Berlin"
     volumes:
       - "{{docker_dir}}/postfix/config:/config"
       - "/etc/ipa/ca.crt:/etc/ipa/ca.crt:ro"

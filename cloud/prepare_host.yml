@@ -14,13 +14,7 @@
     openvpn_interface: tap0
 
   vars_files:
-    - test-vars.yml
-  vars_prompt:
-    - name: otpClient
-      prompt: "Please provide OTP Token for IPA client install of docker host"
-    - name: ipa_admin_user_password
-      prompt: "Please provide the password for user IPA user {{ipa_admin_user}}"
-      private: yes
+    - ../secrets.yml
   tasks:
     # Firewall
     - name: allow ssh
@@ -71,8 +65,6 @@
           - git
           - iptables-persistent
         state: latest
-        update_cache: yes
-      when: false
 
     - name: copy openvpn config_file
       template:
@@ -101,7 +93,7 @@
 
 #ENROLL IN DOMAIN
     - name: set hostname
-      hostname: name=mail.{{domain_name}}
+      hostname: name=linode0.{{internal_domain}}
 
     #DOCKER
     - name: create docker network

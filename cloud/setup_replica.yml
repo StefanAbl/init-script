@@ -2,7 +2,7 @@
 - hosts: all
   become: yes
   vars_files:
-    - test-vars.yml
+    - ../secrets.yml
   vars:
     replica: true
     replica_container_name: replica
@@ -17,6 +17,8 @@
       docker_network:
         name: "macvlan"
         driver: macvlan
+        driver_options:
+          parent: tap0
         ipam_config:
           - subnet: "{{local_subnet}}"
             gateway: "{{local_subnet_gateway}}"
