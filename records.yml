@@ -1,0 +1,35 @@
+---
+- hosts: localhost
+#ansible-playbook --extra-vars "token=secret" records.yml
+  tasks:
+    - dynv6:
+        token: "{{token}}"
+        record: cloud.stabl.one
+        type: CNAME
+        data: "web"
+    - dynv6:
+        token: "{{token}}"
+        record: cloud.thorn.dynv6.net
+        type: CNAME
+        data: "web"
+    - dynv6:
+        token: "{{token}}"
+        record: mail.stabl.one
+        type: A
+        data: "192.46.235.199"
+    - dynv6:
+        token: "{{token}}"
+        record: "_dmarc.stabl.one"
+        type: TXT
+        data: "v=DMARC1; p=reject; adkim=r; aspf=r; sp=reject"
+    - dynv6:
+        token: "{{token}}"
+        record: "dkim._domainkey.stabl.one"
+        type: TXT
+        data: "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtkf6EyDsCY0YJ/pkbnsb3b+M2F2jM+5CTFhBRmLI326sLfv1DxqYmFcrVluPaO9WBHXd6x5LnTdA+NQPyAY6Pi48d3FfdLuTXSdy7iDOCxUL9q7e6YWxuV3ittH/+kUJJLBE80Y+6DR3fv6oBpqOLds0VRPFAuae64AeWG+tPsf34oArkdd1qCf+jgH651HL35QE3FZgR6tK8bELBPPVXhPsVjsddnUceVnofimjjdmjYqmFU6PSRVKpNEXOgW8IMh1kn99C90S/ZM9/bbgHhQbO8uzht79n2zcN0wIIs2kAnoSWkbO53F2BmEzm/KgVL5TDs4+L9frtwJf4HFU4DwIDAQAB"
+    - dynv6:
+        token: "{{token}}"
+        record: "@.stabl.one"
+        type: MX
+        data: "mail.stabl.one."
+        priority: 10
