@@ -51,6 +51,7 @@ swap_bangpath = no
 recipient_delimiter = +
 
 # path to the SSL certificate for the mail server
+#use fullchain certificate because duplicacy does not like it otherwise
 smtpd_tls_cert_file = /data/ssl/fullchain.pem
 smtpd_tls_key_file = /data/ssl/key.pem
 
