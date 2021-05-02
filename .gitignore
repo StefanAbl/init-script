@@ -2,3 +2,5 @@ mullvad.zip
 *.crt
 mullvad_userpass.txt
 *.ovpn
+*.tfstate*
+.terraform.lock.hcl

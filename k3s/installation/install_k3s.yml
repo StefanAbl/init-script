@@ -1,0 +1,42 @@
+---
+- hosts: k3s
+  tasks:
+    - apt:
+        pkg:
+          - apt
+          - open-iscsi
+          - nfs-common
+          - jq
+      become: yes
+
+- hosts: k3s-0.i.stabl.one
+  vars_files:
+    - ../../secrets.yml
+  tasks:
+    - debug:
+        msg: "{{ ansible_default_ipv4.address }}"
+    - name: Install first server
+      shell: curl -sfL https://get.k3s.io | sh -
+      environment:
+        K3S_TOKEN: "{{k3s_token}}"
+        INSTALL_K3S_EXEC: "server"
+        K3S_CLUSTER_INIT: true
+      become: yes
+      register: output
+    - debug: var=output
+
+- hosts: k3s:!k3s-0.i.stabl.one
+  vars_files:
+    - ../../secrets.yml
+  tasks:
+    - name: Print the IP of the first server
+      debug: msg= "{{ hostvars[groups['k3s'][0]]['ansible_default_ipv4']['address'] }}"
+    - name: Join k3s server to primary server
+      shell: curl -sfL https://get.k3s.io | sh -
+      environment:
+        K3S_TOKEN: "{{k3s_token}}"
+        INSTALL_K3S_EXEC: "server"
+        K3S_URL: "https://{{ hostvars[groups['k3s'][0]]['ansible_default_ipv4']['address'] }}:6443"
+      become: yes
+      register: output
+    - debug: var=output

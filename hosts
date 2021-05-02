@@ -14,3 +14,8 @@ proxmox0.i.stabl.one
 
 [desktop]
 desktop.i.stabl.one
+
+[k3s]
+k3s-0.i.stabl.one
+k3s-1.i.stabl.one
+k3s-2.i.stabl.one
