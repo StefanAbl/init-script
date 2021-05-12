@@ -1,0 +1,135 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grafana
+  namespace: default
+  name: grafana
+spec:
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      securityContext:
+        runAsUser: 0
+        fsGroup: 472
+      containers:
+        - image: grafana/grafana:latest
+          imagePullPolicy: IfNotPresent
+          name: grafana
+          env:
+            - name: GF_PATHS_CONFIG
+              value: /etc/grafana/grafana.ini
+            - name: BIND_USER
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secret
+                  key: username
+            - name: BIND_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secret
+                  key: password
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secret
+                  key: secret_key
+          ports:
+            - containerPort: 3000
+              name: http-grafana
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /robots.txt
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 2
+          resources:
+            limits:
+              memory: 2Gi
+            requests:
+              cpu: 100m
+              memory: 1Gi
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana
+            - mountPath: /etc/grafana/
+              name: config
+      volumes:
+        - name: grafana
+          persistentVolumeClaim:
+            claimName: grafana
+        - name: config
+          configMap:
+            name: grafana-config
+            items:
+              - key: "grafana.ini"
+                path: grafana.ini
+              - key: "ldap.toml"
+                path: ldap.toml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: default
+spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: http-grafana
+  selector:
+    app: grafana
+  sessionAffinity: None
+  type: LoadBalancer
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/issuer: freeipa-issuer
+    cert-manager.io/issuer-group: certmanager.freeipa.org
+    cert-manager.io/issuer-kind: ClusterIssuer
+    cert-manager.io/common-name: grafana.k3s.i.stabl.one
+spec:
+  tls:
+  - hosts:
+    - grafana.k3s.i.stabl.one
+    secretName: grafana-cert
+  rules:
+    - host: grafana.k3s.i.stabl.one
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana
+                port:
+                 number: 3000
