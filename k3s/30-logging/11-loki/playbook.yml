@@ -1,0 +1,80 @@
+# yaml-language-server: $schema=https://json.schemastore.org/ansible-playbook
+---
+- hosts: k3s-0.i.stabl.one
+  become: yes
+  become_method: sudo
+  vars_files:
+   - ../../../secrets.yml
+  tasks:
+  - name: install pip
+    package:
+      name: python3-pip
+      state: present
+  - name: install required python modules
+    pip:
+      name:
+        - openshift
+        - PyYAML
+        - passlib
+  - name: Create PVC
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: "{{ lookup('file', 'loki-pvc.yml') | from_yaml }}"
+  
+  - name: Create ConfigMap
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: 
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          namespace: default
+          name: loki-config
+        data:
+          loki.yaml: |
+            {{ lookup('file', 'loki.yml') }}
+  - name: Create statefulSet
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      apply: yes
+      definition: "{{ lookup('file', 'loki-statefulset.yml') | from_yaml_all | list }}"
+  - name: Create Service
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: "{{ lookup('file', 'loki-service.yml') | from_yaml }}"
+
+
+  - name: Create basic auth file
+    community.general.htpasswd:
+      path: /root/.passwordfile
+      name: "{{item.name}}"
+      password: "{{item.password}}"
+    with_items: "{{logging.loki.users}}"
+  - name: Read password file
+    shell: cat /root/.passwordfile
+    register: passwords
+
+  - name: Create Basic Auth Secret
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition:
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          namespace: default
+          name: lokiauth
+        type: Opaque
+        data:
+          auth: "{{passwords.stdout | b64encode }}"
+    register: secret
+
+  - name: Create Ingress
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: "{{ lookup('file', 'loki-ingress.yml') | from_yaml }}"

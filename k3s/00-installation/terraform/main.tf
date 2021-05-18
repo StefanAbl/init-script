@@ -30,7 +30,7 @@ resource "proxmox_vm_qemu" "proxmox_vm" {
   agent             = 1
   cores             = 2 
   cpu               = "host"
-  memory            = 2048
+  memory            = 4096 
   scsihw            = "virtio-scsi-pci"
 
 disk {
