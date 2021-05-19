@@ -7,11 +7,14 @@ ingester:
         store: inmemory
       replication_factor: 1
     final_sleep: 0s
-  chunk_idle_period: 1h       # Any chunk not receiving new logs in this time will be flushed
-  max_chunk_age: 1h           # All chunks will be flushed when they hit this age, default is 1h
-  chunk_target_size: 1048576  # Loki will attempt to build chunks up to 1.5MB, flushing first if chunk_idle_period or max_chunk_age is reached first
-  chunk_retain_period: 30s    # Must be greater than index read cache TTL if using an index cache (Default index read cache TTL is 5m)
-  max_transfer_retries: 0     # Chunk transfers disabled
+  chunk_idle_period: 3m
+  chunk_block_size: 262144
+  chunk_retain_period: 1m
+  max_transfer_retries: 0
+  wal:
+    enabled: true
+    dir: /data/loki/wal
+    replay_memory_ceiling: 1GB
 schema_config:
   configs:
   - from: 2020-10-24
@@ -28,7 +31,7 @@ storage_config:
   boltdb_shipper:
     active_index_directory: /data/loki/boltdb-shipper-active
     cache_location: /data/loki/boltdb-shipper-cache
-    cache_ttl: 48h         # Can be increased for faster performance over longer query periods, uses more disk space
+    cache_ttl: 96h         # Can be increased for faster performance over longer query periods, uses more disk space
     shared_store: filesystem
   filesystem:
     directory: /data/loki/chunks
@@ -40,3 +43,5 @@ table_manager:
 compactor:
   working_directory: /data/loki/boltdb-shipper-compactor
   shared_store: filesystem
+limits_config:
+  max_query_parallelism: 5
