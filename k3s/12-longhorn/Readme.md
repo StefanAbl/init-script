@@ -15,4 +15,4 @@ kubectl -n longhorn-system get pod
 ## Configuration
 The default config was changed in the following ways:
 
-- 
+- `Default Replica Count` was set two 2
