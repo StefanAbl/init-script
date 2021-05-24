@@ -32,7 +32,6 @@ spec:
         fsGroup: 472
       containers:
         - image: grafana/grafana:latest
-          imagePullPolicy: IfNotPresent
           name: grafana
           env:
             - name: GF_PATHS_CONFIG
