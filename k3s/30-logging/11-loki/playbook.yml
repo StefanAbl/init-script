@@ -81,6 +81,7 @@
   - name: install helm chart
     community.kubernetes.helm:
       kubeconfig: /etc/rancher/k3s/k3s.yaml
+      update_repo_cache: yes
       name: loki
       chart_ref: grafana/loki-distributed
       release_namespace: default
@@ -126,3 +127,4 @@
     with_items:
       - /root/.passwordfile
       - /root/loki-distributed-values.yml
+    changed_when: false
