@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+Type: apps/v1
+kind: StatefulSet
+metadata:
+  name: prometheus-external
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-external
+  serviceName: prometheus-external
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: prometheus-external
+    spec:
+      containers:
+      - name: prometheus
+        image: prom/prometheus
+        args:
+          - "--config.file=/config/prometheus.yml"
+          - "--storage.tsdb.path=/data"
+          - "--storage.tsdb.retention.time=3y"
+          - "--log.level=debug"
+        ports:
+        - containerPort: 9090
+          name: metrics
+        volumeMounts:
+        - name: config
+          mountPath: /config/
+        - name: data
+          mountPath: /data
+      volumes:
+        - name: config
+          configMap:
+              name: prometheus-external-config
+              items:
+                - key: "prometheus.yml"
+                  path: prometheus.yml
+        - name: data
+          persistentVolumeClaim:
+              claimName: prometheus-external
+    
