@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unifi-poller
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: unifi-poller
+  template:
+    metadata:
+      labels:
+        app: unifi-poller
+    spec:
+      containers:
+      - name: unifi-poller
+        image: golift/unifi-poller
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 9130
+          name: prom
+        volumeMounts:
+          - name: config
+            mountPath: /config/
+          - name: creds
+            mountPath: /etc/creds/
+      volumes:
+        - name: config
+          configMap:
+            name: unifi-poller
+            items:
+              - key: "poller.conf"
+                path: unifi-poller.conf
+        - name: creds
+          secret:
+            secretName: unifi-poller
+            items:
+              - key: password
+                path: passwd.file
+

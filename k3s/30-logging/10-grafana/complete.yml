@@ -36,6 +36,8 @@ spec:
           env:
             - name: GF_PATHS_CONFIG
               value: /etc/grafana/grafana.ini
+            - name: GF_INSTALL_PLUGINS
+              value: grafana-clock-panel,natel-discrete-panel,grafana-piechart-panel
             - name: BIND_USER
               valueFrom:
                 secretKeyRef:
