@@ -34,6 +34,10 @@
     community.kubernetes.helm_repository:
       name: grafana
       url: https://grafana.github.io/helm-charts
+  - name: install helm diff
+    kubernetes.core.helm_plugin:
+      plugin_path: https://github.com/databus23/helm-diff
+      state: present
 
 
 
@@ -87,6 +91,10 @@
       release_namespace: default
       values_files:
         - /root/loki-distributed-values.yml
+    register: helmout
+
+  - debug:
+      var: helmout
   
   - name: Create basic auth file
     community.general.htpasswd:
@@ -128,3 +136,4 @@
       - /root/.passwordfile
       - /root/loki-distributed-values.yml
     changed_when: false
+    when: true

@@ -31,7 +31,7 @@ spec:
         runAsUser: 0
         fsGroup: 472
       containers:
-        - image: grafana/grafana:latest
+        - image: grafana/grafana:7.5.6
           name: grafana
           env:
             - name: GF_PATHS_CONFIG

@@ -70,7 +70,7 @@
           - app = unifi-poller
       register: pod
 
-    - name: Restartig pod with name
+    - name: Restarting pod with name
       debug:
         var: pod.resources[0].metadata.name
     - name: Restart the pod

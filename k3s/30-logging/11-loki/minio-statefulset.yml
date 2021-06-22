@@ -7,7 +7,13 @@ metadata:
     app: minio
 spec:
   podManagementPolicy: OrderedReady
+  revisionHistoryLimit: 1
   replicas: 1
+  strategy:
+  type: RollingUpdate
+  rollingUpdate:
+  maxUnavailable: 1
+  maxSurge: 100%
   selector:
     matchLabels:
       app: minio
@@ -20,6 +26,7 @@ spec:
         app: minio
         name: minio-loki
     spec:
+      terminationGracePeriode: 120
       initContainers:
         - name: permission-fix
           image: busybox

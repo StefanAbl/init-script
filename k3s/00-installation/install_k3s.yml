@@ -40,3 +40,23 @@
       become: yes
       register: output
     - debug: var=output
+
+- hosts: k3s-0.i.stabl.one
+  become: yes
+  become_method: sudo
+  vars_files:
+   - ../../../secrets.yml
+  tasks:
+  - name: install pip
+    package:
+      name: python3-pip
+      state: present
+  - name: install required python modules
+    pip:
+      name:
+        - openshift
+        - PyYAML
+  - name: Allow K3s pods to resolve internal DNS names
+    shell: |
+      sudo kubectl get cm -n kube-system coredns -o yaml | sed "s/forward . \/etc\/resolv.conf/forward . {{ipa_server_ip}}/g" | sudo kubectl apply -f - 
+      sudo kubectl -n kube-system rollout restart deployment coredns

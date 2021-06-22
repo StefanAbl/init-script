@@ -8,3 +8,10 @@ scrape_configs:
     scrape_interval: 15s
     static_configs:
       - targets: ['localhost:9090']
+  - job_name: jellyfin
+    static_configs:
+      - targets:
+        - "jellyfin.i.stabl.one:8920"
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
