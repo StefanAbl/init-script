@@ -1,0 +1,15 @@
+server:
+  http_listen_port: 0
+  grpc_listen_port: 0
+
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: https://loki.k3s.i.stabl.one/loki/api/v1/push
+    basic_auth:
+      username: "{{promtail.user}}"
+      password: "{% for user in logging.loki.users %}{%if user.name == promtail.user %}{{user.password}}{% endif %}{% endfor %}"
+scrape_configs:
+{{promtail.scrape_configs | string |indent(4, True)}}

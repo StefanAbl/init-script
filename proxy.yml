@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://json.schemastore.org/ansible-playbook
+---
+- hosts: proxy.i.stabl.one
+  become: yes
+  become_method: sudo
+  vars_files:
+  - secrets.yml
+  roles:
+    - ip_update
+    - external_proxy
+    - promtail

@@ -1,0 +1,29 @@
+- name: Install unzip
+  package:
+    name: unzip
+    state: present
+- name: Download promtail
+  get_url:
+    url: https://github.com/grafana/loki/releases/download/v2.1.0/promtail-linux-amd64.zip
+    dest: /tmp/promtail.zip
+- name: unzip promtail
+  unarchive:
+    src: /tmp/promtail.zip
+    dest: /usr/local/bin/
+    mode: "0755"
+    remote_src: true
+- name: Template promtail configuration
+  template:
+    src: promtail.yml
+    dest: /etc/
+
+- name: copy systemd service file
+  copy: 
+    src: promtail.service
+    dest: /etc/systemd/system/
+- name: start promtail
+  systemd: 
+    state: restarted 
+    name: promtail 
+    daemon_reload: yes
+    
