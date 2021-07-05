@@ -1,5 +1,9 @@
 # External Proxy
 This role will setup the main entrypoint for the homelab
+## ACME validation
+Note: currently only dns validation works.
+
+The problem with http validation is that the site config cannot be in it's final form for validation, since the certificates do not yet exists. Instead until the certificate has been obtained for the first time, the config should be replaced by a dummy, which listens only on http and forwards the requests to a specific webroot.
 
 ## Variables
 ```yaml
