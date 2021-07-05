@@ -1,5 +1,9 @@
 # init-script
 
+## Ansible
+
+Install external collections with `ansible-galaxy collection install -r requirements.yml`
+
 ## zsh.yml
 
 it will install zsh and powerlevel10k and configure it based on the users preference

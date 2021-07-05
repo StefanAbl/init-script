@@ -4,7 +4,7 @@
       - nginx
       - git
       - shellcheck
-    state: present
+    state: latest
 - name: Make sure directories are present
   file:
     path: "{{item}}"
@@ -55,6 +55,7 @@
 
 - name: test cert.sh script with shellcheck
   shell: shellcheck /root/cert.sh
+  changed_when: false
 - name: Run cert.sh
   shell: bash /root/cert.sh
 - name: add cronjob for cert.sh
@@ -66,6 +67,7 @@
 
 - name: test nginx configuration
   shell: nginx -t
+  changed_when: false
 - name: Restart nginx
   service:
     name: nginx

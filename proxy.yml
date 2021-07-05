@@ -3,9 +3,12 @@
 - hosts: proxy.i.stabl.one
   become: yes
   become_method: sudo
+  collections:
+    - nginxinc.nginx_core
   vars_files:
   - secrets.yml
   roles:
+    - nginx
     - ip_update
     - external_proxy
     - promtail
