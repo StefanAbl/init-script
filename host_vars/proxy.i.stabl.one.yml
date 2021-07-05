@@ -45,6 +45,18 @@ servers:
     verification: dns
       #If verification is dns, which dns APi should acme.sh use
     api: dns_dynv6
+    extras_location: |
+      # kill cache
+      add_header Last-Modified $date_gmt;
+      add_header Cache-Control 'no-store, no-cache';
+      if_modified_since off;
+      expires off;
+      etag off;
+      # don't cache it
+      proxy_no_cache 1;
+      proxy_cache off;
+      # even if cached, don't try to use it
+      proxy_cache_bypass 1; 
     #extras to include in the server block
     extras: |
       # Content Security Policy
