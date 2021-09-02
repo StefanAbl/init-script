@@ -1,11 +1,18 @@
-- name: make sure shellcheck is present
+- name: make sure packages are present
   package:
-    name: shellcheck
+    name: 
+      - shellcheck
+      - jq
     state: present
 - name: copy dynv6.sh script into place
   copy:
     src: dynv6.sh
     dest: /usr/bin/dynv6.sh
+    mode: 0755
+- name: copy cf.sh script into place
+  copy:
+    src: cf.sh
+    dest: /usr/bin/cf.sh
     mode: 0755
 - name: template update script
   ansible.builtin.template:

@@ -9,6 +9,13 @@ update_ip:
     zones:
       - thorn.dynv6.net
       - stabl.one
+  cf:
+    token: "{{proxy.cf_token}}"
+    zones: 
+      - name: stabl.one
+        records:
+          - "stabl.one"
+          - "web.stabl.one"
 promtail:
     user: proxy #Name of the user from above
     scrape_configs: # scrape configs for loki
@@ -33,6 +40,12 @@ acmesh:
   env_vars:
     - name: DYNV6_TOKEN
       value: "{{proxy.dynv6_token}}"
+    - name: CF_Token
+      value: "{{proxy.cf_token}}"
+    - name: CF_Account_ID
+      value: "{{CF_Account_ID}}"
+    - name: CF_Zone_ID
+      value: "{{CF_Zone_ID}}"
 streams:
   - name: unifi.thorn.dynv6.net
     value: |
@@ -44,7 +57,7 @@ servers:
       #How acme.sh should verify the server either http or dns
     verification: dns
       #If verification is dns, which dns APi should acme.sh use
-    api: dns_dynv6
+    api: dns_cf
     extras_location: |
       # kill cache
       add_header Last-Modified $date_gmt;
@@ -83,7 +96,7 @@ servers:
   - name: cloud.stabl.one
     upstream: https://10.13.2.11
     verification: dns
-    api: dns_dynv6
+    api: dns_cf
     extras: |
       client_max_body_size 100000G;
   - name: cloud.thorn.dynv6.net
@@ -96,7 +109,7 @@ servers:
     upstream: http://10.13.2.106:5000
     verification: dns
     allow_embedding: True
-    api: dns_dynv6
+    api: dns_cf
     extras_location: |
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection "upgrade";

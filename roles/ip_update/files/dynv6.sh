@@ -50,6 +50,7 @@ _dynv6_rest() {
     else
         response="$(cat $file)"
     fi
+    rm $file
     _debug response "$response"
     return 0
 }

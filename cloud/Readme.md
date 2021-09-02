@@ -43,7 +43,7 @@ From internal mail addresses mail can be sent to group@domain it will then be de
 
 
 ### Setup DNS
-1. Setup mail.domain in dynv6
+1. Setup mail.domain in dns
 2. Setup reverse DNS
 3. Make sure correct timezone is set
 4. Add Dkim record and dmarc record to domain see https://www.c0ffee.net/blog/mail-server-guide/ for more

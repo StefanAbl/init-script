@@ -1,8 +1,9 @@
 #!/bin/bash
 device={{update_ip.device}}
-ip4File="/root/.ip4"
-ip6File="/root/.ip6"
+ip4File="/tmp/.ip4"
+ip6File="/tmp/.ip6"
 dynv6="/usr/bin/dynv6.sh"
+cf="/usr/bin/cf.sh"
 
 date 
 ip4="$(curl -4 https://am.i.mullvad.net)"
@@ -33,5 +34,13 @@ $dynv6 hosts "{{zone}}" set ipv6addr "$ip6"
 $dynv6 records update "{{r}}" A "$ip4"
 $dynv6 records update "{{r}}" AAAA "$ip6"
 {% endfor %}
+{%endif%}
+{%endif%}
+
+{%if update_ip.cf%}
+{%if update_ip.cf.zones %}
+{% for zone in update_ip.cf.zones %}
+$cf -4 "$ip4" -6 "$ip6" --key "{{update_ip.cf.token}}" --zone "{{ zone.name }}" {% for record in zone.records%} -r "{{record}}"{%endfor%}
+{%endfor%}
 {%endif%}
 {%endif%}

@@ -11,4 +11,11 @@ update_ip:
       - something.centostest.v6.rocks
     zones: #List of dynv6 zones
       - centostest.v6.rocks
+  cf:
+    token: #the secret key
+    zones:
+      - name: example.com
+        records:
+          - "@"
+          - "www"
 ```

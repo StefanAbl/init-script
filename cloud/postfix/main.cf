@@ -25,7 +25,7 @@ mydestination = localhost, localhost.{{domain_name}}
 
 # Domain appended to mail sent locally from this machine - such as mail sent
 # via the `sendmail` command.
-myorigin = test.thorn.dynv6.net
+myorigin = stabl.one
 
 # prevent spammers from searching for valid users
 disable_vrfy_command = yes
@@ -59,7 +59,7 @@ smtpd_tls_key_file = /data/ssl/key.pem
 # faster and arguably more secure, but many mail servers don't yet support
 # it. I enable both types in postfix, but you most likely only have a single
 # RSA cert, and don't need to include these three lines.
-#smtpd_tls_eccert_file = /data/ssl/mail.test.thorn.dynv6.net
+#smtpd_tls_eccert_file = /data/ssl/mail.example.com
 #smtpd_tls_eckey_file = /etc/ssl/certs/mail.example.com.ecc.key
 #smtpd_tls_eecdh_grade = ultra
 
