@@ -7,10 +7,10 @@
       prompt: "Please enter password for IPA user {{ ipa_admin_user }}"
       private: yes
   vars:
-    - recreate: no
+    - recreate: yes
   roles:
-    #- docker
-    #- authelia_docker
+    - docker
+    - authelia_docker
     - portainer
     - internal_nginx_docker_proxy
   tasks:

@@ -8,20 +8,20 @@
   shell: "id -g {{user}}"
   register: userGID
   changed_when: False
-- name: make directories
-  become_user: "{{user}}"
-  become: yes
-  file:
-    path: "{{ item }}"
-    state: directory
-  with_items:
-    - "{{authelia_config_dir}}"
-    - "{{ db_storage }}"
+# - name: make directories
+#   become_user: "{{user}}"
+#   become: yes
+#   file:
+#     path: "{{ item }}"
+#     state: directory
+#   with_items:
+#     - "{{authelia_config_dir}}"
+#     - "{{ db_storage }}"
 
-- template:
-    src: configuration.yml
-    dest: "{{authelia_config_dir}}configuration.yml"
-  become_user: "{{user}}"
+# - template:
+#     src: configuration.yml
+#     dest: "{{authelia_config_dir}}configuration.yml"
+#   become_user: "{{user}}"
 
 - name: create docker network
   docker_network:

@@ -3,6 +3,7 @@
     name: portainer_data
   become: yes
 - name: Create a network
+  become: yes
   docker_network:
     name: primary
 - name: create container
