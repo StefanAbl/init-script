@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/ansible-playbook
 ---
-- hosts: linode0
+- hosts: linode0.i.stabl.one
   become: yes
   become_method: sudo
   roles:
@@ -38,35 +38,42 @@
 
     - name: deploy postfix
       include:  postfix/postfix.yml
+# CERTIFICATES
     - name: start acme.sh container
       docker_container:
         name: acme.sh
         image: neilpang/acme.sh
+        pull: yes
         state: started
         detach: true
         recreate: no
         restart_policy: always
+        env:
+          CF_Token: "{{mail.CF_Token}}" 
+          #CF_Account_ID: "{{CF_Account_ID}}" 
+          CF_Zone_ID: "{{CF_Zone_ID}}" 
+
         volumes:
           - "{{docker_dir}}/mail/ssl/:/acme.sh"
         command: daemon
-# CERTIFICATES
     - name: wait for container to be ready
       shell: |
         until [ "`/usr/bin/docker inspect -f {{ '{{' }}.State.Running{{ '}}' }} acme.sh`"=="true" ]; do
           sleep 0.1;
         done;
+    - name: set default ca to LE
+      shell: |
+          docker exec acme.sh --set-default-ca  --server  letsencrypt 
     - name: get cert
       shell: |
-        export Cf_Token="{{mail.CF_Token}}" && \
-        export CF_Account_ID="{{CF_Account_ID}}" && \
-        export CF_Zone_ID="{{CF_Zone_ID}}" && \
-        docker exec acme.sh --issue -d mail.{{domain_name}} --dns dns_cf \
+        docker exec acme.sh --issue --debug -d mail.{{domain_name}} --dns dns_cf \
         --cert-file      /acme.sh/cert.pem  \
         --key-file       /acme.sh/key.pem  \
         --fullchain-file /acme.sh/fullchain.pem
       register: result
       failed_when: result.rc == 1
       changed_when: result.rc == 0
+    - debug: var=result
 # Dovecot
     - name: dovecot
       include: dovecot/dovecot.yml
