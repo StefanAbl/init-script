@@ -3,6 +3,7 @@
     image: redis
     state: started
     recreate: no
+    restart_policy: always
     networks:
       - name: primary
     command: redis-server --maxmemory 512mb --maxmemory-policy volatile-lru
@@ -44,6 +45,7 @@
     image: rspamd
     state: started
     recreate: yes
+    restart_policy: always
     networks:
       - name: primary
     volumes:

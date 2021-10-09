@@ -46,7 +46,7 @@
         state: started
         detach: true
         recreate: no
-        restart_policy: no
+        restart_policy: always
         hostname: "{{mailserver_replica_name}}"
         sysctls: "net.ipv6.conf.all.disable_ipv6=0"
         dns_servers: "{{ipa_server_ip}}"
