@@ -64,6 +64,9 @@
           SYNCSERVER_DEBUG_ENABLED=true
           SYNCSERVER_FORWARDED_ALLOW_IPS="*"
           PORT='5001'
+      log_driver: json-file
+      log_options:
+        tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
 
   - become: yes
     file:
@@ -93,3 +96,6 @@
         - name: ffsync
       published_ports:
         - "5001:5001"
+      log_driver: json-file
+      log_options:
+        tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"

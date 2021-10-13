@@ -12,3 +12,6 @@
         published_ports:
           - "5000:80"
       become: yes
+      log_driver: json-file
+      log_options:
+        tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"

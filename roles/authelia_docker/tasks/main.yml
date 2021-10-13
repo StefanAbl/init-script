@@ -29,6 +29,7 @@
   become: yes
 
 - name: deploy Redis
+  become: yes
   docker_container:
     name: "{{redis_name}}"
     image: redis
@@ -37,7 +38,9 @@
       - name: "{{authelia_network}}"
     exposed_ports:
       - 6379
-  become: yes
+    log_driver: json-file
+    log_options:
+      tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
 
 - name: build custom mysql image
   become: yes
@@ -67,6 +70,9 @@
       MYSQL_DATABASE="{{ db_name }}"
       MYSQL_USER="{{ db_user }}"
       MYSQL_PASSWORD="{{ authelia_db_user_pass }}"
+    log_driver: json-file
+    log_options:
+      tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
 
 
 - name: deploy authelia
@@ -80,3 +86,6 @@
       - name: primary
     volumes:
       - "{{ authelia_config_dir }}configuration.yml:/config/configuration.yml:ro"
+    log_driver: json-file
+    log_options:
+      tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
