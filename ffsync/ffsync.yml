@@ -17,13 +17,9 @@
     changed_when: False
 
   - name: make directories
-    become_user: "{{user}}"
+    become_user: root
     become: yes
-    file:
-      path: "{{ item }}"
-      state: directory
-    with_items:
-      - "{{docker_config_dir}}/ffsync"
+    command: sudo -u "{{user}}" mkdir -p "{{docker_config_dir}}/ffsync"
 
   - name: build custom docker image with user
     become: yes
