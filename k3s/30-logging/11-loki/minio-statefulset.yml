@@ -46,12 +46,12 @@ spec:
         runAsUser: 10001
       containers:
         - name: minio
-          image: minio/minio
+          image: minio/minio:RELEASE.2021-09-18T18-09-59Z
           command: 
             - sh
           args: 
             - -c
-            - 'mkdir -p /data/loki && /usr/bin/minio server /data'
+            - 'mkdir -p /data/loki && /opt/bin/minio server /data'
           env:
             - name: MINIO_ACCESS_KEY
               valueFrom:
