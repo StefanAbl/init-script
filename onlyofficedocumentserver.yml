@@ -2,6 +2,7 @@
 - hosts: docker0.i.stabl.one
   tasks:
     - name: start docker container
+      become: yes
       docker_container:
         name: onlyofficeDocumentserver
         image: onlyoffice/documentserver
@@ -11,7 +12,6 @@
         restart_policy: unless-stopped
         published_ports:
           - "5000:80"
-      become: yes
-      log_driver: json-file
-      log_options:
-        tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
+        log_driver: json-file
+        log_options:
+          tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
