@@ -25,13 +25,6 @@
         api_token: "{{token}}"
         zone: stabl.one
         ttl: 60
-        record: web.stabl.one
-        type: A
-        value: "127.0.0.1"
-    - community.general.cloudflare_dns:
-        api_token: "{{token}}"
-        zone: stabl.one
-        ttl: 60
         record: mail.stabl.one
         type: A
         value: "192.46.235.199"
@@ -46,6 +39,13 @@
           - "cloud"
           - "stream"
           - "docsrv"
+    - community.general.cloudflare_dns:
+        api_token: "{{token}}"
+        zone: stabl.one
+        ttl: 60
+        record: "stabl.one"
+        type: TXT
+        value: "v=spf1 mx -all"
     - community.general.cloudflare_dns:
         api_token: "{{token}}"
         zone: stabl.one
