@@ -2,8 +2,8 @@
 ---
 - hosts: nextcloud.i.stabl.one
   vars:
-    archive_url: "https://download.nextcloud.com/server/releases/nextcloud-21.0.1.tar.bz2"
-    old_version: 20.0.4
+    archive_url: "https://download.nextcloud.com/server/releases/nextcloud-22.2.0.tar.bz2"
+    old_version: 21.0.1
   become: yes
   tasks:
     - name: Download new NC version
@@ -62,7 +62,7 @@
 
     - name: start updater
       shell: 
-        cmd: sudo -u www-data php7.4 occ upgrade --no-interaction
+        cmd: sudo -u www-data php8.0 occ upgrade --no-interaction
         chdir: /var/www/nextcloud/ 
       register: occ_output
     - name: Print occ output
