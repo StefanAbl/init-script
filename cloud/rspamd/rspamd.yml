@@ -7,6 +7,9 @@
     networks:
       - name: primary
     command: redis-server --maxmemory 512mb --maxmemory-policy volatile-lru
+    log_driver: json-file
+    log_options:
+      tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
 - file:
     path: ~/rspamd
     state: directory
@@ -51,6 +54,9 @@
     volumes:
       - "{{docker_dir}}/rspamd/config:/etc/rspamd/local.d/:rw"
       - "{{docker_dir}}/rspamd/dkim:/dkim/:rw"
+    log_driver: json-file
+    log_options:
+      tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
 
 - name: edit postfix configuration
   blockinfile:

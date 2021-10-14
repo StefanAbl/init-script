@@ -4,12 +4,15 @@
   become: yes
   become_method: sudo
   roles:
-    - ../roles/portainer
+    - ../roles/docker_promtail
+    # - ../roles/portainer
   vars:
     replica: true
     replica_container_name: replica
     docker_dir: /var/docker
     freeipa_dir: "{{docker_dir}}/replica"
+    promtail:
+      user: linode0
 
   vars_files:
     - ../secrets.yml
@@ -52,6 +55,9 @@
           CF_Token: "{{mail.CF_Token}}" 
           #CF_Account_ID: "{{CF_Account_ID}}" 
           CF_Zone_ID: "{{CF_Zone_ID}}" 
+        log_driver: json-file
+        log_options:
+          tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
 
         volumes:
           - "{{docker_dir}}/mail/ssl/:/acme.sh"

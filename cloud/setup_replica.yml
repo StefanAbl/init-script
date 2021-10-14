@@ -63,4 +63,7 @@
         volumes:
           - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
           - "{{freeipa_dir}}:/data:Z"
+        log_driver: json-file
+        log_options:
+          tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
         #command: "ipa-replica-install -U --no-ntp -P {{ipa_admin_user}} -w $(cat /password)"
