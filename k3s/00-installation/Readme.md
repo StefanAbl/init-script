@@ -7,7 +7,7 @@ cd /DirStor/template/iso/
 wget https://cloud-images.ubuntu.com/hirsute/current/hirsute-server-cloudimg-amd64.img
 qm create 9000 -name hirsute-template -memory 1024 -net0 virtio,bridge=vmbr0 -cores 1 -sockets 1 -cpu cputype=kvm64 -description "Ubuntu Server 21.04 cloud image" -kvm 1 -numa 1
 qm importdisk 9000 hirsute-server-cloudimg-amd64.img $storage
-qm set 9000 -scsihw virtio-scsi-pci -virtio0 $storage:vm-9000-disk-0ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDqseQRRLlG4YiNgD9Kjs+GAWudIPDXWFs3ic74CgnrSRF6tBRjqBmvGmjwbUvXvWPgfCdcLwPKFPUGx/R6ymXFiMwMc7ZCtthHg9rD/QtlSMRW/6YwKX8dzDteLERTmJFZzlh2MYob4Q6/543Dj57sGp3v1IQIfKTCmmTYrZIWCtxRdQ1P6I/jxk9bQvmfJs2LbhxUAvj0wdZOkSRySkxvpk3Abe/p2XpxKt8lcEHX0XkA27lu+s4w0y6BGc2q8ZNoFp5DgVF/oRDVREp/vwjS5Li5SPLqCPgFZru2xO5HkBMu1f4DS3pbGUw2vT/BZ6K8Cb8RjqYmZteSycMADOQ85ZoRU8rBsAHwFqbK5VYC13ovmhLKratE8WbSjfdhUlz74hjNyFFcTjZHy415zsEFa4G90mCGedPY8fzTLeI6b0itReqfmR0QcLtevqku4CtrD7n9GKbdq0dC8AJGr+68LiBHvtWH7VOBnM3+N+dI0FHKPia75Hw1cODjI6P+sTM= stefan@pop-os
+qm set 9000 -scsihw virtio-scsi-pci -virtio0 $storage:vm-9000-disk-0
 qm set 9000 -serial0 socket
 qm set 9000 -boot c -bootdisk virtio0
 qm set 9000 -agent 1
