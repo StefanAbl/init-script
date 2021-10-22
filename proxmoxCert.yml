@@ -4,19 +4,34 @@
     - ipa_host: ipa.i.stabl.one
     - realm: I.STABL.ONE
   tasks:
-    - debug: var=ansible_facts.hostname
-    - debug: var=ansible_facts.fqdn
-    - ipa_service:
-        name: "HTTP/{{ ansible_facts.fqdn }}"
-        state: present
-        ipa_host: "{{ ipa_host }}"
-        ipa_admin_user: "{{ user }}"
-        ipa_admin_user_password: "{{ pass }}"
-    - shell:
-        cmd: ipa-getcert request -r -f pveproxy-ssl.pem -k pveproxy-ssl.key -N CN="{{ ansible_facts.fqdn }}" -K "HTTP/{{ ansible_facts.fqdn }}@"{{ realm }}""
-        chdir: "/etc/pve/nodes/{{ ansible_facts.hostname }}/"
-      become: yes
-    - systemd:
-        name: pveproxy
-        state: restarted
-      become: yes
+    - name: Certificate
+      block:
+      - debug: var=ansible_facts.hostname
+      - debug: var=ansible_facts.fqdn
+      - ipa_service:
+          name: "HTTP/{{ ansible_facts.fqdn }}"
+          state: present
+          ipa_host: "{{ ipa_host }}"
+          ipa_admin_user: "{{ user }}"
+          ipa_admin_user_password: "{{ pass }}"
+      - name: Check that the certificate file exists
+        stat:
+          path: "/etc/pve/nodes/{{ ansible_facts.hostname }}/pveproxy-ssl.pem"
+        register: stat_result
+      - name: check if certificate exists
+        become: yes
+        when: stat_result.stat.exists
+        shell: 
+          cmd: ipa-getcert status -f pveproxy-ssl.pem
+          chdir: "/etc/pve/nodes/{{ ansible_facts.hostname }}/"
+        register: status_result
+      - name: Request Certificate from IPA
+        become: yes
+        when: not stat_result.stat.exists and not status_result.rc == 0 
+        shell:
+          cmd: ipa-getcert request -r -f pveproxy-ssl.pem -k pveproxy-ssl.key -N CN="{{ ansible_facts.fqdn }}" -K "HTTP/{{ ansible_facts.fqdn }}@"{{ realm }}""
+          chdir: "/etc/pve/nodes/{{ ansible_facts.hostname }}/"
+      - systemd:
+          name: pveproxy
+          state: restarted
+        become: yes
