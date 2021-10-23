@@ -50,6 +50,9 @@
         volumes:
           - /var/docker/mail_backup/key:/key
           - /var/docker/mail_backup/data:/data
+        log_driver: json-file
+        log_options:
+          tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
 
     - name: Wait for key to be created
       pause:
