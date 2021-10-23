@@ -1,19 +1,17 @@
 ---
 - hosts: proxmox
+  vars_files:
+    - secrets.yml
   vars:
     - ipa_host: ipa.i.stabl.one
     - realm: I.STABL.ONE
+  roles:
+    - syncoid_backup
   tasks:
     - name: Certificate
       block:
       - debug: var=ansible_facts.hostname
       - debug: var=ansible_facts.fqdn
-      - ipa_service:
-          name: "HTTP/{{ ansible_facts.fqdn }}"
-          state: present
-          ipa_host: "{{ ipa_host }}"
-          ipa_admin_user: "{{ user }}"
-          ipa_admin_user_password: "{{ pass }}"
       - name: Check that the certificate file exists
         stat:
           path: "/etc/pve/nodes/{{ ansible_facts.hostname }}/pveproxy-ssl.pem"
@@ -25,6 +23,14 @@
           cmd: ipa-getcert status -f pveproxy-ssl.pem
           chdir: "/etc/pve/nodes/{{ ansible_facts.hostname }}/"
         register: status_result
+      - name: Add service to FreeIPA
+        when: not stat_result.stat.exists and not status_result.rc == 0 
+        ipa_service:
+          name: "HTTP/{{ ansible_facts.fqdn }}"
+          state: present
+          ipa_host: "{{ ipa_server }}"
+          ipa_admin_user: "{{ ipa_admin_user }}"
+          ipa_admin_user_password: "{{ pass }}"
       - name: Request Certificate from IPA
         become: yes
         when: not stat_result.stat.exists and not status_result.rc == 0 
