@@ -8,6 +8,8 @@
   template:
     src: "backup.sh"
     dest: "/etc/backup.sh"
+    owner: root
+    mode: '0750'
   vars:
     syncoid_backup_mail_user: svc_grafana
     syncoid_backup_mail_user_password: "{{logging.grafana.bind_user.password}}"
