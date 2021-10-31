@@ -1,12 +1,41 @@
+# yaml-language-server: $schema=https://json.schemastore.org/ansible-playbook
 ---
 - hosts: proxmox
   vars_files:
     - secrets.yml
+  vars_prompt:
+    - name: _pass
+      prompt: Enter password for FreeIPA user "{{ ipa_admin_user }}"
+      private: yes
   vars:
     - ipa_host: ipa.i.stabl.one
     - realm: I.STABL.ONE
   roles:
-    - syncoid_backup
+    - role: ansible-acme-sh
+      vars:
+        acme_sh_uninstall: False
+        acme_sh_become_user: "root"
+        acme_sh_upgrade: False
+        acme_sh_account_email: "{{ipa_admin_user}}@{{domain_name}}"
+        acme_sh_default_staging: False
+        acme_sh_default_force_issue: False
+        acme_sh_default_dns_provider: "dns_cf"
+        acme_sh_default_dns_provider_api_keys:
+          "CF_Token": "{{minio.cf_token}}"
+          "CF_Zone_ID": "{{CF_Zone_ID}}" 
+        acme_sh_domains:
+          - domains:
+            - "s3.{{internal_domain}}"
+            staging: False
+            force_issue: True
+            issue_post_hook: "chown svc_minio /etc/ssl/ansible/s3.{{internal_domain}}/private.key"
+    - role: minio_server
+      vars: 
+        minio_server_opts: "--certs-dir /etc/ssl/ansible/s3.{{internal_domain}}/"
+        minio_server_env_extra: "MINIO_SERVER_URL=\"https://s3.i.stabl.one:9000\""
+        minio_server_datadirs:
+          - /Volume2/app_data
+
   tasks:
     - name: Certificate
       block:
@@ -31,7 +60,7 @@
           state: present
           ipa_host: "{{ ipa_server }}"
           ipa_admin_user: "{{ ipa_admin_user }}"
-          ipa_admin_user_password: "{{ pass }}"
+          ipa_admin_user_password: "{{ _pass }}"
       - name: Request Certificate from IPA
         become: yes
         when: not stat_result.stat.exists and not status_result.rc == 0 
