@@ -39,43 +39,6 @@
       plugin_path: https://github.com/databus23/helm-diff
       state: present
 
-
-
-
-  - name: Create PVC
-    community.kubernetes.k8s:
-      kubeconfig: /etc/rancher/k3s/k3s.yaml
-      state: present
-      definition: "{{ lookup('file', 'loki-pvc.yml') | from_yaml }}"
-
-  - name: Create Minio secret
-    community.kubernetes.k8s:
-      kubeconfig: /etc/rancher/k3s/k3s.yaml
-      state: present
-      apply: yes
-      definition: 
-        apiVersion: v1
-        kind: Secret
-        metadata:
-          namespace: default
-          name: loki-minio-secret
-        type: Opaque
-        stringData:
-          access_key: "{{logging.loki.minio.access_key}}"
-          secret_key: "{{logging.loki.minio.secret_key}}"
-  - name: create minio stateful set
-    community.kubernetes.k8s:
-      kubeconfig: /etc/rancher/k3s/k3s.yaml
-      state: present
-      apply: yes
-      definition: "{{ lookup('file', 'minio-statefulset.yml') | from_yaml_all | list }}"
-  - name: create minio service
-    community.kubernetes.k8s:
-      kubeconfig: /etc/rancher/k3s/k3s.yaml
-      state: present
-      apply: yes
-      definition: "{{ lookup('file', 'minio-service.yml') | from_yaml }}"
-
   - name: template values file
     template:
       src: values.yml
@@ -88,6 +51,7 @@
       update_repo_cache: yes
       name: loki
       chart_ref: grafana/loki-distributed
+      chart_version: 0.38.0
       release_namespace: default
       values_files:
         - /root/loki-distributed-values.yml

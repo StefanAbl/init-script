@@ -40,6 +40,8 @@ loki:
         ring:
           kvstore:
             store: memberlist
+      wal:
+        dir: /var/loki/wal
     querier:
       query_timeout: 15m
       engine:
@@ -67,7 +69,7 @@ loki:
     storage_config:
       aws:
 {% endraw %}
-        s3: s3://{{logging.loki.minio.access_key}}:{{logging.loki.minio.secret_key}}@minio-loki.default.svc.cluster.local.:9000/loki
+        s3: https://{{logging.loki.minio.access_key}}:{{logging.loki.minio.secret_key}}@s3.{{internal_domain}}.:9000/loki
         s3forcepathstyle: true
       boltdb_shipper:
         active_index_directory: /var/loki/index
