@@ -26,4 +26,8 @@
     state: restarted 
     name: promtail 
     daemon_reload: yes
+- name: enable promtail systemd service
+  systemd: 
+    enabled: true 
+    name: promtail 
     
