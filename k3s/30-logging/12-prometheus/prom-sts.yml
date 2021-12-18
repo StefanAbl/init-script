@@ -10,11 +10,13 @@ spec:
       app: prometheus-external
   serviceName: prometheus-external
   replicas: 1
+  podManagementPolicy: Parallel
   template:
     metadata:
       labels:
         app: prometheus-external
     spec:
+      terminationGracePeriodSeconds: 60
       containers:
       - name: prometheus
         image: prom/prometheus
