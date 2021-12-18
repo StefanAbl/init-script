@@ -1,12 +1,18 @@
 ---
 - hosts: docker0.i.stabl.one
   tasks:
+    - name: pull latest image
+      become: yes
+      docker_image:
+        name: onlyoffice/documentserver:latest
+        source: pull
     - name: start docker container
       become: yes
       docker_container:
         name: onlyofficeDocumentserver
         image: onlyoffice/documentserver
         state: started
+        pull: true
         recreate: true
         detach: true
         restart_policy: unless-stopped
