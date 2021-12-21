@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tphc
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tphc
+  template:
+    metadata:
+      labels:
+        app: tphc
+    spec:
+      volumes:
+      - name: git-checkout
+        emptyDir: {}
+      - name: nginx-config
+        configMap:
+            name: tphc
+            items:
+              - key: "nginx.conf"
+                path: nginx.conf
+      containers:
+      - name: git-sync
+        image: stefanabl/git-sync:latest__linux_amd64
+        args:
+          - "--repo" 
+          - "https://git.glxy.one/stardi/thepixelheadco.git"
+          - "--branch"
+          - "master"
+          - "--root"
+          - "/checkout"
+          - "--dest"
+          - "repo"
+        securityContext:
+          runAsUser: 1000 # git-sync user
+        resources:
+            requests: 
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 1000m
+              memory: 300Mi
+        volumeMounts:
+        - name: git-checkout
+          mountPath: /checkout
+          readOnly: false
+      - name: node
+        image: node
+        resources:
+            requests: 
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 1000m
+              memory: 500Mi
+        command: ["/bin/sh"]
+        args: ["-c", "export DEBIAN_FRONTEND=noninteractive && apt update -y && apt install -y inotify-tools && cd /checkout/repo/dev && npm ci && while :; do npm run build && inotifywait -e create -e modify . ;  echo modified; done"]
+        securityContext:
+          runAsUser: 0 # root to install packages
+        volumeMounts:
+        - name: git-checkout
+          mountPath: /checkout
+          readOnly: false
+      - name: webserver
+        image: nginx
+        resources:
+          requests: 
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 1000m
+            memory: 300Mi
+        ports: 
+          - containerPort: 80
+            name: website
+        volumeMounts:
+          - name: git-checkout
+            mountPath: /checkout
+            readOnly: true
+          - name: nginx-config
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+      securityContext:
+        fsGroup: 1000 #

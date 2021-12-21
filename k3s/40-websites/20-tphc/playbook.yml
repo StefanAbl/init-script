@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://json.schemastore.org/ansible-playbook
+---
+- hosts: k3s-0.i.stabl.one
+  become: yes
+  become_method: sudo
+  # vars_files:
+  #  - ../../../secrets.yml
+  tasks:
+
+  - name: Create config map for nginx config
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition:
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          namespace: default
+          name: tphc
+        data:
+          nginx.conf: |
+            {{ lookup('template', 'nginx.conf') }}
+  - name: create Deployment
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      force: yes
+      definition: "{{ lookup('template', 'deploy.yml') }}"
+
+  - name: create Service
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: "{{ lookup('template', 'svc.yml') }}"
+  - name: create Ingress
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: "{{ lookup('template', 'ingress.yml') }}"
+  
