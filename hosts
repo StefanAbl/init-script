@@ -1,5 +1,6 @@
 ipa.i.stabl.one
 jellyfin.i.stabl.one
+jellyfin0.i.stabl.one
 nextcloud.i.stabl.one
 linode0.i.stabl.one ansible_host=mail.stabl.one
 replica-cloud.i.stabl.one

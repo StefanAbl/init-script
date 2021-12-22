@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://json.schemastore.org/ansible-playbook
+---
+- hosts: jellyfin0.i.stabl.one
+  vars_files:
+    - "../secrets.yml"
+  roles:
+    - ../roles/zsh
+    - ../roles/minio_client
+  tasks:
+  - name: install Jellyfin
+    become: yes
+    block:
+    - name: Install apt-transport-https
+      apt:
+        name: apt-transport-https
+        state: present
+    - name: Enable universe repository
+      apt_repository:
+        repo: "{{ item }}"
+      loop:
+        - "deb http://archive.ubuntu.com/ubuntu/ {{ ansible_facts['lsb']['codename'] }} universe"
+        - "deb http://archive.ubuntu.com/ubuntu/ {{ ansible_facts['lsb']['codename'] }}-updates universe"
+        - "deb http://security.ubuntu.com/ubuntu/ {{ ansible_facts['lsb']['codename'] }}-security universe"
+      when: false
+    - name: enable universe repository
+      shell: echo | DEBIAN_FRONTEND=noninteractive add-apt-repository universe
+    - name: add jellyfin apt-key
+      apt_key: 
+        url: https://repo.jellyfin.org/ubuntu/jellyfin_team.gpg.key
+        state: present 
+    - name: add jellyfin apt repository
+      apt_repository: 
+        repo: 'deb [arch=amd64] https://repo.jellyfin.org/ubuntu focal main' 
+        state: present 
+        filename: jellyfin 
+        update_cache: yes
+    - name: Install jellyfin
+      apt:
+        name: jellyfin
+        state: present
+        update_cache: yes
+  - name: Configuration
+    become: yes    
+    block:
+      - name: Create Jellyfin systemd configuration file
+        file: 
+          path: /etc/systemd/system/jellyfin.service.d/override.conf
+          state: touch
+      - name: Configure Jellyfin to use svc_jellyfin user
+        blockinfile:
+          path: /etc/systemd/system/jellyfin.service.d/override.conf
+          block: |
+            [Service]
+            User=svc_jellyfin
+            Restart=always
+            Environment="JELLYFIN_USER=svc_jellyfin"
+      - name: Change ownership of jellyfin folders
+        file:
+          path: "{{item}}"
+          state: directory
+          owner: svc_jellyfin
+          group: svc_jellyfin
+          recurse: true
+        with_items:
+          - /var/lib/jellyfin
+          - /var/cache/jellyfin
+          - /var/log/jellyfin
+          - /etc/jellyfin
+  - name: Add Server to MC command
+    become: true
+    command: mc alias set local https://s3.{{internal_domain}}:9000 uid={{jellyfin.service_user.name}},cn=users,cn=accounts,{{base_dn}} {{jellyfin.service_user.password}}
