@@ -1,7 +1,12 @@
 ---
 - hosts: localhost
   #ansible-playbook --extra-vars "token=secret" records.yml
+  vars_files:
+    - "secrets.yml"
   tasks:
+    - name: Set token
+      set_fact:
+        token: "{{proxy.cf_token}}"
     - name: Simple A record (IPV4 address) lookup for example.com
       ansible.builtin.debug:
         msg: "{{ lookup('community.general.dig', 'web.stabl.one.') | default('127.0.0.1', true)}}"
@@ -39,6 +44,7 @@
           - "cloud"
           - "stream"
           - "docsrv"
+          - "tphc"
     - community.general.cloudflare_dns:
         api_token: "{{token}}"
         zone: stabl.one

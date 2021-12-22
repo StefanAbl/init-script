@@ -129,3 +129,7 @@ servers:
     extras: |
       listen 8443 ssl;
       listen [::]:8443 ssl;
+  - name: tphc.stabl.one
+    upstream: http://tphc.k3s.i.stabl.one
+    verification: dns
+    api: dns_cf
