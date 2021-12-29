@@ -42,7 +42,13 @@ resource "proxmox_vm_qemu" "proxmox_vm" {
   scsihw            = "virtio-scsi-pci"
 
 disk {
-    size            = "32G" 
+    size            = "16G" 
+    type            = "virtio"
+    storage         = "NVMe"
+    backup          = 1
+  }
+disk {
+    size            = "16G" 
     type            = "virtio"
     storage         = "NVMe"
   }
