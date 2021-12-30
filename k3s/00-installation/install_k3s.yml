@@ -8,6 +8,26 @@
           - nfs-common
           - jq
       become: yes
+    - name: Create multipath configuration file
+      become: yes
+      file: 
+        path: /etc/multipath.conf
+        state: touch
+    - name: Blacklist longhorn devices in multipath configuration file
+      become: yes
+      blockinfile:
+        file: /etc/multipath.conf
+        block: |
+            blacklist {
+              devnode "^sd[a-z0-9]+"
+            }
+      register: result
+    - name: Restart multipathd.service
+      service:
+        name: multipathd
+        state: restarted
+      when: result.changed
+
 
 - hosts: k3s-0.i.stabl.one
   vars_files:
