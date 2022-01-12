@@ -12,4 +12,4 @@ clients:
       username: "{{promtail.user}}"
       password: "{% for user in logging.loki.users %}{%if user.name == promtail.user %}{{user.password}}{% endif %}{% endfor %}"
 scrape_configs:
-{{promtail.scrape_configs | string |indent(4, True)}}
+{{promtail.scrape_configs | to_yaml(indent=2, width=1337) |indent(4, True)}}

@@ -8,7 +8,7 @@
   vars_files:
   - secrets.yml
   roles:
+    - promtail
     - nginx
     - ip_update
     - external_proxy
-    - promtail

@@ -24,6 +24,9 @@ promtail:
       - replace:
           expression: '(?:[0-9]{1,3}\.){3}([0-9]{1,3})'
           replace: '***'
+      - replace:
+          expression: '(?:remote_addr": ")(?:[A-Za-z0-9]+:{1,2}){0,1}((?:[A-Za-z0-9]+:{1,2})+)[[A-Za-z0-9]*(?:")'
+          replace: '**ipv6**:'
       - replace: #Replaces the query part of a URI
           Expression: '(?:(?:\/[A-Za-z0-9-._~]+))(\?.*?)(?:(?:"|\s))'
           replace: ''  
@@ -35,6 +38,12 @@ promtail:
           host: proxy 
           agent: promtail
           __path__: /var/log/nginx/json_access.log
+    - job_name: error_log
+      static_configs:
+      - labels:
+          job: nginx_error_log
+          host: proxy
+          __path__: /var/log/nginx/error.log
 
 acmesh:
   env_vars:
