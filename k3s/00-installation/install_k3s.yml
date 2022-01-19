@@ -1,4 +1,5 @@
 ---
+# Prepare Multipath configuration
 - hosts: k3s
   tasks:
     - apt:
@@ -28,7 +29,7 @@
         state: restarted
       when: result.changed
 
-
+# Initialize cluster
 - hosts: k3s-0.i.stabl.one
   vars_files:
     - ../../secrets.yml
@@ -45,6 +46,7 @@
       register: output
     - debug: var=output
 
+# Join additional servers (masters) to cluster
 - hosts: k3s:!k3s-0.i.stabl.one
   vars_files:
     - ../../secrets.yml
@@ -61,21 +63,50 @@
       register: output
     - debug: var=output
 
-- hosts: k3s-0.i.stabl.one
+# Install Helm and modules needed for Ansible on all server (master) nodes
+- hosts: k3s
   become: yes
   become_method: sudo
   vars_files:
    - ../../../secrets.yml
   tasks:
-  - name: install pip
-    package:
-      name: python3-pip
+  - name: install required apt packages
+    apt:
+      name: 
+        - "python3-pip"
+        - "apt-transport-https"
+        - python3-pip
       state: present
   - name: install required python modules
     pip:
       name:
         - openshift
         - PyYAML
+        - passlib
+  - name: add key to apt
+    apt_key:
+      url: https://baltocdn.com/helm/signing.asc
+      state: present
+  - name: add apt repository
+    apt_repository:
+      repo: deb https://baltocdn.com/helm/stable/debian/ all main
+      state: present
+  - name: install helm using apt
+    apt: 
+      name: helm
+      state: latest
+  - name: install helm diff
+    kubernetes.core.helm_plugin:
+      plugin_path: https://github.com/databus23/helm-diff
+      state: present
+
+
+- hosts: k3s.0.i.stabl.one
+  become: yes
+  become_method: sudo
+  vars_files:
+   - ../../../secrets.yml
+  tasks:
   - name: Allow K3s pods to resolve internal DNS names
     shell: |
       sudo kubectl get cm -n kube-system coredns -o yaml | sed "s/forward . \/etc\/resolv.conf/forward . {{ipa_server_ip}}/g" | sudo kubectl apply -f - 

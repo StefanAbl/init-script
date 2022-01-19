@@ -6,38 +6,10 @@
   vars_files:
    - ../../../secrets.yml
   tasks:
-  - name: install required apt packages
-    apt:
-      name: 
-        - "python3-pip"
-        - "apt-transport-https"
-      state: present
-  - name: add key to apt
-    apt_key:
-      url: https://baltocdn.com/helm/signing.asc
-      state: present
-  - name: add apt repository
-    apt_repository:
-      repo: deb https://baltocdn.com/helm/stable/debian/ all main
-      state: present
-  - name: install helm using apt
-    apt: 
-      name: helm
-      state: latest
-  - name: install required python modules
-    pip:
-      name:
-        - openshift
-        - PyYAML
-        - passlib
   - name: add Grafana helm repo
     community.kubernetes.helm_repository:
       name: grafana
       url: https://grafana.github.io/helm-charts
-  - name: install helm diff
-    kubernetes.core.helm_plugin:
-      plugin_path: https://github.com/databus23/helm-diff
-      state: present
 
   - name: template values file
     template:
