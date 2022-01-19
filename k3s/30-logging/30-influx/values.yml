@@ -1,0 +1,4 @@
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  hostname: influxdb2.k3s.i.stabl.one
