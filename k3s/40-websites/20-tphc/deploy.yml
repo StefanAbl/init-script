@@ -8,6 +8,11 @@ spec:
   selector:
     matchLabels:
       app: tphc
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
   template:
     metadata:
       labels:
@@ -34,6 +39,8 @@ spec:
           - "/checkout"
           - "--dest"
           - "repo"
+          - "--max-sync-failures"
+          - "-1"
         securityContext:
           runAsUser: 1000 # git-sync user
         resources:
@@ -83,5 +90,15 @@ spec:
           - name: nginx-config
             mountPath: /etc/nginx/nginx.conf
             subPath: nginx.conf
+        readinessProbe:
+          httpGet:
+            path: /product.html
+            port: 80
+            # httpHeaders:
+            # - name: Custom-Header
+            #   value: Awesome
+          initialDelaySeconds: 10
+          periodSeconds: 5
+
       securityContext:
         fsGroup: 1000 #
