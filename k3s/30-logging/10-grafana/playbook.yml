@@ -6,16 +6,6 @@
   vars_files:
    - ../../../secrets.yml
   tasks:
-  - name: install pip
-    package:
-      name: python3-pip
-      state: present
-  - name: install required python modules
-    pip:
-      name:
-        - openshift
-        - PyYAML
-
   - name: create secret
     community.kubernetes.k8s:
       kubeconfig: /etc/rancher/k3s/k3s.yaml
@@ -83,7 +73,7 @@
       namespace: default
       kubeconfig: /etc/rancher/k3s/k3s.yaml
       pod: "{{pod.resources[0].metadata.name}}"
-      command: reboot
+      command: kill 1
     when: secret.changed or configMap.changed or depl.changed
     register: fail
     failed_when: false
