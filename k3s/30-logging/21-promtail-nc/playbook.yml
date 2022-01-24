@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://json.schemastore.org/ansible-playbook
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible-playbook.json
 ---
 - hosts: nextcloud.i.stabl.one
   become: yes
