@@ -21,3 +21,7 @@ scrape_configs:
     scheme: https
     static_configs:
     - targets: ['s3.i.stabl.one:9000']
+  - job_name: nextcloud-exporter
+    scrape_interval: 30s
+    static_configs:
+    - targets: ['nc-exporter.default.svc.cluster.local:9205']
