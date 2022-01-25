@@ -2,8 +2,8 @@
 ---
 - hosts: nextcloud.i.stabl.one
   vars:
-    archive_url: "https://download.nextcloud.com/server/releases/nextcloud-22.2.0.tar.bz2"
-    old_version: 21.0.1
+    archive_url: "https://download.nextcloud.com/server/releases/nextcloud-23.0.0.tar.bz2"
+    old_version: 22.2.0
   become: yes
   tasks:
     - name: Download new NC version
@@ -19,7 +19,6 @@
       include_tasks: ./cronjobs.yml
       vars:
         - disable: true
-
 
     - name: backup current installation
       copy: 
