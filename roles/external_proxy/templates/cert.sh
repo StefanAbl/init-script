@@ -3,9 +3,12 @@
 {% for i in acmesh.env_vars %}
 export {{i.name}}='{{i.value}}'
 {% endfor %}
+
+/root/acme.sh/acme.sh  --register-account  -m {{ipa_admin_user}}@{{domain_name}} --server zerossl
+
 {% for server in servers %}
 
-/root/acme.sh/acme.sh --issue -d {{server.name}} --server letsencrypt \
+/root/acme.sh/acme.sh --issue -d {{server.name}} --server zerossl \
 {% if server.verification == "dns" %} --dns {{server.api}} {% else %} --nginx /etc/nginx/sites/{{server.name}} {% endif %} \
  --key-file /etc/letsencrypt/live/{{server.name}}/key.pem \
   --ca-file /etc/letsencrypt/live/{{server.name}}/ca.pem \
