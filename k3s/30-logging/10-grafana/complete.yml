@@ -26,9 +26,12 @@ spec:
     metadata:
       labels:
         app: grafana
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/grafana: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
     spec:
       securityContext:
-        runAsUser: 0
+        runAsUser: 472
         fsGroup: 472
       containers:
         - image: grafana/grafana:8.3.4-ubuntu
@@ -36,8 +39,8 @@ spec:
           env:
             - name: GF_PATHS_CONFIG
               value: /etc/grafana/grafana.ini
-            - name: GF_INSTALL_PLUGINS
-              value: grafana-clock-panel,natel-discrete-panel,grafana-piechart-panel
+            # - name: GF_INSTALL_PLUGINS
+            #   value: grafana-clock-panel,natel-discrete-panel,grafana-piechart-panel
             - name: BIND_USER
               valueFrom:
                 secretKeyRef:
@@ -69,7 +72,8 @@ spec:
             timeoutSeconds: 2
           resources:
             limits:
-              memory: 2Gi
+              memory: 1Gi
+              cpu: "1"
             requests:
               cpu: 100m
               memory: 1Gi
@@ -78,7 +82,23 @@ spec:
               name: grafana
             - mountPath: /etc/grafana/
               name: config
+            - mountPath: /tmp/
+              name : tmp
+            - mountPath: /var/log/
+              name : logs
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
       volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: logs
+          emptyDir: {}
         - name: grafana
           persistentVolumeClaim:
             claimName: grafana
@@ -90,6 +110,8 @@ spec:
                 path: grafana.ini
               - key: "ldap.toml"
                 path: ldap.toml
+      automountServiceAccountToken: false
+  strategy: {}
 ---
 apiVersion: v1
 kind: Service
@@ -106,6 +128,7 @@ spec:
   sessionAffinity: None
   type: LoadBalancer
 
+
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -120,9 +143,9 @@ metadata:
     cert-manager.io/common-name: grafana.k3s.i.stabl.one
 spec:
   tls:
-  - hosts:
-    - grafana.k3s.i.stabl.one
-    secretName: grafana-cert
+    - hosts:
+        - grafana.k3s.i.stabl.one
+      secretName: grafana-cert
   rules:
     - host: grafana.k3s.i.stabl.one
       http:
@@ -133,4 +156,5 @@ spec:
               service:
                 name: grafana
                 port:
-                 number: 3000
+                  number: 3000
+
