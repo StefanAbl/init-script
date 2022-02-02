@@ -7,6 +7,10 @@ replica-cloud.i.stabl.one
 vpn-cloud.i.stabl.one
 proxy.i.stabl.one
 
+[ipa]
+ipa0.i.stabl.one
+ipa1.i.stabl.one
+
 [docker]
 docker0.i.stabl.one
 docker1.i.stabl.one
