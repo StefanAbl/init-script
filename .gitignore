@@ -5,3 +5,4 @@ mullvad_userpass.txt
 *.tfstate*
 .terraform.lock.hcl
 .terraform/*
+kubeaudit
