@@ -13,6 +13,9 @@ spec:
     metadata:
       labels:
         app: grafana-image-renderer
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/grafana-image-renderer: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
     spec:
       containers:
         - image: grafana/grafana-image-renderer:latest
@@ -33,6 +36,19 @@ spec:
             requests:
               cpu: 100m
               memory: 200Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+      automountServiceAccountToken: false
+  strategy: {}
 ---
 apiVersion: v1
 kind: Service
@@ -46,3 +62,5 @@ spec:
       targetPort: image-renderer
   selector:
     app: grafana-image-renderer
+status:
+  loadBalancer: {}
