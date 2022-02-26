@@ -22,11 +22,11 @@
             {{ lookup('template', 'prometheus.yml')}}
 
 
-  - name: create PVC
+  - name: create PVC and PV
     community.kubernetes.k8s:
       kubeconfig: /etc/rancher/k3s/k3s.yaml
       state: present
-      definition: "{{ lookup('template', 'prom-pvc.yml') }}"
+      definition: "{{ lookup('template', 'prom-pvc.yml') | from_yaml_all | list }}"
 
 
   - name: create Stateful Set

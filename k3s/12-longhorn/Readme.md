@@ -5,14 +5,12 @@
 1. Install Longhorn on any Kubernetes cluster using this command:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.2.2/deploy/longhorn.yaml
+ansible-playbook -K -i hosts k3s/12-longhorn/playbook.yml --ask-vault-pass
 ```
 2. Check that the deployment was successful
 ```bash
 kubectl -n longhorn-system get pod
 ```
 
-## Configuration
-The default config was changed in the following ways:
-
-- `Default Replica Count` was set two 2
+3. Restore volumes from Longhorn UI
+4. Apply manifests for other applications which bind volumes with PVs and PVCs

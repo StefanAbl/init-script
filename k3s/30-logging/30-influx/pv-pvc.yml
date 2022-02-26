@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: prometheus-external-vol-0
+  name: influxdb2-vol-0
 spec:
   capacity:
     storage: 10Gi # must match size of Longhorn volume
   volumeMode: Filesystem
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   # persistentVolumeReclaimPolicy: Delete
   csi:
     driver: driver.longhorn.io # driver must match this
@@ -15,19 +15,19 @@ spec:
     volumeAttributes:
       numberOfReplicas: "2" # must match Longhorn volume value
       staleReplicaTimeout: '30' # in minutes
-    volumeHandle: pvc-31d0e766-ad38-474c-b511-1ad4404a19cb # must match volume name from Longhorn
+    volumeHandle: pvc-54635041-d51e-4e7e-820f-8f5a3ae0e6e7 # must match volume name from Longhorn
   storageClassName: longhorn # must be same name that we will use later
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: prometheus-external
+  name: influxdb2
   namespace: default
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 10Gi
   storageClassName: longhorn
-  volumeName: prometheus-external-vol-0
+  volumeName: influxdb2-vol-0

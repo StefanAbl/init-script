@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible-playbook.json
+---
+- hosts: k3s-0.i.stabl.one
+  become: yes
+  become_method: sudo
+  vars_files:
+  - ../../secrets.yml
+  tasks:
+  - name: create secret
+    with_items:
+      - default
+      - longhorn-system
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: 
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          namespace: "{{item}}"
+          name: backup-secret
+        type: Opaque
+        stringData:
+          AWS_ACCESS_KEY_ID: "{{longhorn.s3_user}}"
+          AWS_SECRET_ACCESS_KEY: "{{longhorn.s3_pass}}"
+          AWS_ENDPOINTS: "https://s3.{{internal_domain}}:9000"
+  - name: add longhorn helm repo
+    community.kubernetes.helm_repository:
+      name: longhorn
+      url: https://charts.longhorn.io
+
+  - name: install helm chart
+    community.kubernetes.helm:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      update_repo_cache: yes
+      name: longhorn
+      chart_ref: longhorn/longhorn
+      release_namespace: longhorn-system
+      create_namespace: true
+      values:
+        csi:
+          kubeletRootDir: /var/lib/kubelet
+        defaultSettings:
+          backupTarget: s3://longhorn@region/
+          backupTargetCredentialSecret: backup-secret
+    register: helmout
+
+  - debug:
+      var: helmout
+
+  - name: Create Ingress resource
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: "{{ lookup('file', 'longhorn-ingress.yml') | from_yaml }}"
