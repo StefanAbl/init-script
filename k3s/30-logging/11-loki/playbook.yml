@@ -73,3 +73,39 @@
       - /root/loki-distributed-values.yml
     changed_when: false
     when: true
+
+  - name: Install promtail in cluster
+    community.kubernetes.helm:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      update_repo_cache: yes
+      name: promtail
+      chart_ref: grafana/promtail
+      chart_version: 3.11.0
+      release_namespace: default
+      values:
+        containerSecurityContext:
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+          allowPrivilegeEscalation: false
+          privileged: false
+        podAnnotations:
+          container.apparmor.security.beta.kubernetes.io/promtail: runtime/default
+          seccomp.security.alpha.kubernetes.io/pod: runtime/default
+        resources: 
+          limits:
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        config:
+          lokiAddress: http://loki-loki-distributed-gateway.default.svc.cluster.local/loki/api/v1/push
+          snippets:
+            extraRelabelConfigs: 
+              - target_label: host
+                replacement: k3s.{{internal_domain}}
+    register: helmout
+  - debug:
+      var: helmout
