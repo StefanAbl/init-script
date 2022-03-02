@@ -11,25 +11,40 @@ spec:
     metadata:
       labels:
         app: nc-exporter
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/nc-exporter: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
     spec:
       containers:
-      - name: nc-exporter
-        image: xperimental/nextcloud-exporter
-        args:
-          - "--server"
-          - "https://cloud.{{domain_name}}"
-        env:
-        - name: NEXTCLOUD_AUTH_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: nc-exporter-token
-              key: token
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-        ports:
-        - containerPort: 9205
-          name: prom
+        - name: nc-exporter
+          image: xperimental/nextcloud-exporter
+          args:
+            - "--server"
+            - "https://cloud.{{domain_name}}"
+          env:
+            - name: NEXTCLOUD_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: nc-exporter-token
+                  key: token
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 9205
+              name: prom
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+      automountServiceAccountToken: false
+  strategy: {}
 
 

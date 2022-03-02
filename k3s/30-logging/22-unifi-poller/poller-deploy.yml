@@ -11,22 +11,35 @@ spec:
     metadata:
       labels:
         app: unifi-poller
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/unifi-poller: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
     spec:
       containers:
-      - name: unifi-poller
-        image: golift/unifi-poller
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-        ports:
-        - containerPort: 9130
-          name: prom
-        volumeMounts:
-          - name: config
-            mountPath: /config/
-          - name: creds
-            mountPath: /etc/creds/
+        - name: unifi-poller
+          image: golift/unifi-poller
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 9130
+              name: prom
+          volumeMounts:
+            - name: config
+              mountPath: /config/
+            - name: creds
+              mountPath: /etc/creds/
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
       volumes:
         - name: config
           configMap:
@@ -40,4 +53,6 @@ spec:
             items:
               - key: password
                 path: passwd.file
+      automountServiceAccountToken: false
+  strategy: {}
 
