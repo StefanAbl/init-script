@@ -15,3 +15,26 @@ ingress:
     cert-manager.io/issuer-group: certmanager.freeipa.org
     cert-manager.io/issuer-kind: ClusterIssuer
     cert-manager.io/common-name: influxdb2.k3s.i.stabl.one
+
+resources: 
+  limits:
+    cpu: 1000m
+    memory: 500Mi
+  requests:
+    cpu: 125m
+    memory: 250Mi
+
+# Security
+podAnnotations: 
+  container.apparmor.security.beta.kubernetes.io/influxdb2: runtime/default
+  seccomp.security.alpha.kubernetes.io/pod: runtime/default
+
+securityContext:
+  privileged: false
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  capabilities:
+    drop:
+      -  ALL
