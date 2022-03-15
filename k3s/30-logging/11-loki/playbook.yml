@@ -109,3 +109,11 @@
     register: helmout
   - debug:
       var: helmout
+
+  - name: Create Kubernetes Event Exporter
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: "{{ lookup('template', 'event-exporter.yml') | from_yaml_all | list }}"
+    vars:
+      namespace: default

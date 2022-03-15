@@ -1,8 +1,55 @@
 ingester:
   replicas: 3
+  podAnnotations: 
+    container.apparmor.security.beta.kubernetes.io/loki: runtime/default
+  resources:  
+    limits:
+      cpu: 250m
+      memory: 300Mi
+    requests:
+      cpu: 50m
+      memory: 100Mi
 querier:
+  podAnnotations: 
+    container.apparmor.security.beta.kubernetes.io/loki: runtime/default
   replicas: 3
+  resources:  
+    limits:
+      cpu: 2
+      memory: 2048Mi
+    requests:
+      cpu: 50m
+      memory: 300Mi
+distributor:
+  podAnnotations: 
+    container.apparmor.security.beta.kubernetes.io/loki: runtime/default
+  resources:  
+    limits:
+      cpu: 250m
+      memory: 300Mi
+    requests:
+      cpu: 50m
+      memory: 100Mi
+queryFrontend:
+  podAnnotations: 
+    container.apparmor.security.beta.kubernetes.io/loki: runtime/default
+  resources:  
+    limits:
+      cpu: 250m
+      memory: 300Mi
+    requests:
+      cpu: 50m
+      memory: 100Mi
 gateway:
+  podAnnotations: 
+    container.apparmor.security.beta.kubernetes.io/nginx: runtime/default
+  resources:  
+    limits:
+      cpu: 250m
+      memory: 300Mi
+    requests:
+      cpu: 50m
+      memory: 50Mi
   nginxConfig:
     httpSnippet: |
       proxy_read_timeout 600s;
@@ -12,12 +59,20 @@ gateway:
 
 
 loki:
+  containerSecurityContext:
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+    allowPrivilegeEscalation: false
+    privileged: false
+  podAnnotations: 
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
   config: |
-{% raw %}
     auth_enabled: false
 
     server:
-      log_level: info
+      log_level: info #TODO: REDUCE
       # Must be set to 3100
       http_listen_port: 3100
       http_server_read_timeout: 15m
@@ -48,7 +103,8 @@ loki:
         timeout: 15m
     memberlist:
       join_members:
-        - {{ include "loki.fullname" . }}-memberlist
+        - {% raw %}{{ include "loki.fullname" . }}-memberlist{% endraw %}
+        #Empty line needed after endraw
 
     limits_config:
       ingestion_rate_mb: 10
@@ -68,7 +124,6 @@ loki:
 
     storage_config:
       aws:
-{% endraw %}
         s3: https://{{logging.loki.minio.access_key}}:{{logging.loki.minio.secret_key}}@s3.{{internal_domain}}.:9000/loki
         s3forcepathstyle: true
       boltdb_shipper:
@@ -90,10 +145,10 @@ loki:
           fifocache:
             max_size_items: 1024
             validity: 24h
-{% raw %}
     frontend_worker:
-      frontend_address: {{ include "loki.queryFrontendFullname" . }}:9095
-{% endraw %}
+      frontend_address: {% raw %}{{ include "loki.queryFrontendFullname" . }}:9095{% endraw %}
+      #Empty line needed after endraw
+
     frontend:
       log_queries_longer_than: 5s
       compress_responses: true
