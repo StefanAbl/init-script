@@ -8,8 +8,23 @@
       prompt: "Please enter password for IPA user {{ ipa_admin_user }}"
       private: yes
   roles:
-    - ../roles/zsh
-    - ../roles/minio_client
+    #- ../roles/zsh
+    #- ../roles/minio_client
+    - role: ../roles/promtail
+      vars:
+        promtail:
+          user: jellyfin #Name of the user from above
+          run_as_user: svc_jellyfin
+          scrape_configs: # scrape configs for loki
+          - job_name: system
+            static_configs:
+            - targets:
+              - localhost
+              labels:
+                host: "{{ansible_facts['fqdn']}}"
+                app: promtail
+                agent: promtail
+                __path__: /var/log/jellyfin/log*.log
   tasks:
   - name: install Jellyfin
     become: yes
