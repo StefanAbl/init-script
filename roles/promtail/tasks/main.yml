@@ -1,32 +1,39 @@
 - name: Install unzip
+  become: true
   package:
     name: unzip
     state: present
 - name: Download promtail
+  become: true
   get_url:
     url: https://github.com/grafana/loki/releases/download/v2.1.0/promtail-linux-amd64.zip
     dest: /tmp/promtail.zip
 - name: unzip promtail
+  become: true
   unarchive:
     src: /tmp/promtail.zip
     dest: /usr/local/bin/
     mode: "0755"
     remote_src: true
 - name: Template promtail configuration
+  become: true
   template:
     src: promtail.yml
     dest: /etc/
 
 - name: copy systemd service file
-  copy: 
+  become: true
+  template: 
     src: promtail.service
     dest: /etc/systemd/system/
 - name: start promtail
+  become: true
   systemd: 
     state: restarted 
     name: promtail 
     daemon_reload: yes
 - name: enable promtail systemd service
+  become: true
   systemd: 
     enabled: true 
     name: promtail 

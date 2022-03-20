@@ -13,7 +13,8 @@ logging:
 The following variables are needed.
 ```yaml
 promtail:
-    user: #Name of the user from above
+    user: # Name of the user from above
+    run_as_user: # The user for the promtail process on the local machine. Defaults to www-data
     scrape_configs: # scrape configs for loki
     - job_name: system
       pipeline_stages: 
