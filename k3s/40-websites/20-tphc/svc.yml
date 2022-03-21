@@ -7,5 +7,5 @@ spec:
   selector:
     app: tphc
   ports:
-  - port: 80
+  - port: 8000
     targetPort: website

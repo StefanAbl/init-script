@@ -11,94 +11,145 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1
+      maxSurge: 2
       maxUnavailable: 1
   template:
     metadata:
       labels:
         app: tphc
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/git-sync: runtime/default
+        container.apparmor.security.beta.kubernetes.io/node: runtime/default
+        container.apparmor.security.beta.kubernetes.io/webserver: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
     spec:
       volumes:
-      - name: git-checkout
-        emptyDir: {}
-      - name: nginx-config
-        configMap:
+        - name: tmp
+          emptyDir:
+            medium: ""
+        - name: nodehome
+          emptyDir:
+            medium: ""
+        - name: run
+          emptyDir:
+            medium: ""
+        - name: log
+          emptyDir:
+            medium: ""
+        - name: cache
+          emptyDir:
+            medium: ""
+        - name: git-checkout
+          emptyDir: {}
+        - name: nginx-config
+          configMap:
             name: tphc
             items:
               - key: "nginx.conf"
                 path: nginx.conf
       containers:
-      - name: git-sync
-        image: stefanabl/git-sync:latest__linux_amd64
-        args:
-          - "--repo" 
-          - "https://git.glxy.one/stardi/thepixelheadco.git"
-          - "--branch"
-          - "master"
-          - "--root"
-          - "/checkout"
-          - "--dest"
-          - "repo"
-          - "--max-sync-failures"
-          - "-1"
-        securityContext:
-          runAsUser: 1000 # git-sync user
-        resources:
-            requests: 
+        - name: git-sync
+          image: stefanabl/git-sync:latest__linux_amd64
+          args:
+            - "--repo"
+            - "https://git.glxy.one/stardi/thepixelheadco.git"
+            - "--branch"
+            - "master"
+            - "--root"
+            - "/checkout"
+            - "--dest"
+            - "repo"
+            - "--max-sync-failures"
+            - "-1"
+          securityContext:
+            runAsUser: 1000 
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+          resources:
+            requests:
               cpu: 100m
               memory: 100Mi
             limits:
-              cpu: 1000m
+              cpu: "1"
               memory: 300Mi
-        volumeMounts:
-        - name: git-checkout
-          mountPath: /checkout
-          readOnly: false
-      - name: node
-        image: node
-        resources:
-            requests: 
+          volumeMounts:
+            - name: git-checkout
+              mountPath: /checkout
+        - name: node
+          image: stefanabl/nodeinotify
+          resources:
+            requests:
               cpu: 100m
               memory: 100Mi
             limits:
-              cpu: 1000m
+              cpu: "1"
               memory: 500Mi
-        command: ["/bin/sh"]
-        args: ["-c", "export DEBIAN_FRONTEND=noninteractive && apt update -y && apt install -y inotify-tools && cd /checkout/repo/dev && npm ci && while :; do npm run build && inotifywait -e create -e modify . ;  echo modified; done"]
-        securityContext:
-          runAsUser: 0 # root to install packages
-        volumeMounts:
-        - name: git-checkout
-          mountPath: /checkout
-          readOnly: false
-      - name: webserver
-        image: nginx
-        resources:
-          requests: 
-            cpu: 100m
-            memory: 100Mi
-          limits:
-            cpu: 1000m
-            memory: 300Mi
-        ports: 
-          - containerPort: 80
-            name: website
-        volumeMounts:
-          - name: git-checkout
-            mountPath: /checkout
-            readOnly: true
-          - name: nginx-config
-            mountPath: /etc/nginx/nginx.conf
-            subPath: nginx.conf
-        readinessProbe:
-          httpGet:
-            path: /product.html
-            port: 80
-            # httpHeaders:
-            # - name: Custom-Header
-            #   value: Awesome
-          initialDelaySeconds: 10
-          periodSeconds: 5
-
+          command: ["/bin/sh"]
+          args: ["-c", "cd /checkout/repo/dev && npm ci && while :; do npm run build && inotifywait -e create -e modify . ;  echo modified; done"]
+          securityContext:
+            runAsUser: 1000
+            fsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: git-checkout
+              mountPath: /checkout
+            - name: nodehome
+              mountPath:  /home/node
+            - name: tmp
+              mountPath: /tmp/
+        - name: webserver
+          image: nginx
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: "1"
+              memory: 300Mi
+          ports:
+            - containerPort: 8000
+              name: website
+          volumeMounts:
+            - name: run
+              mountPath:  /var/run
+            - name: log
+              mountPath:  /var/log/nginx
+            - name: cache
+              mountPath:  /var/cache/nginx
+            - name: git-checkout
+              mountPath: /checkout
+              readOnly: true
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+          readinessProbe:
+            httpGet:
+              path: /product.html
+              port: 8000
+              # httpHeaders:
+              # - name: Custom-Header
+              #   value: Awesome
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
       securityContext:
-        fsGroup: 1000 #
+        fsGroup: 1000 
+      automountServiceAccountToken: false
+status: {}

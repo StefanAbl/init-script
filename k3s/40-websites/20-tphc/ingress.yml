@@ -24,4 +24,4 @@ spec:
               service:
                 name: tphc
                 port:
-                 number: 80
+                  number: 8000
