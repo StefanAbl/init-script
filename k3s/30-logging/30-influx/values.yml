@@ -15,6 +15,9 @@ ingress:
     cert-manager.io/issuer-group: certmanager.freeipa.org
     cert-manager.io/issuer-kind: ClusterIssuer
     cert-manager.io/common-name: influxdb2.k3s.i.stabl.one
+    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+
 
 resources: 
   limits:

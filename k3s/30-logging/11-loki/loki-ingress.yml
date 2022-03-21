@@ -11,6 +11,9 @@ metadata:
     cert-manager.io/common-name: loki.k3s.i.stabl.one
     ingress.kubernetes.io/auth-type: basic
     ingress.kubernetes.io/auth-secret: lokiauth
+    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+
 spec:
   tls:
   - hosts:

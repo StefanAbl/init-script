@@ -163,6 +163,9 @@ metadata:
     cert-manager.io/issuer-group: certmanager.freeipa.org
     cert-manager.io/issuer-kind: ClusterIssuer
     cert-manager.io/common-name: grafana.k3s.i.stabl.one
+    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+
 spec:
   tls:
     - hosts:
