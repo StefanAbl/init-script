@@ -30,6 +30,10 @@ mail_file="$(mktemp)"
   echo "Subject: Backup Status $status"
   echo ""
   cat "$logtemp"
+  echo ""
+  echo ""
+  ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net zpool list
+  ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net zfs list
 } >>"$mail_file"
 
 curl --url 'smtp://mail.stabl.one:587' --ssl-reqd \
