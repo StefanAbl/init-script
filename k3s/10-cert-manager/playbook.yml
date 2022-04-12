@@ -4,7 +4,7 @@
   become: yes
   become_method: sudo
   vars_files:
-   - ../../../secrets.yml
+    - ../../secrets.yml
   tasks:
   - name: add jetstack helm repo
     community.kubernetes.helm_repository:

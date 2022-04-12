@@ -3,6 +3,10 @@ kind: StatefulSet
 metadata:
   name: prometheus-external
   namespace: default
+  annotations:
+    keel.sh/policy: "major"
+    keel.sh/trigger: poll     # enable active repository checking
+    keel.sh/approvals: "1"    # required approvals to update
 spec:
   selector:
     matchLabels:
@@ -25,7 +29,7 @@ spec:
         runAsGroup: 1000
       containers:
         - name: prometheus
-          image: prom/prometheus
+          image: prom/prometheus:v2.34.0
           args:
             - "--config.file=/config/prometheus.yml"
             - "--storage.tsdb.path=/data"

@@ -40,6 +40,10 @@ metadata:
     app: grafana
   namespace: default
   name: grafana
+  annotations:
+    keel.sh/policy: "major"
+    keel.sh/trigger: poll     # enable active repository checking
+    keel.sh/approvals: "1"    # required approvals to update
 spec:
   selector:
     matchLabels:
@@ -56,7 +60,7 @@ spec:
         runAsUser: 472
         fsGroup: 472
       containers:
-        - image: grafana/grafana:8.4.3-ubuntu
+        - image: grafana/grafana:8.4.5-ubuntu
           name: grafana
           env:
             - name: GF_PATHS_CONFIG

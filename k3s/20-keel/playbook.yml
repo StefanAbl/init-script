@@ -1,0 +1,77 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible-playbook.json
+---
+- hosts: k3s-0.i.stabl.one
+  become: yes
+  become_method: sudo
+  vars_files:
+  - ../../secrets.yml
+  tasks:
+  - name: add Keel helm repo
+    community.kubernetes.helm_repository:
+      name: keel
+      url: https://charts.keel.sh
+
+  - name: install helm chart
+    community.kubernetes.helm:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      update_repo_cache: yes
+      name: keel
+      chart_ref: keel/keel
+      release_namespace: kube-system
+      create_namespace: false
+      values:
+        helmProvider:
+          enabled: true
+          # set to version "v3" for Helm v3
+          version: "v3"
+        basicauth:
+          enabled: true
+          user: "user"
+          password: "{{k3s.keel.basic_auth_password}}"
+        notificationLevel: debug
+        mail:
+          enabled: true
+          from: "{{k3s.ipa_service_user.user}}@{{domain_name}}"
+          to: "{{ipa_admin_user}}@{{domain_name}}"
+          smtp:
+            server: "mail.{{domain_name}}"
+            port: 587
+            user: "{{k3s.ipa_service_user.user}}@{{domain_name}}"
+            pass: "{{k3s.ipa_service_user.password}}"
+          webhook:
+            enabled: true
+            endpoint: "https://webhook.site/3f96cf86-faa6-41be-bc94-72b398a98c52"
+        debug: true
+        # Keel service
+        # Enable to receive webhooks from Docker registries
+        service:
+          enabled: true
+          type: LoadBalancer
+          externalPort: 9300
+          clusterIP: ""
+        ingress:
+          enabled: true
+          labels: {}
+          annotations: 
+            cert-manager.io/issuer: freeipa-issuer
+            cert-manager.io/issuer-group: certmanager.freeipa.org
+            cert-manager.io/issuer-kind: ClusterIssuer
+            cert-manager.io/common-name: keel.k3s.i.stabl.one
+            kubernetes.io/ingress.class: traefik
+            # ingress.kubernetes.io/auth-type: forward
+            # ingress.kubernetes.io/auth-url: https://authelia.i.stabl.one/api/verify
+            # ingress.kubernetes.io/auth-tls-insecure: "true"
+            traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+            traefik.ingress.kubernetes.io/redirect-entry-point: https
+          hosts: 
+            - host: keel.k3s.i.stabl.one
+              paths:
+                - /
+          tls: 
+            - hosts:
+              - keel.k3s.i.stabl.one
+              secretName: keel-cert
+    register: helmout
+
+  - debug:
+      var: helmout

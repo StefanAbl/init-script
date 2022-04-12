@@ -5,6 +5,10 @@ metadata:
     app: grafana-image-renderer
   namespace: default
   name: grafana-image-renderer
+  annotations:
+    keel.sh/policy: "major"
+    keel.sh/trigger: poll     # enable active repository checking
+    keel.sh/approvals: "1"    # required approvals to update
 spec:
   selector:
     matchLabels:
@@ -18,7 +22,7 @@ spec:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
     spec:
       containers:
-        - image: grafana/grafana-image-renderer:latest
+        - image: grafana/grafana-image-renderer:3.4.2
           name: grafana-image-renderer
           env:
             - name: ENABLE_METRICS
