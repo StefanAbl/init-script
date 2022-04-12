@@ -3,6 +3,11 @@ kind: Deployment
 metadata:
   name: nc-exporter
   namespace: default
+  annotations:
+    keel.sh/policy: "major"
+    keel.sh/trigger: poll     # enable active repository checking
+    keel.sh/approvals: "1"    # required approvals to update  annotations:
+    keel.sh/pollSchedule: "@every 10m"
 spec:
   selector:
     matchLabels:
@@ -17,7 +22,7 @@ spec:
     spec:
       containers:
         - name: nc-exporter
-          image: xperimental/nextcloud-exporter
+          image: xperimental/nextcloud-exporter:0.5.1
           args:
             - "--server"
             - "https://cloud.{{domain_name}}"
