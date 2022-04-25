@@ -56,8 +56,19 @@
 - name: test cert.sh script with shellcheck
   shell: shellcheck /root/cert.sh
   changed_when: false
+
+  # Nginx has to be restarted before getting certificates for http01 validation to work with acme
+- name: test nginx configuration
+  shell: nginx -t
+  changed_when: false
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted
+
 - name: Run cert.sh
   shell: bash /root/cert.sh
+
 - name: add cronjob for cert.sh
   cron:
     name: renew certificates

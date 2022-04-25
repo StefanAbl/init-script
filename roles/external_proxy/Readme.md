@@ -1,9 +1,12 @@
 # External Proxy
 This role will setup the main entrypoint for the homelab
 ## ACME validation
-Note: currently only dns validation works.
-
-The problem with http validation is that the site config cannot be in it's final form for validation, since the certificates do not yet exists. Instead until the certificate has been obtained for the first time, the config should be replaced by a dummy, which listens only on http and forwards the requests to a specific webroot.
+Certificates are obtained via [acme.sh](https://github.com/acmesh-official/acme.sh.)
+Validation can be done via http01 validation or dns validation. 
+This can be specified on a per virtual server basis.
+For dns validation the necessary environment variables should be included in `acmesh.env_vars`
+Additionally the dns api which should be used by acme.sh should be specified, e.g. use Cloudflare with dns_cf.
+A full ist can be found [here](https://github.com/acmesh-official/acme.sh/wiki/dnsapi)
 
 ## Variables
 ```yaml
