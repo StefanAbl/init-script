@@ -1,0 +1,2 @@
+nextcloud:
+  data_dir_nfs_source: "10.13.2.17:/single/ncd"

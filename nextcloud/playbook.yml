@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible-playbook.json
+---
+- hosts: 10.13.2.18
+  vars_files:
+    - ../secrets.yml
+  roles:
+    # - role: ../roles/zsh
+    # - role: ../roles/docker
+    #   vars:
+    #     docker_compose_version: v2.4.1
+    - role: ../roles/nextcloud_compose
+  tasks:
