@@ -2,7 +2,7 @@ terraform {
   required_providers {
     proxmox = {
       source = "telmate/proxmox"
-      version = "2.6.9"
+      version = "2.9.6"
     }
   }
 }
@@ -46,6 +46,7 @@ resource "proxmox_vm_qemu" "proxmox_vm" {
   define_connection_info = false
 
 disk {
+    slot            = 0
     size            = "8G" 
     type            = "virtio"
     storage         = "NVMe"
