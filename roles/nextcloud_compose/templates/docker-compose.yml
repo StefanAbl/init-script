@@ -15,27 +15,23 @@ services:
       - MARIADB_PASSWORD_FILE=/run/secrets/nextcloud_db_user_pass
       - MYSQL_DATABASE=owncloud
       - MYSQL_USER=owncloud
+
   redis:
     image: "redis:alpine"
-
+    restart: always
     command: redis-server
 
-    ports:
-     - "6379:6379"
-
   app:
-    image: nextcloud:23.0.0-fpm
+    image: "{{nextcloud.docker_image}}"
     restart: always
     links:
       - db
     volumes:
       - /nextcloud_local/webroot:/var/www/html
       - /data:/data
-    # environment:
-    #   - MYSQL_PASSWORD=
-    #   - MYSQL_DATABASE=nextcloud
-    #   - MYSQL_USER=nextcloud
-    #   - MYSQL_HOST=db
+    depends_on:
+      - db
+      - redis
 
   web:
     image: nginx
@@ -46,5 +42,27 @@ services:
       - app
     volumes:
       - /nextcloud_local/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /nextcloud_local/webroot:/var/www/html:ro
     volumes_from:
       - app
+
+  cron:
+    build: ./cron
+    restart: always
+    volumes:
+      - /nextcloud_local/webroot:/var/www/html
+      - /data:/data
+    entrypoint: /cron.sh
+    depends_on:
+      - db
+      - redis
+
+  backup:
+    build: ./backup
+    restart: always
+    volumes:
+      - /nextcloud_local/webroot:/var/www/html:ro
+      - /data:/data
+    entrypoint: /cron.sh
+    depends_on:
+      - db

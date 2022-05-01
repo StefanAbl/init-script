@@ -32,7 +32,9 @@
     - name: "/nextcloud_local/secrets"
     - name: "/nextcloud_local/dbdump"
       owner: www-data
-    
+    - name: "/nextcloud_local/compose/cron"
+    - name: "/nextcloud_local/compose/backup"
+
 - name: Copy latest DB dump
   become: true
   shell: sudo -u www-data cp /data/dbBackup.sql /nextcloud_local/dbdump/dbBackup.sql
@@ -50,20 +52,31 @@
     - nextcloud_maridb_root_password
     - nextcloud_db_user_pass
 
+- name: Extract webroot
+  become: true
+  shell: 
+    cmd: sudo -u www-data tar -xf /data/webroot.tar -C /nextcloud_local/webroot/
+    creates: /nextcloud_local/webroot/config/config.php
+
 - name: Template Docker Compose file
   become: true 
   template:
     src: docker-compose.yml
     dest: /nextcloud_local/compose/
 
-- shell: exit 1
-- name: Extract webroot
+- name: Template Dockerfile for cron image
   become: true
-  shell: sudo -u www-data tar -xf /data/webroot.tar -C /nextcloud_local/webroot/
+  template:
+    src: "{{ item }}.Dockerfile"
+    dest: "/nextcloud_local/compose/{{ item }}/Dockerfile"
+  with_items:
+    - cron
+    - backup
 
 - name: Start Services
   become: true
   community.docker.docker_compose:
     project_src: /nextcloud_local/compose/
     project_name: nextcloud
+    build: true
     state: present

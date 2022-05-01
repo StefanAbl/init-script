@@ -4,5 +4,5 @@ mullvad_userpass.txt
 *.ovpn
 *.tfstate*
 .terraform.lock.hcl
-.terraform/*
+.terraform
 kubeaudit
