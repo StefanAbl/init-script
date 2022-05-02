@@ -2,7 +2,7 @@ terraform {
   required_providers {
     proxmox = {
       source = "telmate/proxmox"
-      version = "2.6.9"
+      version = "2.9.10"
     }
   }
 }
@@ -25,6 +25,9 @@ variable "otp" {
 variable "ip" {
   type = string
 }
+variable "hostname" {
+  type = string
+}
 resource "tls_private_key" "temporary" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -33,19 +36,20 @@ resource "tls_private_key" "temporary" {
 
 resource "proxmox_vm_qemu" "proxmox_vm" {
   count             = 1
-  name              = "testing"
+  name              = "${var.hostname}"
   target_node       = "proxmox0"
   clone             = "ubuntu-20.04"
   os_type           = "cloud-init"
-  agent             = 1
-  cores             = 2 
+  agent             = 1 
+  cores             = 4 
   cpu               = "host"
-  memory            = 2048 
+  memory            = 4096 
   scsihw            = "virtio-scsi-pci"
   guest_agent_ready_timeout = 120
   define_connection_info = false
 
 disk {
+    slot            = 0
     size            = "8G" 
     type            = "virtio"
     storage         = "NVMe"

@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible-playbook.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible.json
 ---
 - hosts: localhost
   vars_prompt:
@@ -26,8 +26,12 @@
         project_path: './'
         state: present
         force_init: true
+        provider_upgrade: true
         variables:
           otp: "{{out.host.randompassword}}"
           proxmox_user: stefan@i.stabl.one
           proxmox_pass: "{{ipa_admin_user_password}}"
           ip: "{{ip}}"
+          hostname: "testing"
+      register: tf
+    - debug: var=tf
