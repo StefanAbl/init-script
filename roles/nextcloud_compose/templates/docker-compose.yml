@@ -29,6 +29,7 @@ services:
     volumes:
       - /nextcloud_local/webroot:/var/www/html
       - /data:/data
+      - /etc/ssl/certs/:/etc/ssl/certs:ro
     depends_on:
       - db
       - redis
@@ -37,11 +38,13 @@ services:
     image: nginx
     restart: always
     ports:
-      - 8080:80
+      - 80:80
+      - 443:443
     links:
       - app
     volumes:
       - /nextcloud_local/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /nextcloud_local/nginx/certs:/etc/nginx/certs:ro
       - /nextcloud_local/webroot:/var/www/html:ro
     volumes_from:
       - app

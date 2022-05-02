@@ -29,6 +29,7 @@
     - name: "/nextcloud_local/webroot"
       owner: www-data
     - name: "/nextcloud_local/nginx"
+    - name: "/nextcloud_local/nginx/certs"
     - name: "/nextcloud_local/secrets"
     - name: "/nextcloud_local/dbdump"
       owner: www-data
@@ -72,6 +73,16 @@
   with_items:
     - cron
     - backup
+
+- name: Get Certificate from FreeIPA
+  become: yes
+  become_user: root
+  shell:
+    cmd: id; ipa-getcert request -r -f /nextcloud_local/nginx/certs/cert.crt -k /nextcloud_local/nginx/certs/key.key -N CN="{{ansible_facts.fqdn}}" -K "HTTP/{{ansible_facts.fqdn}}"@"{{ internal_domain|upper }}"
+    creates: /nextcloud_local/nginx/certs/cert.crt
+  register: get_cert_output
+
+- debug: var=get_cert_output
 
 - name: Start Services
   become: true

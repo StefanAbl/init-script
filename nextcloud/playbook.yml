@@ -1,6 +1,6 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible-playbook.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible.json
 ---
-- hosts: 10.13.2.18
+- hosts: nextcloud.i.stabl.one
   vars_files:
     - ../secrets.yml
   roles:
