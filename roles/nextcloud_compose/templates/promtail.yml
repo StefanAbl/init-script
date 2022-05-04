@@ -4,7 +4,7 @@ server:
 
 
 positions:
-  filename: /tmp/positions.yaml
+  filename: /var/promtail/positions/positions.yaml
 
 clients:
   - url: https://loki.k3s.i.stabl.one/loki/api/v1/push
@@ -16,9 +16,9 @@ scrape_configs:
       pipeline_stages: 
       static_configs:
       - targets:
-         - localhost
+        - localhost
         labels:
-         host: "{{ansible_facts['fqdn']}}"
-         app: nextcloud
-         agent: promtail
-         __path__: /data/nextcloud.log
+          host: "{{ansible_facts['fqdn']}}"
+          app: nextcloud
+          agent: promtail
+          __path__: /data/nextcloud.log

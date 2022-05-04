@@ -4,10 +4,10 @@
    description: Docker Repo
    baseurl: https://download.docker.com/linux/centos/7/x86_64/stable/
    gpgkey: https://download.docker.com/linux/centos/gpg
-  become: yes
+  become: true
   become_method: sudo
 
-  #become: yes
+  #become: true
 - name: install docker install Docker packages
   dnf:
     name:
@@ -15,17 +15,17 @@
      - docker-ce-cli
      - containerd.io
     state: latest
-  become: yes
+  become: true
   become_method: sudo
 
 - name: install docker packages using commandline
   command: dnf install -4 -q -y --nobest docker-ce docker-ce-cli containerd.io
-  become: yes
+  become: true
   become_method: sudo
 
 - name: Start docker
   systemd:
     state: started
     name: docker
-  become: yes
+  become: true
   become_method: sudo

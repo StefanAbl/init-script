@@ -103,13 +103,13 @@ servers:
         return 404;
       }
   - name: cloud.stabl.one
-    upstream: https://10.13.2.11
+    upstream: https://10.13.2.101
     verification: dns
     api: dns_cf
     extras: |
       client_max_body_size 100000G;
   - name: cloud.thorn.dynv6.net
-    upstream: https://10.13.2.11
+    upstream: https://10.13.2.101
     verification: dns
     api: dns_dynv6
     extras: |

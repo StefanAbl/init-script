@@ -6,12 +6,13 @@
       prompt: "Please enter password for IPA user"
       private: yes
   vars:
-    ip: "10.13.2.120"
+    ip: "10.13.2.101"
+    hostname: nextcloud
   tasks:
     - name: Generate a random password for bulk enrolment
       community.general.ipa_host:
-        name: testing.i.stabl.one
-        description: Example host
+        name: "{{hostname}}.i.stabl.one"
+        description: nextcloud host
         ip_address: "{{ip}}"
         state: present
         ipa_host: ipa0.i.stabl.one
@@ -32,6 +33,6 @@
           proxmox_user: stefan@i.stabl.one
           proxmox_pass: "{{ipa_admin_user_password}}"
           ip: "{{ip}}"
-          hostname: "testing"
+          hostname: "{{hostname}}"
       register: tf
     - debug: var=tf

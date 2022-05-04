@@ -40,7 +40,7 @@ resource "proxmox_vm_qemu" "proxmox_vm" {
   target_node       = "proxmox0"
   clone             = "ubuntu-20.04"
   os_type           = "cloud-init"
-  agent             = 1 
+  agent             = 1
   cores             = 4 
   cpu               = "host"
   memory            = 4096 
@@ -50,7 +50,7 @@ resource "proxmox_vm_qemu" "proxmox_vm" {
 
 disk {
     slot            = 0
-    size            = "8G" 
+    size            = "32G" 
     type            = "virtio"
     storage         = "NVMe"
     backup          = 1
