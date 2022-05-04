@@ -1,9 +1,0 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible-playbook.json
----
-- hosts: nextcloud.i.stabl.one
-  become: true
-  tasks:
-  - name: update cronjobs
-    include_tasks: ./cronjobs.yml
-    vars:
-      - disable: false
