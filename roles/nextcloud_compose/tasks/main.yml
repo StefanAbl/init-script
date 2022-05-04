@@ -35,6 +35,8 @@
       owner: www-data
     - name: "/nextcloud_local/compose/cron"
     - name: "/nextcloud_local/compose/backup"
+    - name: "/nextcloud_local/promtail"
+    - name: "/nextcloud_local/promtail/positions"
 
 - name: Copy latest DB dump
   become: true
@@ -73,6 +75,14 @@
   with_items:
     - cron
     - backup
+
+- name: Template promtail config file
+  become: true
+  template:
+    src: promtail.yml
+    dest: /nextcloud_local/promtail/
+  vars:
+    username: "nextcloud"
 
 - name: Get Certificate from FreeIPA
   become: yes

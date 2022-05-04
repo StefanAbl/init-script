@@ -66,6 +66,18 @@ services:
     volumes:
       - /nextcloud_local/webroot:/var/www/html:ro
       - /data:/data
+      - /nextcloud_local/secrets/nextcloud_db_user_pass:/run/secrets/nextcloud_db_user_pass:ro
     entrypoint: /cron.sh
     depends_on:
       - db
+
+  logs:
+    image: grafana/promtail
+    restart: always
+    command: -config.file /etc/promtail.yml
+    group_add:
+      - www-data
+    volumes:
+      - /data:/data:ro
+      - /nextcloud_local/promtail/promtail.yml:/etc/promtail.yml:ro
+      - /nextcloud_local/promtail/positions:/var/promtail/positions
