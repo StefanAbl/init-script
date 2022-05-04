@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: keel-exporter
-          image: ghcr.io/stefanabl/keel-exporter:v0.0.1
+          image: ghcr.io/stefanabl/keel-exporter:v0.0.2
           env:
             - name: KEEL_URL
               valueFrom:
