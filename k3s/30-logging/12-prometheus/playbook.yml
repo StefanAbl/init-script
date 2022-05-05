@@ -29,6 +29,12 @@
       definition: "{{ lookup('template', 'prom-pvc.yml') | from_yaml_all | list }}"
 
 
+  - name: Apply RBAC
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: "{{ lookup('template', 'prom-rbac.yml') | from_yaml_all | list}}"
+
   - name: create Stateful Set
     community.kubernetes.k8s:
       kubeconfig: /etc/rancher/k3s/k3s.yaml
