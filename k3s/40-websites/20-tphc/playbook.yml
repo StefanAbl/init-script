@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible-playbook.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible.json
 ---
 - hosts: k3s-0.i.stabl.one
   become: yes
@@ -6,20 +6,6 @@
   # vars_files:
   #  - ../../../secrets.yml
   tasks:
-
-  - name: Create config map for nginx config
-    community.kubernetes.k8s:
-      kubeconfig: /etc/rancher/k3s/k3s.yaml
-      state: present
-      definition:
-        apiVersion: v1
-        kind: ConfigMap
-        metadata:
-          namespace: default
-          name: tphc
-        data:
-          nginx.conf: |
-            {{ lookup('template', 'nginx.conf') }}
   - name: create Deployment
     community.kubernetes.k8s:
       kubeconfig: /etc/rancher/k3s/k3s.yaml

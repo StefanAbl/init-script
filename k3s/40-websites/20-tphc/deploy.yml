@@ -3,6 +3,11 @@ kind: Deployment
 metadata:
   name: tphc
   namespace: default
+  annotations:
+    keel.sh/policy: "force"
+    keel.sh/trigger: poll     # enable active repository checking
+    keel.sh/pollSchedule: "@every 5m"
+
 spec:
   replicas: 1
   selector:
@@ -18,18 +23,10 @@ spec:
       labels:
         app: tphc
       annotations:
-        container.apparmor.security.beta.kubernetes.io/git-sync: runtime/default
-        container.apparmor.security.beta.kubernetes.io/node: runtime/default
         container.apparmor.security.beta.kubernetes.io/webserver: runtime/default
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
     spec:
       volumes:
-        - name: tmp
-          emptyDir:
-            medium: ""
-        - name: nodehome
-          emptyDir:
-            medium: ""
         - name: run
           emptyDir:
             medium: ""
@@ -39,81 +36,15 @@ spec:
         - name: cache
           emptyDir:
             medium: ""
-        - name: git-checkout
-          emptyDir: {}
-        - name: nginx-config
-          configMap:
-            name: tphc
-            items:
-              - key: "nginx.conf"
-                path: nginx.conf
       containers:
-        - name: git-sync
-          image: stefanabl/git-sync:latest__linux_amd64
-          args:
-            - "--repo"
-            - "https://git.glxy.one/stardi/thepixelheadco.git"
-            - "--branch"
-            - "master"
-            - "--root"
-            - "/checkout"
-            - "--dest"
-            - "repo"
-            - "--max-sync-failures"
-            - "-1"
-          securityContext:
-            runAsUser: 1000 
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            privileged: false
-            readOnlyRootFilesystem: true
-          resources:
-            requests:
-              cpu: 100m
-              memory: 100Mi
-            limits:
-              cpu: "1"
-              memory: 300Mi
-          volumeMounts:
-            - name: git-checkout
-              mountPath: /checkout
-        - name: node
-          image: stefanabl/nodeinotify
-          resources:
-            requests:
-              cpu: 100m
-              memory: 100Mi
-            limits:
-              cpu: "1"
-              memory: 500Mi
-          command: ["/bin/sh"]
-          args: ["-c", "cd /checkout/repo/dev && npm ci && while :; do npm run build && inotifywait -e create -e modify . ;  echo modified; done"]
-          securityContext:
-            runAsUser: 1000
-            fsGroup: 1000
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            privileged: false
-            readOnlyRootFilesystem: true
-          volumeMounts:
-            - name: git-checkout
-              mountPath: /checkout
-            - name: nodehome
-              mountPath:  /home/node
-            - name: tmp
-              mountPath: /tmp/
         - name: webserver
-          image: nginx
+          image: "ghcr.io/devstardi/thepixelhead.co"
           resources:
             requests:
               cpu: 100m
               memory: 100Mi
             limits:
-              cpu: "1"
+              cpu: "500m"
               memory: 300Mi
           ports:
             - containerPort: 8000
@@ -125,12 +56,6 @@ spec:
               mountPath:  /var/log/nginx
             - name: cache
               mountPath:  /var/cache/nginx
-            - name: git-checkout
-              mountPath: /checkout
-              readOnly: true
-            - name: nginx-config
-              mountPath: /etc/nginx/nginx.conf
-              subPath: nginx.conf
           readinessProbe:
             httpGet:
               path: /product.html
