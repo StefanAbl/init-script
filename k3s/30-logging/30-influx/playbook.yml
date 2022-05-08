@@ -3,7 +3,7 @@
 - hosts: k3s-0.i.stabl.one
   become: yes
   become_method: sudo
-  vars_files:
+  # vars_files:
   #  - ../../../secrets.yml
   tasks:
   - name: add Influxdata helm repo

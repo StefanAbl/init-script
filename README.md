@@ -1,4 +1,11 @@
-# init-script
+# Homelab
+
+Configuration for my Homelab which is setup using Ansible.
+
+It includes a locally hosted [Nextcloud](./nextcloud) and [Jellyfin](./jellyfin) instances.
+Some Application are hosted in a [k3s Kubernetes](./k3s) cluster and there is an [e-mail server](./cloud) hosted in the cloud.
+
+
 
 ## Requirements
 

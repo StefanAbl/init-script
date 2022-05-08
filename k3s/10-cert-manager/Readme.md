@@ -1,42 +1,13 @@
 # Cert-Manager
+
+Install Cert-Manager and FreeIPA issuer to automatically request certificates from FreeIPA.
+
 ## Prerequisites
 - The kubernetes workers running the controller for the issuing system must be joined to the FreeIPA domain, for the certificate of the FreeIPA server to be recognized
 
 ## Installation
-#### Install cert-manager
-Install with
-```bash
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.3.0/cert-manager.yaml
-```
-Verify installation with
-```bash
-k get pods --namespace cert-manager
-```
+Installation of Cert-Manager and the FreeIPA issuer is automated using an Ansible Playbook. However first a service user has to be created in FreeIPA with the permissions detailed in [minimalPermissions.md](minimalPermissions.md). The username and password should be provided to the Playbook in the variables `k3s.ipa_service_user.user/password`.
 
-#### Install freeipa-issuer
-
-Install the issuer system
-```bash
-./kustomize build . | k apply -f -
-```
-
-In FreeIPA create a user with the permissions detailed in [minimalPermissions.md](minimalPermissions.md)
-
-Add a secret with the base64 encoded password and username
-
-```bash
-echo "Enter FreeIPA user name for issuer"; \
-read user; \
-echo "Enter password for this user"; \
-read pass; \
-sudo k3s kubectl create secret generic freeipa-auth --from-literal=user="$user" --from-literal=password="$pass" --dry-run -o yaml | sudo k3s kubectl apply -n freeipa-issuer-system -f - ;\
-unset user pass
-```
-
-Create a new issuer
-```bash
-k apply -f issuer.yml
-```
 ### How to use
 
 Secure an Ingress resources
