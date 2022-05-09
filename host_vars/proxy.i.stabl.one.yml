@@ -142,3 +142,7 @@ servers:
     upstream: http://tphc.k3s.i.stabl.one
     verification: dns
     api: dns_cf
+  - name: blog.stabl.one
+    upstream: http://blog.k3s.i.stabl.one
+    verification: dns
+    api: dns_cf
