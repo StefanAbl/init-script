@@ -1,0 +1,28 @@
+- name: Check if certificate exists
+  stat:
+    path: /etc/letsencrypt/live/{{item.name}}/key.pem
+  register: stat_result
+- when: not stat_result.stat.exists
+  block:
+  - name: Create certificate directory
+    file:
+      state: directory
+      path: /etc/letsencrypt/live/{{item.name}}
+  - name: Create private key (RSA, 4096 bits)
+    community.crypto.openssl_privatekey:
+      path: /etc/letsencrypt/live/{{item.name}}/key.pem
+  - name: Create certificate signing request (CSR) for self-signed certificate
+    community.crypto.openssl_csr_pipe:
+      privatekey_path: /etc/letsencrypt/live/{{item.name}}/key.pem
+      common_name: "{{item.name}}"
+      organization_name: "{{item.name}}"
+      subject_alt_name:
+        - "DNS:{{item.name}}"
+    register: csr
+
+  - name: Create self-signed certificate from CSR
+    community.crypto.x509_certificate:
+      path: /etc/letsencrypt/live/{{item.name}}/fullchain.pem
+      csr_content: "{{ csr.csr }}"
+      privatekey_path: /etc/letsencrypt/live/{{item.name}}/key.pem
+      provider: selfsigned

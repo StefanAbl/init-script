@@ -16,10 +16,7 @@
     state: absent
   with_items: "{{found_sites['files'] | map(attribute='path') | list}}"
 
-- name: For Servers with validation via HTTP, generate a temporary certificate
-  loop: "{{ servers }}"
-  when: item.verification != 'dns'
-  loop_control:
-    label: "{{ item.verification }}"
-  include_tasks: self-signed-cert.yml
 
+- name: Create initial certificate for server
+  loop: "{{ servers }}"
+  include_tasks: initial-cert.yml
