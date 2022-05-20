@@ -30,6 +30,14 @@ promtail:
       - replace: #Replaces the query part of a URI
           Expression: '(?:(?:\/[A-Za-z0-9-._~]+))(\?.*?)(?:(?:"|\s))'
           replace: ''  
+      - match:
+        selector: '{job="nginx_access_log"}'
+        stages:
+        - json:
+            expressions:
+              server_name: "server_name"
+        - labels:
+            server_name: 
       static_configs:
       - targets:
         - localhost
