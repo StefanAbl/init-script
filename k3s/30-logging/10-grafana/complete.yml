@@ -60,7 +60,7 @@ spec:
         runAsUser: 472
         fsGroup: 472
       containers:
-        - image: grafana/grafana:8.5.0-ubuntu
+        - image: grafana/grafana:8.5.3-ubuntu
           name: grafana
           env:
             - name: GF_PATHS_CONFIG
