@@ -39,6 +39,8 @@ spec:
       containers:
         - name: webserver
           image: "ghcr.io/stefanabl/blog:main"
+          # Needed for keel to work without semver tags
+          imagePullPolicy: Always
           resources:
             requests:
               cpu: 100m
