@@ -39,6 +39,7 @@ spec:
       containers:
         - name: webserver
           image: "ghcr.io/devstardi/thepixelhead.co"
+          imagePullPolicy: Always
           resources:
             requests:
               cpu: 100m
