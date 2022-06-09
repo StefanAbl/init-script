@@ -49,7 +49,7 @@
   become: true
 
 - name: Create files for secrets
-  shell: echo "{{ lookup('ansible.builtin.vars', item) }}" > /nextcloud_local/secrets/{{item}}
+  shell: echo "{{ lookup('ansible.builtin.vars', item) }}" > /nextcloud_local/secrets/{{item}} && chmod 0600 /nextcloud_local/secrets/{{item}}
   become: true
   with_items: 
     - nextcloud_maridb_root_password
