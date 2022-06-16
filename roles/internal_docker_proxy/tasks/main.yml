@@ -1,0 +1,59 @@
+# needs variables server_name(host name), upstream (Web address), record(String), protected (Boolean)
+- debug:
+    var: domain
+- name: create nginx config directories
+  become: true
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ internal_docker_proxy.nginx_dir }}"
+    - "{{ internal_docker_proxy.nginx_dir }}/sites"
+
+- name: template nginx.conf
+  become: true
+  template:
+    src: nginx.conf
+    dest: "{{ internal_docker_proxy.nginx_dir }}"
+- name: template files
+  become: true
+  template:
+    src: "{{ item }}"
+    dest: "{{ internal_docker_proxy.nginx_dir }}/sites"
+  with_items:
+    - auth.conf
+    - authelia.conf
+    - proxy.conf
+
+- include_tasks: site.yml 
+  vars:
+    server_name: "{{item.server_name}}"
+    upstream: "{{item.upstream}}"
+    record: "{{item.record}}"
+    protected: "{{item.protected}}"
+  loop: "{{ internal_docker_proxy.sites }}"
+
+
+- name: Create a network
+  docker_network:
+    name: "{{ internal_docker_proxy.network_name | default('primary', true) }}"
+- name: start nginx docker container
+  become: true
+  docker_container:
+    name: nginx
+    image: nginx
+    pull: yes
+    state: started
+    detach: yes
+    recreate: yes
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{ internal_docker_proxy.network_name | default('primary', true) }}"
+    published_ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "{{ internal_docker_proxy.nginx_dir }}/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "{{ internal_docker_proxy.nginx_dir }}/sites/:/etc/nginx/sites/:ro"
+      - "/etc/ipa/ca.crt:/etc/ipa/ca.crt:ro"
+

@@ -12,4 +12,5 @@ ip route del 0.0.0.0/1 via $route_vpn_gateway >> $log 2>&1
 ip route del 128.0.0.0/1 via $route_vpn_gateway >> $log 2>&1
 ip route add default via $route_vpn_gateway >> $log 2>&1
 resolvectl dns tun0 10.9.0.1
+resolvectl dns {{local_interface}} 10.9.0.1
 exit 0

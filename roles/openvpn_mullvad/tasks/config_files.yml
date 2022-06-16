@@ -1,0 +1,32 @@
+- name: template fix route script
+  template:
+    src: fix-routes.sh
+    dest: "/etc/openvpn/"
+- name: template down script
+  template:
+    src: down.sh
+    dest: "/etc/openvpn/"
+
+- name: Create certificate file
+  copy: 
+    content: "{{mullvad.ca_crt}}"
+    dest: "{{ openvpnConfigDir }}mullvad_ca.crt"
+- name: Template mullvad_userpass.txt
+  template:
+    src: mullvad_userpass.txt.template
+    dest: "{{ openvpnConfigDir }}mullvad_userpass.txt"
+
+- name: copy update-resolv-conf file
+  copy:
+    src: "update-resolv-conf"
+    dest: "{{ openvpnConfigDir }}"
+    mode: 'og+x'
+
+- name: template mullvad.conf
+  template:
+    src: "mullvad.conf"
+    dest: "{{ openvpnConfigDir }}mullvad.conf"
+- name: template service file
+  template:
+    src: "openvpn@.service"
+    dest: /etc/systemd/system/openvpn@.service

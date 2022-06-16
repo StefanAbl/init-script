@@ -1,0 +1,16 @@
+- name: install epel-release
+  dnf:
+    name: epel-release
+  when: ansible_distribution == "CentOS"
+- name: install openvpn and unzip
+  dnf:
+    name:
+      - openvpn
+  when: ansible_distribution == "CentOS"
+
+- name: install openvpn and iptables-persistent
+  apt:
+    name:
+      - openvpn
+      - iptables-persistent
+  when: ansible_distribution == "Ubuntu"

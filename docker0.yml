@@ -15,20 +15,24 @@
     - docker_promtail
     - authelia_docker
     - portainer
-    - internal_nginx_docker_proxy
+    - role: internal_docker_proxy
+      vars:
+        internal_docker_proxy:
+          nginx_dir: "{{nginx_config_dir}}"
+          sites:
+          - server_name: "{{ internal_authelia_fqdn }}"
+            upstream: "http://{{authelia_container_name}}"
+            record: authelia
+            protected: false
+          - server_name: "portainer.{{ansible_facts.fqdn}}"
+            upstream: "http://portainer:9000"
+            record: "portainer.{{ansible_facts.hostname}}"
+            protected: false
+          - server_name: "speedtracker.{{internal_domain}}"
+            upstream: "http://speedtracker"
+            record: "speedtracker"
+            protected: true
   tasks:
-
-    - name: get "{{user}}" uid
-      shell: "id -u {{user}}"
-      register: userUID
-      changed_when: False
-
-    - name: get "{{user}}" gid
-      shell: "id -g {{user}}"
-      register: userGID
-      changed_when: False
-
-
     - name: create docker volume for speedtracker
       docker_volume:
         name: speedtracker
@@ -53,25 +57,6 @@
         log_options:
           tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
 
-
-    - include: tasklists/add_internal_proxy_site/makeNginxProxy.yml
-      vars:
-        - server_name: "{{ internal_authelia_fqdn }}"
-        - upstream: "http://{{authelia_container_name}}"
-        - record: authelia
-        - protected: false
-    - include: tasklists/add_internal_proxy_site/makeNginxProxy.yml
-      vars:
-        - server_name: "portainer.{{ansible_facts.fqdn}}"
-        - upstream: "http://portainer:9000"
-        - record: "portainer.{{ansible_facts.hostname}}"
-        - protected: false
-    - include: tasklists/add_internal_proxy_site/makeNginxProxy.yml
-      vars:
-        - server_name: "speedtracker.{{internal_domain}}"
-        - upstream: "http://speedtracker"
-        - record: "speedtracker"
-        - protected: true
     - name: start nginx docker container
       become: yes
       docker_container:
