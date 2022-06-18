@@ -1,0 +1,36 @@
+- name: Install Minio Server
+  include_tasks: server.yml
+  args:
+    apply:
+      become: yes
+- name: Install Minio Client
+  include_tasks: client.yml
+  args:
+    apply:
+      become: yes
+- name: Flush handlers
+  meta: flush_handlers
+- name: Wait 300 seconds for port 22 to become open and contain "OpenSSH"
+  wait_for:
+    port: 9000
+    host: 'localhost'
+- name: Add Server to MC command
+  become: true
+  async: 180
+  poll: 5
+  shell: timeout 1m bash -c 'until (mc config host add local https://"s3.{{internal_domain}}":9000 "{{minio.root_user.name}}" "{{minio.root_user.pass}}"); do sleep 1; done;'
+  #until (mc config host add local http://localhost:9000 "{{minio_root_user}}" "{{minio_root_pass}}") do echo waiting && sleep 1; done;
+  #mc config host add local http://localhost:9000 {{minio_root_user}} {{minio_root_pass}}
+  #until (/usr/bin/mc config host add myminio http://storage:9000 minioadmin minioadmin) do echo '...waiting...' && sleep 1; done;
+
+- name: Grant access to Minio Console to FreeIPA user {{ ipa_admin_user }}
+  become: true
+  command: 
+    argv:
+      - mc
+      - admin
+      - policy
+      - set
+      - local
+      - consoleAdmin
+      - user='uid={{ipa_admin_user}},cn=users,cn=accounts,{{base_dn}}'

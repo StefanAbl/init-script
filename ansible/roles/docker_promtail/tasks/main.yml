@@ -1,0 +1,21 @@
+- name: template promtail config
+  become: true
+  template:
+    src: promtail.yml
+    dest: /var/promtail.yml
+  vars:
+    loki_host: "https://loki.k3s.i.stabl.one"
+- name: run docker container
+  become: true
+  docker_container:
+    name: promtail
+    image: "grafana/promtail:2.3.0"
+    restart_policy: always
+    restart: yes
+    volumes:
+      - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+      - "/var/promtail.yml:/etc/promtail/promtail.yml:ro"
+    command: -config.file=/etc/promtail/promtail.yml
+    log_driver: json-file
+    log_options:
+      tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"

@@ -1,2 +1,0 @@
-type = "normal";
-enabled = false;

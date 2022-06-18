@@ -1,0 +1,91 @@
+---
+- hosts: localhost
+  #ansible-playbook --extra-vars "token=secret" records.yml
+  vars_files:
+    - "secrets.yml"
+  tasks:
+    - name: Set token
+      set_fact:
+        token: "{{proxy.cf_token}}"
+    - name: Simple A record (IPV4 address) lookup for example.com
+      ansible.builtin.debug:
+        msg: "{{ lookup('community.general.dig', 'web.stabl.one.') | default('127.0.0.1', true)}}"
+    - community.general.cloudflare_dns:
+        api_token: "{{token}}"
+        zone: stabl.one
+        ttl: 60
+        record: web.stabl.one
+        type: A
+        value: "{{ lookup('community.general.dig', 'web.stabl.one.') | default('127.0.0.1', true)}}"
+        solo: true
+    - community.general.cloudflare_dns:
+        api_token: "{{token}}"
+        zone: stabl.one
+        ttl: 60
+        record: web.stabl.one
+        type: AAAA
+        value: "{{ lookup('community.general.dig', 'web.stabl.one./AAAA') | default('::0', true)}}"
+        solo: true
+    - community.general.cloudflare_dns:
+        api_token: "{{token}}"
+        zone: stabl.one
+        ttl: 60
+        record: mail.stabl.one
+        type: A
+        value: "192.46.235.199"
+    - community.general.cloudflare_dns:
+        api_token: "{{token}}"
+        zone: stabl.one
+        ttl: 60
+        record: "{{item}}.stabl.one"
+        type: CNAME
+        value: "web.stabl.one."
+      with_items:
+          - "cloud"
+          - "stream"
+          - "docsrv"
+          - "tphc"
+    - community.general.cloudflare_dns:
+        api_token: "{{token}}"
+        zone: stabl.one
+        ttl: 60
+        record: "stabl.one"
+        type: TXT
+        value: "v=spf1 mx -all"
+    - community.general.cloudflare_dns:
+        api_token: "{{token}}"
+        zone: stabl.one
+        ttl: 60
+        record: "_dmarc.stabl.one"
+        type: TXT
+        value: "v=DMARC1; p=reject; adkim=r; aspf=r; sp=reject"
+    - community.general.cloudflare_dns:
+        api_token: "{{token}}"
+        zone: stabl.one
+        ttl: 60
+        record: "dkim._domainkey.stabl.one"
+        type: TXT
+        value: "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtkf6EyDsCY0YJ/pkbnsb3b+M2F2jM+5CTFhBRmLI326sLfv1DxqYmFcrVluPaO9WBHXd6x5LnTdA+NQPyAY6Pi48d3FfdLuTXSdy7iDOCxUL9q7e6YWxuV3ittH/+kUJJLBE80Y+6DR3fv6oBpqOLds0VRPFAuae64AeWG+tPsf34oArkdd1qCf+jgH651HL35QE3FZgR6tK8bELBPPVXhPsVjsddnUceVnofimjjdmjYqmFU6PSRVKpNEXOgW8IMh1kn99C90S/ZM9/bbgHhQbO8uzht79n2zcN0wIIs2kAnoSWkbO53F2BmEzm/KgVL5TDs4+L9frtwJf4HFU4DwIDAQAB"
+    - community.general.cloudflare_dns:
+        api_token: "{{token}}"
+        zone: stabl.one
+        ttl: 60
+        record: "stabl.one"
+        type: MX
+        priority: 10
+        value: "mail.stabl.one."
+    - name: "Create internal records"
+      community.general.cloudflare_dns:
+        api_token: "{{token}}"
+        zone: stabl.one
+        ttl: 60
+        record: "{{item.record}}.stabl.one"
+        type: A
+        value: "{{item.value}}"
+      with_items:
+        - record: ipa.i
+          value: "10.13.2.100"
+        - record: proxmox0.i
+          value: "10.13.2.10"
+        - record: authelia.i
+          value: "10.13.2.106"

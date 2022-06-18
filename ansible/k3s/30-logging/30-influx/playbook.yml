@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible.json
+---
+- hosts: k3s-0.i.stabl.one
+  become: yes
+  become_method: sudo
+  # vars_files:
+  #  - ../../../secrets.yml
+  tasks:
+  - name: add Influxdata helm repo
+    community.kubernetes.helm_repository:
+      name: influxdata
+      url: https://helm.influxdata.com/
+  - set_fact:
+      valuesFile: /root/influxdb-values.yml
+  - name: template values file
+    template:
+      src: values.yml
+      dest: "{{valuesFile}}"
+    # changed_when: false
+  - name: create PVC and PV
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: "{{ lookup('template', 'pv-pvc.yml') | from_yaml_all | list }}" 
+
+  - name: install helm chart
+    community.kubernetes.helm:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      update_repo_cache: yes
+      name: influxdb2
+      chart_ref: influxdata/influxdb2
+      # chart_version: 0.38.0
+      release_namespace: default
+      values_files:
+        - "{{valuesFile}}"
+    register: helmout
+
+  - debug:
+      var: helmout

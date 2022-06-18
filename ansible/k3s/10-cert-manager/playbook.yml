@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible.json
+---
+- hosts: k3s-0.i.stabl.one
+  become: yes
+  become_method: sudo
+  vars_files:
+    - ../../secrets.yml
+  tasks:
+  - name: add jetstack helm repo
+    community.kubernetes.helm_repository:
+      name: jetstack
+      url: https://charts.jetstack.io
+
+  - name: install cert-manager helm chart
+    community.kubernetes.helm:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      update_repo_cache: yes
+      name: cert-manager
+      chart_ref: jetstack/cert-manager
+      release_namespace: cert-manager
+      create_namespace: true
+      values:
+        installCRDs: true
+    register: helmout
+
+  - debug:
+      var: helmout
+
+  - name: Install FreeIPA issuer system
+    shell: kubectl kustomize https://github.com/StefanAbl/freeipa-issuer/config/default | kubectl apply -f -
+
+  - name: create secret
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: 
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          namespace: freeipa-issuer-system
+          name: freeipa-auth
+        type: Opaque
+        stringData:
+          user: "{{k3s.ipa_service_user.user}}"
+          password: "{{k3s.ipa_service_user.password}}"
+    register: secret
+  - name: Create ClusterIssuer resource
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: "{{ lookup('file', '02-issuer.yml') | from_yaml }}"

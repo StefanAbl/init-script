@@ -1,0 +1,15 @@
+[Unit]
+Description=Promtail service
+After=network.target
+
+[Service]
+Type=simple
+{% if promtail.run_as_user |default(False) %}
+User={{promtail.run_as_user}}
+{%else%}
+User=www-data
+{% endif %}
+ExecStart=/usr/local/bin/promtail-linux-amd64 -config.file /etc/promtail.yml
+
+[Install]
+WantedBy=multi-user.target

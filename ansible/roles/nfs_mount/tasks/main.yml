@@ -1,0 +1,12 @@
+- name: Install helper package
+  apt:
+    name: nfs-common
+    state: present
+- name: Configure NFS mounts
+  ansible.posix.mount:
+    src: "{{ item.src }}"
+    path: "{{ item.dest }}"
+    opts: rw,relatime,vers=4.2,rsize=128000,wsize=128000,namlen=255,hard,proto=tcp,timeo=600,retrans=2
+    state: mounted
+    fstype: nfs4
+  with_items: "{{nfs_mount}}"

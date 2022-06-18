@@ -1,7 +1,0 @@
-- name: Install Minio Client
-  include_tasks: client.yml
-  args:
-    apply:
-      become: yes
-- name: Flush handlers
-  meta: flush_handlers

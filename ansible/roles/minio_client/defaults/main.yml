@@ -1,0 +1,32 @@
+---
+
+# Minio binaries path
+minio_server_bin: /usr/local/bin/minio
+minio_client_bin: /usr/local/bin/mc
+
+# Minio release to install. default if lastet
+minio_server_release: ""
+minio_client_release: ""
+
+# Path to the file containing the ENV variables for the Minio server
+minio_server_envfile: /etc/default/minio
+
+# Minio server listen address
+minio_server_addr: ":9091"
+
+# Minio server data directories
+minio_server_datadirs: [ ]
+minio_server_make_datadirs: true
+
+# Minio server cluster node list.
+minio_server_cluster_nodes: [ ]
+
+# Additional environment variables to be set in minio server environment
+minio_server_env_extra: ""
+
+# Additional Minio server CLI options
+minio_server_opts: ""
+
+# Switches to enable/disable the Minio server and/or Minio client installation.
+minio_install_server: true
+minio_install_client: true

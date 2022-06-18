@@ -1,0 +1,29 @@
+- name: make sure packages are present
+  package:
+    name: 
+      - shellcheck
+      - jq
+    state: present
+- name: copy dynv6.sh script into place
+  copy:
+    src: dynv6.sh
+    dest: /usr/bin/dynv6.sh
+    mode: 0755
+- name: copy cf.sh script into place
+  copy:
+    src: cf.sh
+    dest: /usr/bin/cf.sh
+    mode: 0755
+- name: template update script
+  ansible.builtin.template:
+    src: update-ip.sh
+    dest: /update-ip.sh
+    mode: 0755
+    backup: yes
+    validate: shellcheck %s
+- name: create cronjob
+  cron:
+    name: update ip
+    job: "export dynv6_token='{{update_ip.dynv6.token}}' && /update-ip.sh"
+    user: nobody
+    minute: "*/5"

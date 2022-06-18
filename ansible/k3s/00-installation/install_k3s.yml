@@ -1,0 +1,113 @@
+---
+# Prepare Multipath configuration
+- hosts: k3s
+  tasks:
+    - apt:
+        pkg:
+          - apt
+          - open-iscsi
+          - nfs-common
+          - jq
+      become: yes
+    - name: Create multipath configuration file
+      become: yes
+      file: 
+        path: /etc/multipath.conf
+        state: touch
+    - name: Blacklist longhorn devices in multipath configuration file
+      become: yes
+      blockinfile:
+        file: /etc/multipath.conf
+        block: |
+            blacklist {
+              devnode "^sd[a-z0-9]+"
+            }
+      register: result
+    - name: Restart multipathd.service
+      service:
+        name: multipathd
+        state: restarted
+      when: result.changed
+
+# Initialize cluster
+- hosts: k3s-0.i.stabl.one
+  vars_files:
+    - ../../secrets.yml
+  tasks:
+    - debug:
+        msg: "{{ ansible_default_ipv4.address }}"
+    - name: Install first server
+      shell: curl -sfL https://get.k3s.io | sh -
+      environment:
+        K3S_TOKEN: "{{k3s_token}}"
+        INSTALL_K3S_EXEC: "server"
+        K3S_CLUSTER_INIT: true
+      become: yes
+      register: output
+    - debug: var=output
+
+# Join additional servers (masters) to cluster
+- hosts: k3s:!k3s-0.i.stabl.one
+  vars_files:
+    - ../../secrets.yml
+  tasks:
+    - name: Print the IP of the first server
+      debug: msg= "{{ hostvars[groups['k3s'][0]]['ansible_default_ipv4']['address'] }}"
+    - name: Join k3s server to primary server
+      shell: curl -sfL https://get.k3s.io | sh -
+      environment:
+        K3S_TOKEN: "{{k3s_token}}"
+        INSTALL_K3S_EXEC: "server"
+        K3S_URL: "https://{{ hostvars[groups['k3s'][0]]['ansible_default_ipv4']['address'] }}:6443"
+      become: yes
+      register: output
+    - debug: var=output
+
+# Install Helm and modules needed for Ansible on all server (master) nodes
+- hosts: k3s
+  become: yes
+  become_method: sudo
+  vars_files:
+   - ../../../secrets.yml
+  tasks:
+  - name: install required apt packages
+    apt:
+      name: 
+        - "python3-pip"
+        - "apt-transport-https"
+        - python3-pip
+      state: present
+  - name: install required python modules
+    pip:
+      name:
+        - openshift
+        - PyYAML
+        - passlib
+  - name: add key to apt
+    apt_key:
+      url: https://baltocdn.com/helm/signing.asc
+      state: present
+  - name: add apt repository
+    apt_repository:
+      repo: deb https://baltocdn.com/helm/stable/debian/ all main
+      state: present
+  - name: install helm using apt
+    apt: 
+      name: helm
+      state: latest
+  - name: install helm diff
+    kubernetes.core.helm_plugin:
+      plugin_path: https://github.com/databus23/helm-diff
+      state: present
+
+
+- hosts: k3s.0.i.stabl.one
+  become: yes
+  become_method: sudo
+  vars_files:
+   - ../../../secrets.yml
+  tasks:
+  - name: Allow K3s pods to resolve internal DNS names
+    shell: |
+      sudo kubectl get cm -n kube-system coredns -o yaml | sed "s/forward . \/etc\/resolv.conf/forward . {{ipa_server_ip}}/g" | sudo kubectl apply -f - 
+      sudo kubectl -n kube-system rollout restart deployment coredns

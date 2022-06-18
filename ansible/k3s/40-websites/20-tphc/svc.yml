@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tphc
+  namespace: default
+spec:
+  selector:
+    app: tphc
+  ports:
+  - port: 8000
+    targetPort: website

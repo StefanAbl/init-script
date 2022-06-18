@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prometheus-external
+  namespace: default
+  annotations:
+    keel.sh/policy: "major"
+    keel.sh/trigger: poll     # enable active repository checking
+    keel.sh/approvals: "1"    # required approvals to update
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-external
+  serviceName: prometheus-external
+  replicas: 1
+  podManagementPolicy: Parallel
+  template:
+    metadata:
+      labels:
+        app: prometheus-external
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/prometheus: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    spec:
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+        runAsGroup: 1000
+      serviceAccountName: prometheus
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v2.35.0
+          args:
+            - "--config.file=/config/prometheus.yml"
+            - "--storage.tsdb.path=/data"
+            - "--storage.tsdb.retention.time=3y"
+            - "--log.level=debug"
+          ports:
+            - containerPort: 9090
+              name: metrics
+          volumeMounts:
+            - name: config
+              mountPath: /config/
+              readOnly: true
+            - name: data
+              mountPath: /data
+          resources: 
+            limits:
+              cpu: 1000m
+              memory: 500Mi
+            requests:
+              cpu: 50m
+              memory: 100Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+      # See https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+      # initContainers:
+      # - name: fix-permissions
+      #   image: busybox
+      #   command: ["sh", "-c", "chown -R 1000:1000 /prometheus"]
+      #   securityContext:
+      #     runAsUser: 0
+      #     runAsNonRoot: false
+      #   volumeMounts:
+      #     - name: data
+      #       mountPath: /prometheus
+      volumes:
+        - name: config
+          configMap:
+            name: prometheus-external-config
+            items:
+              - key: "prometheus.yml"
+                path: prometheus.yml
+        - name: data
+          persistentVolumeClaim:
+            claimName: prometheus-external
+  updateStrategy: {}

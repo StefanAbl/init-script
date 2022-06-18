@@ -1,0 +1,28 @@
+- name: Install sanoid
+  become: true
+  package:
+    name: sanoid
+    state: present
+- name: Template backup script
+  become: yes
+  template:
+    src: "backup.sh"
+    dest: "/etc/backup.sh"
+    owner: root
+    mode: '0750'
+  vars:
+    syncoid_backup_mail_user: svc_grafana
+    syncoid_backup_mail_user_password: "{{logging.grafana.bind_user.password}}"
+- name: Copy systemd files
+  become: yes
+  copy:
+    src: "{{item}}"
+    dest: /etc/systemd/system/
+  with_items:
+    - backup.service
+    - backup.timer
+- name: Start backup timer
+  become: true
+  systemd:
+    name: backup.timer
+    state: started

@@ -1,0 +1,24 @@
+- name: add routes to reach local local_networks
+  shell: ip route add 192.168.2.0/24 dev "{{ local_interface }}" via 10.13.2.1
+  register: ret
+  failed_when: >
+    (ret.stderr != '') and
+    ("RTNETLINK answers: File exists" not in ret.stderr)
+
+- name: disable ipv6
+  sysctl:
+    name: 'net.ipv6.conf.all.disable_ipv6'
+    value: 1
+
+- name: Install packages
+  include_tasks: packages.yml
+
+- include_tasks: config_files.yml
+
+# - include_tasks: iptables.yml
+
+- name: start openvpn
+  systemd:
+    state: started
+    daemon-reload: yes
+    name: openvpn@mullvad

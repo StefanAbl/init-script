@@ -1,0 +1,47 @@
+[[servers]]
+# Ldap server host (specify multiple hosts space separated)
+host = "ipa.i.stabl.one"
+# Default port is 389 or 636 if use_ssl = true
+port = 636
+# Set to true if LDAP server should use an encrypted TLS connection (either with STARTTLS or LDAPS)
+use_ssl = true
+# If set to true, use LDAP with STARTTLS instead of LDAPS
+start_tls = false
+# set to true if you want to skip SSL cert validation
+ssl_skip_verify = true
+# set to the path to your root CA certificate or leave unset to use system defaults
+# root_ca_cert = "/path/to/certificate.crt"
+# Authentication against LDAP servers requiring client certificates
+# client_cert = "/path/to/client.crt"
+# client_key = "/path/to/client.key"
+
+# Search user bind dn
+bind_dn = "uid=${BIND_USER},cn=users,cn=accounts,dc=i,dc=stabl,dc=one"
+# Search user bind password
+# If the password contains # or ; you have to wrap it with triple quotes. Ex """#password;"""
+bind_password = "${BIND_PASS}"
+
+# User search filter, for example "(cn=%s)" or "(sAMAccountName=%s)" or "(uid=%s)"
+# Allow login from email or username, example "(|(sAMAccountName=%s)(userPrincipalName=%s))"
+search_filter = "(&(uid=%s)(memberof=cn=ipausers,cn=groups,cn=accounts,dc=i,dc=stabl,dc=one))"
+
+# An array of base dns to search through
+search_base_dns = ["dc=i,dc=stabl,dc=one"]
+
+# group_search_filter = "(&(objectClass=posixGroup)(memberUid=%s))"
+# group_search_filter_user_attribute = "distinguishedName"
+# group_search_base_dns = ["ou=groups,dc=grafana,dc=org"]
+
+# Specify names of the LDAP attributes your LDAP uses
+[servers.attributes]
+member_of = "memberOf"
+email =  "mail"
+name = "displayName"
+username = "uid"
+
+[[servers.group_mappings]]
+group_dn = "cn=admins,cn=groups,cn=accounts,dc=i,dc=stabl,dc=one"
+org_role = "Admin"
+grafana_admin = true
+# The Grafana organization database id, optional, if left out the default org (id 1) will be used
+# org_id = 1

@@ -1,0 +1,83 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible.json
+---
+- hosts: k3s-0.i.stabl.one
+  become: yes
+  become_method: sudo
+  vars_files:
+   - ../../../secrets.yml
+  tasks:
+  - name: create secret
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: 
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          namespace: default
+          name: grafana-secret
+        type: Opaque
+        stringData:
+          username: "{{logging.grafana.bind_user.name}}"
+          password: "{{logging.grafana.bind_user.password}}"
+          secret_key: "{{logging.grafana.secret_key}}"
+    register: secret
+
+
+  - name: create config map
+    register: configMap
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      apply: true
+      definition: 
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          namespace: default
+          name: grafana-config
+        data:
+          grafana.ini: |
+            {{ lookup('template', 'grafana.ini') }}
+          ldap.toml: |
+            {{ lookup('file', 'ldap.toml') }}
+
+
+  - name: apply grafana 
+    register: depl
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      apply: yes
+      definition: "{{ lookup('file', 'complete.yml') | from_yaml_all | list }}"
+
+  - name: apply image renderer
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      apply: yes
+      definition: "{{ lookup('file', 'image-renderer.yml') | from_yaml_all | list }}"
+
+  - name: get pod 
+    community.kubernetes.k8s_info:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      kind: pod
+      label_selectors:
+        - app = grafana
+    register: pod
+  - name: Restartig pod with name
+    debug:
+      var: pod.resources[0].metadata.name
+  - name: Restart the pod
+    community.kubernetes.k8s_exec:
+      namespace: default
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      pod: "{{pod.resources[0].metadata.name}}"
+      command: kill 1
+    when: secret.changed or configMap.changed or depl.changed
+    register: fail
+    failed_when: false
+  - name: Status of restarting
+    debug: 
+      msg: "Failed to restart pod \n {{fail}}"
+    when: (secret.changed or configMap.changed or depl.changed) and (fail.changed or fail.failed)

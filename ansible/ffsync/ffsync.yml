@@ -1,0 +1,97 @@
+---
+- hosts: docker0.i.stabl.one
+  vars_files:
+    - ../secrets.yml
+  tasks:
+  - debug: var=user #The user variable is read from the host variables
+  - debug: var=docker_config_dir # Also read from host vars
+  - debug: var=ffsync_secret_token #Loaded from secrets file
+  - name: get "{{user}}" uid
+    shell: "id -u {{user}}"
+    register: userUID
+    changed_when: False
+
+  - name: get "{{user}}" gid
+    shell: "id -g {{user}}"
+    register: userGID
+    changed_when: False
+
+  - name: make directories
+    become_user: root
+    become: yes
+    command: sudo -u "{{user}}" mkdir -p "{{docker_config_dir}}/ffsync"
+
+  - name: build custom docker image with user
+    become: yes
+    shell: |
+      echo "
+      FROM mozilla/syncserver:latest
+      USER root
+      RUN apk add shadow
+      RUN /usr/sbin/groupadd --system -f --gid {{userGID.stdout}} {{user}}
+      RUN /usr/sbin/useradd -l --system --uid {{userUID.stdout}} -g {{user}} {{user}}
+      USER {{user}}
+      " |\
+      docker build -t ffsync_custom -
+
+  - name: make docker network
+    become: yes
+    docker_network:
+      name: ffsync
+  - name: deploy docker container
+    become: yes
+    docker_container:
+      name: ffsync
+      image: ffsync_custom
+      recreate: yes
+      restart_policy: unless-stopped
+      networks:
+        - name: ffsync
+      exposed_ports:
+        - 5001
+      volumes:
+        - "{{docker_config_dir}}/ffsync:/data"
+      env:
+          SYNCSERVER_PUBLIC_URL='https://ffsync.thorn.dynv6.net'
+          SYNCSERVER_SECRET="{{ffsync_secret_token}}"
+          SYNCSERVER_SQLURI='sqlite:////data/syncserver.db'
+          SYNCSERVER_BATCH_UPLOAD_ENABLED='true'
+          SYNCSERVER_FORCE_WSGI_ENVIRON='false'
+          SYNCSERVER_DEBUG_ENABLED=true
+          SYNCSERVER_FORWARDED_ALLOW_IPS="*"
+          PORT='5001'
+      log_driver: json-file
+      log_options:
+        tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
+
+  - become: yes
+    file:
+      path: ~/ffsync
+      state: directory
+
+  - become: yes
+    template:
+      src: "{{item}}"
+      dest: ~/ffsync/
+    with_items:
+      - Dockerfile
+      - nginx.conf
+
+  - become: yes
+    shell: "cd ~/ffsync/ && docker build -t ffsync_proxy . && rm * && cd .. && rmdir ffsync"
+
+  - name: start nginx container
+    become: yes
+    docker_container:
+      name: ffsync_proxy
+      image: ffsync_proxy
+      recreate: true
+      state: started
+      restart_policy: unless-stopped
+      networks:
+        - name: ffsync
+      published_ports:
+        - "5001:5001"
+      log_driver: json-file
+      log_options:
+        tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"

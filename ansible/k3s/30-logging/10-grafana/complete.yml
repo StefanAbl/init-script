@@ -1,0 +1,189 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: grafana-vol-0
+spec:
+  capacity:
+    storage: 1Gi # must match size of Longhorn volume
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  # persistentVolumeReclaimPolicy: Delete
+  csi:
+    driver: driver.longhorn.io # driver must match this
+    fsType: ext4
+    volumeAttributes:
+      numberOfReplicas: "2" # must match Longhorn volume value
+      staleReplicaTimeout: '30' # in minutes
+    volumeHandle: pvc-a7fad41c-4e3d-4437-8daa-6cc8ccb8a236 # must match volume name from Longhorn
+  storageClassName: longhorn # must be same name that we will use later
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn
+  volumeName: grafana-vol-0
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grafana
+  namespace: default
+  name: grafana
+  annotations:
+    keel.sh/policy: "major"
+    keel.sh/trigger: poll     # enable active repository checking
+    keel.sh/approvals: "1"    # required approvals to update
+spec:
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/grafana: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    spec:
+      securityContext:
+        runAsUser: 472
+        fsGroup: 472
+      containers:
+        - image: grafana/grafana:8.5.3-ubuntu
+          name: grafana
+          env:
+            - name: GF_PATHS_CONFIG
+              value: /etc/grafana/grafana.ini
+            # - name: GF_INSTALL_PLUGINS
+            #   value: grafana-clock-panel,natel-discrete-panel,grafana-piechart-panel
+            - name: BIND_USER
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secret
+                  key: username
+            - name: BIND_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secret
+                  key: password
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secret
+                  key: secret_key
+          ports:
+            - containerPort: 3000
+              name: http-grafana
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /robots.txt
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 2
+          resources:
+            limits:
+              memory: 1Gi
+              cpu: "1"
+            requests:
+              cpu: 100m
+              memory: 1Gi
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana
+            - mountPath: /etc/grafana/
+              name: config
+            - mountPath: /tmp/
+              name : tmp
+            - mountPath: /var/log/
+              name : logs
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: logs
+          emptyDir: {}
+        - name: grafana
+          persistentVolumeClaim:
+            claimName: grafana
+        - name: config
+          configMap:
+            name: grafana-config
+            items:
+              - key: "grafana.ini"
+                path: grafana.ini
+              - key: "ldap.toml"
+                path: ldap.toml
+      automountServiceAccountToken: false
+  strategy: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: default
+spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: http-grafana
+  selector:
+    app: grafana
+  sessionAffinity: None
+  type: LoadBalancer
+
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/issuer: freeipa-issuer
+    cert-manager.io/issuer-group: certmanager.freeipa.org
+    cert-manager.io/issuer-kind: ClusterIssuer
+    cert-manager.io/common-name: grafana.k3s.i.stabl.one
+    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+
+spec:
+  tls:
+    - hosts:
+        - grafana.k3s.i.stabl.one
+      secretName: grafana-cert
+  rules:
+    - host: grafana.k3s.i.stabl.one
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana
+                port:
+                  number: 3000
+

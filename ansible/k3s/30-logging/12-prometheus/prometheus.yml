@@ -1,0 +1,46 @@
+global:
+scrape_configs:
+  - job_name: unifi-poller
+    scrape_interval: 30s
+    static_configs:
+    - targets: ['unifi-poller.default.svc.cluster.local:9130']
+  - job_name: 'prometheus'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['localhost:9090']
+  # - job_name: jellyfin
+  #   static_configs:
+  #     - targets:
+  #       - "jellyfin.i.stabl.one:8920"
+  #   scheme: https
+  #   tls_config:
+  #     insecure_skip_verify: true
+  - job_name: minio-job
+    bearer_token: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ3OTE3MDY1NTcsImlzcyI6InByb21ldGhldXMiLCJzdWIiOiJTQ2x1S0NZZUpHbFhUTm9RaThtc1NMVkRxZ1hySmdPdXBwdFZPZDFVb2s1YzN4ZzlSWSJ9.xIWGp2YCfgsA1CBEli-HUqlYPCwd43R8V3deU9TJZ4YbUAsHB6hmqMHbzMPxm-tAdCGkVY4o-RX8s666TXMH8Q
+    metrics_path: /minio/v2/metrics/cluster
+    scheme: https
+    static_configs:
+    - targets: ['s3.i.stabl.one:9000']
+  - job_name: nextcloud-exporter
+    scrape_interval: 30s
+    static_configs:
+    - targets: ['nc-exporter.default.svc.cluster.local:9205']
+  - job_name: keel-exporter
+    scrape_interval: 30s
+    static_configs:
+    - targets: ['keel-exporter.default.svc.cluster.local:8080']
+  - job_name: Longhorn
+    scrape_interval: 30s
+    kubernetes_sd_configs:
+    - api_server: 'https://kubernetes'
+      tls_config:
+        ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+      role: pod
+      namespaces:
+        names:
+        - longhorn-system
+      selectors:
+      - role: "pod"
+        label: "app=longhorn-manager"
+    metrics_path: /metrics

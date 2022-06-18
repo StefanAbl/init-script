@@ -1,0 +1,86 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible.json
+---
+- hosts: 
+    - docker0.i.stabl.one
+  vars_prompt:
+    - name: ipa_user
+      prompt: Please enter the name of the IPA admin user
+    - name: ipa_pass
+      prompt: Please enter the password for the user 
+      private: yes
+  tasks:
+    - name: Build Docker container
+      become: yes
+      become_method: sudo
+      block:
+      - name: Create directory to build docker container
+        file:
+          path: ~/mail_backup
+          state: directory
+      - name: copy files
+        copy:
+          src: "{{item}}"
+          dest: ~/mail_backup
+        with_items:
+          - Dockerfile
+          - start.sh
+      - name: Build Docker container
+        shell: cd ~/mail_backup && docker build -t mail_backup . && rm * && cd .. && rmdir mail_backup
+
+
+    - name: Create directory for backup data
+      become_user: svc_docker0
+      become: yes
+      file:
+        path: "/var/docker/mail_backup/{{item}}"
+        state: directory
+      with_items:
+        - key
+        - data
+
+    - name: deploy docker container
+      become: yes
+      docker_container:
+        name: mail_backup
+        image: mail_backup
+        state: started
+        detach: true
+        recreate: true
+        restart_policy: unless-stopped
+        volumes:
+          - /var/docker/mail_backup/key:/key
+          - /var/docker/mail_backup/data:/data
+        log_driver: json-file
+        log_options:
+          tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
+
+    - name: Wait for key to be created
+      pause:
+        seconds: "30"
+
+    - name: Read public key
+      shell: cat /var/docker/mail_backup/key/rsa.pub
+      register: key
+
+    - name: Add SSh key to svc_mail user
+      ipa_user:
+        uid: svc_mail
+        update_password: on_create
+        sshpubkey:
+          - "{{key.stdout}}"
+        ipa_host: ipa.i.stabl.one
+        ipa_user: "{{ipa_user}}"
+        ipa_pass: "{{ipa_pass}}"
+
+    - name: Allow svc_mail to access the mail server
+      ipa_hbacrule:
+        ipa_host: ipa.i.stabl.one
+        ipa_user: "{{ipa_user}}"
+        ipa_pass: "{{ipa_pass}}"
+        cn: allow_svc_mail_to_mailserver
+        host: 
+          - linode0.i.stabl.one
+        user:
+          - svc_mail
+        service:
+          - sshd

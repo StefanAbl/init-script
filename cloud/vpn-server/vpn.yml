@@ -1,9 +1,0 @@
----
-hosts: all # change to real host
-vars:
-tasks:
-  # setup priviledged container with turnkey openvpn template
-  # use real hostname and set ipa as dns server
-  # yum install ipa-client -y
-  # ipa-client-install --enable-dns-updates --mkhomedir --password 'otp-token'
-  # iptables -t nat -A POSTROUTING -s 10.213.135.0/24 -o eth0 -j MASQUERADE

@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grafana-image-renderer
+  namespace: default
+  name: grafana-image-renderer
+  annotations:
+    keel.sh/policy: "major"
+    keel.sh/trigger: poll     # enable active repository checking
+    keel.sh/approvals: "1"    # required approvals to update
+spec:
+  selector:
+    matchLabels:
+      app: grafana-image-renderer
+  template:
+    metadata:
+      labels:
+        app: grafana-image-renderer
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/grafana-image-renderer: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    spec:
+      containers:
+        - image: grafana/grafana-image-renderer:3.4.2
+          name: grafana-image-renderer
+          env:
+            - name: ENABLE_METRICS
+              value: "true"
+            - name: BROWSER_TZ
+              value: "Europe/Berlin"
+          ports:
+            - containerPort: 8081
+              name: image-renderer
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 1
+              memory: 500Mi
+            requests:
+              cpu: 100m
+              memory: 200Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+      automountServiceAccountToken: false
+  strategy: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-image-renderer
+  namespace: default
+spec:
+  ports:
+    - port: 8081
+      protocol: TCP
+      targetPort: image-renderer
+  selector:
+    app: grafana-image-renderer
+status:
+  loadBalancer: {}

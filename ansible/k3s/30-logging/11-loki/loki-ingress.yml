@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: loki-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/issuer: freeipa-issuer
+    cert-manager.io/issuer-group: certmanager.freeipa.org
+    cert-manager.io/issuer-kind: ClusterIssuer
+    cert-manager.io/common-name: loki.k3s.i.stabl.one
+    ingress.kubernetes.io/auth-type: basic
+    ingress.kubernetes.io/auth-secret: lokiauth
+    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+
+spec:
+  tls:
+  - hosts:
+    - loki.k3s.i.stabl.one
+    secretName: loki-cert
+  rules:
+    - host: loki.k3s.i.stabl.one
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: loki-loki-distributed-gateway
+                port:
+                  number: 80

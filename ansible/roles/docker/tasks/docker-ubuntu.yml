@@ -1,0 +1,77 @@
+
+- name: Install aptitude using apt
+  apt: name=aptitude state=latest update_cache=true force_apt_get=true
+  become: true
+  become_method: sudo
+
+- name: Install required system packages
+  apt: name={{ item }} state=latest update_cache=true
+  loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
+
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  become: true
+  become_method: sudo
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu focal stable
+    state: present
+  become: true
+  become_method: sudo
+
+- name: Update apt and install docker-ce
+  apt: update_cache=true name=docker-ce state=latest
+  become: true
+  become_method: sudo
+
+- name: Make sure old docker module is absent
+  pip:
+    name:
+      - docker-py
+    state: absent
+  become: true
+  become_method: sudo
+
+- name: Install Docker Module for Python
+  pip:
+    name:
+      - docker
+  become: true
+  become_method: sudo
+
+- name: Check current docker-compose version
+  command: docker-compose --version
+  register: docker_compose_vsn
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- set_fact:
+    docker_compose_current_version: "v{{ docker_compose_vsn.stdout | regex_search('(\\d+(\\.\\d+)+)') }}"
+  when:
+    - docker_compose_vsn.stdout is defined
+
+- debug: var=docker_compose_current_version
+- debug: var=docker_compose_version
+- name: Install Docker-Compose
+  get_url: 
+    url : "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
+    dest: /usr/local/bin/docker-compose
+    mode: 'a+x'
+    force: true
+  when: >
+    docker_compose_version is defined and 
+    ( docker_compose_current_version is not defined
+    or docker_compose_current_version == ""
+    or docker_compose_current_version is version(docker_compose_version, '<') )
+  become: true
+  become_method: sudo
+- name: Install Docker Module for Docker Compose
+  pip:
+    name:
+      - docker-compose
+  become: true
+  become_method: sudo

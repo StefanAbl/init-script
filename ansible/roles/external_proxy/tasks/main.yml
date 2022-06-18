@@ -1,0 +1,85 @@
+- name: Install packages
+  apt:
+    pkg: 
+      - nginx
+      - git
+      - shellcheck
+    state: latest
+- name: Make sure directories are present
+  file:
+    path: "{{item}}"
+    state: directory
+  with_items:
+    - /etc/nginx/snippets
+    - /etc/nginx/sites
+    - /etc/nginx/streams
+    - /etc/letsencrypt/live/
+- name: make directories for certificates
+  file:
+    path: "/etc/letsencrypt/live/{{item.name}}"
+    state: directory
+    owner: www-data
+    group: www-data
+  with_items: "{{servers}}"
+
+- name: copy non-template files
+  copy:
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+  with_items:
+    - src: nginx.conf
+      dest: /etc/nginx/nginx.conf
+    - src: ssl.conf
+      dest: /etc/nginx/snippets/ssl.conf
+- name: Generate Diffie-Hellman parameters with the default size (4096 bits)
+  openssl_dhparam:
+    path: /etc/ssl/dhparams.pem
+
+- include: ./servers.yml
+- include: ./streams.yml
+
+
+- name: Download acme.sh
+  git:
+    repo: 'https://github.com/acmesh-official/acme.sh.git'
+    dest: /root/acme.sh
+- name: set permissions on acme.sh
+  file:
+    path: /root/acme.sh/acme.sh
+    mode: 0755
+- name: template cert.sh
+  template:
+    src: cert.sh
+    dest: /root/cert.sh
+    mode: 0700
+
+- name: test cert.sh script with shellcheck
+  shell: shellcheck /root/cert.sh
+  changed_when: false
+
+  # Nginx has to be restarted before getting certificates for http01 validation to work with acme
+- name: test nginx configuration
+  shell: nginx -t
+  changed_when: false
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted
+
+- name: Run cert.sh
+  shell: bash /root/cert.sh
+
+- name: add cronjob for cert.sh
+  cron:
+    name: renew certificates
+    job: 'bash /root/cert.sh && systemctl restart nginx'
+    weekday: "1"
+
+
+- name: test nginx configuration
+  shell: nginx -t
+  changed_when: false
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted

@@ -1,0 +1,70 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible.json
+---
+- hosts: k3s-0.i.stabl.one
+  become: yes
+  become_method: sudo
+  vars_files:
+   - ../../../secrets.yml
+  tasks:
+
+  - name: create config map
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: 
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: prometheus-external-config
+          namespace: default
+        data:
+          prometheus.yml: |
+            {{ lookup('template', 'prometheus.yml')}}
+
+
+  - name: create PVC and PV
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: "{{ lookup('template', 'prom-pvc.yml') | from_yaml_all | list }}"
+
+
+  - name: Apply RBAC
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: "{{ lookup('template', 'prom-rbac.yml') | from_yaml_all | list}}"
+
+  - name: create Stateful Set
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: "{{ lookup('template', 'prom-sts.yml') }}"
+
+  - name: create Service
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: "{{ lookup('template', 'prom-svc.yml') }}"
+  
+  - name: get pod 
+    community.kubernetes.k8s_info:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      kind: pod
+      label_selectors:
+        - app = prometheus-external
+    register: pod
+  - name: Restartig pod with name
+    debug:
+      var: pod.resources[0].metadata.name
+  - name: Restart the pod
+    community.kubernetes.k8s_exec:
+      namespace: default
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      pod: "{{pod.resources[0].metadata.name}}"
+      command: reboot
+    register: fail
+    failed_when: false
+  - name: Status of restarting
+    debug: 
+      msg: "{{fail}}"

@@ -1,0 +1,118 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible.json
+---
+- hosts: k3s-0.i.stabl.one
+  become: yes
+  become_method: sudo
+  vars_files:
+    - ../../../secrets.yml
+  tasks:
+  - name: add Grafana helm repo
+    community.kubernetes.helm_repository:
+      name: grafana
+      url: https://grafana.github.io/helm-charts
+
+  - name: template values file
+    template:
+      src: values.yml
+      dest: /root/loki-distributed-values.yml
+    changed_when: false
+
+  - name: install helm chart
+    community.kubernetes.helm:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      update_repo_cache: yes
+      name: loki
+      chart_ref: grafana/loki-distributed
+      chart_version: 0.38.0
+      release_namespace: default
+      values_files:
+        - /root/loki-distributed-values.yml
+    register: helmout
+
+  - debug:
+      var: helmout
+  
+  - name: Create basic auth file
+    community.general.htpasswd:
+      path: /root/.passwordfile
+      name: "{{item.name}}"
+      password: "{{item.password}}"
+    with_items: "{{logging.loki.users}}"
+    changed_when: false
+  - name: Read password file
+    shell: cat /root/.passwordfile
+    register: passwords
+    changed_when: false
+
+  - name: Create Basic Auth Secret
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition:
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          namespace: default
+          name: lokiauth
+        type: Opaque
+        data:
+          auth: "{{passwords.stdout | b64encode }}"
+    register: secret
+
+  - name: Create Ingress
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: "{{ lookup('file', 'loki-ingress.yml') | from_yaml }}"
+  - name: Delete temporary files
+    file:
+      path: "{{item}}"
+      state: absent
+    with_items:
+      - /root/.passwordfile
+      - /root/loki-distributed-values.yml
+    changed_when: false
+
+  - name: Install promtail in cluster
+    community.kubernetes.helm:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      update_repo_cache: yes
+      name: promtail
+      chart_ref: grafana/promtail
+      chart_version: 3.11.0
+      release_namespace: default
+      values:
+        containerSecurityContext:
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+          allowPrivilegeEscalation: false
+          privileged: false
+        podAnnotations:
+          container.apparmor.security.beta.kubernetes.io/promtail: runtime/default
+          seccomp.security.alpha.kubernetes.io/pod: runtime/default
+        resources: 
+          limits:
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        config:
+          lokiAddress: http://loki-loki-distributed-gateway.default.svc.cluster.local/loki/api/v1/push
+          snippets:
+            extraRelabelConfigs: 
+              - target_label: host
+                replacement: k3s.{{internal_domain}}
+    register: helmout
+  - debug:
+      var: helmout
+
+  - name: Create Kubernetes Event Exporter
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition: "{{ lookup('template', 'event-exporter.yml') | from_yaml_all | list }}"
+    vars:
+      namespace: default

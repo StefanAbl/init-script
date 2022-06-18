@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: blog
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    # cert-manager.io/issuer: freeipa-issuer
+    # cert-manager.io/issuer-group: certmanager.freeipa.org
+    # cert-manager.io/issuer-kind: ClusterIssuer
+    # cert-manager.io/common-name: loki.k3s.i.stabl.one
+spec:
+  # tls:
+  # - hosts:
+  #   - loki.k3s.i.stabl.one
+  #   secretName: loki-cert
+  rules:
+    - host: blog.k3s.i.stabl.one
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: blog
+                port:
+                  number: 8080

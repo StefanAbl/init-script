@@ -1,0 +1,77 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible.json
+---
+- hosts: k3s-0.i.stabl.one
+  become: yes
+  become_method: sudo
+  vars_files:
+    - ../../../secrets.yml
+  tasks:
+    - name: create config map
+      community.kubernetes.k8s:
+        kubeconfig: /etc/rancher/k3s/k3s.yaml
+        state: present
+        apply: true
+        definition: 
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: unifi-poller
+            namespace: default
+          data:
+            poller.conf: |
+              {{ lookup('template', 'poller.conf')}}
+
+    - name: create secret
+      community.kubernetes.k8s:
+        kubeconfig: /etc/rancher/k3s/k3s.yaml
+        state: present
+        definition: 
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            namespace: default
+            name: unifi-poller
+          type: Opaque
+          stringData:
+            password: "{{logging.unifipoller.password}}"
+      register: secret
+
+    - name: create service
+      community.kubernetes.k8s:
+        kubeconfig: /etc/rancher/k3s/k3s.yaml
+        state: present
+        apply: true
+        definition: 
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: unifi-poller
+            namespace: default
+          spec:
+            selector:
+              app: unifi-poller
+            ports:
+            - port: 9130
+              targetPort: prom
+
+    - name: create deployment
+      community.kubernetes.k8s:
+        kubeconfig: /etc/rancher/k3s/k3s.yaml
+        state: present
+        apply: true
+        definition: |
+          {{ lookup('template', 'poller-deploy.yml') | from_yaml}}
+
+    - name: get pod 
+      community.kubernetes.k8s_info:
+        kubeconfig: /etc/rancher/k3s/k3s.yaml
+        kind: pod
+        label_selectors:
+          - app = unifi-poller
+      register: pod
+
+    - name: Restarting pod with name
+      debug:
+        var: pod.resources[0].metadata.name
+    - name: Restart the pod
+      shell: kubectl delete pod "{{pod.resources[0].metadata.name}}"

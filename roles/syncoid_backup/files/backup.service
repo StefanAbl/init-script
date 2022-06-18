@@ -1,5 +1,0 @@
-[Unit]
-Description=Run Syncoid Backup
-
-[Service]
-ExecStart=/usr/bin/bash -c '/etc/backup.sh'

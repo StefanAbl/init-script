@@ -1,0 +1,88 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible.json
+---
+- hosts: linode0.i.stabl.one
+  become: yes
+  become_method: sudo
+  roles:
+    - ../roles/docker_promtail
+    # - ../roles/portainer
+  vars:
+    replica: true
+    replica_container_name: replica
+    docker_dir: /var/docker
+    freeipa_dir: "{{docker_dir}}/replica"
+    promtail:
+      user: linode0
+
+  vars_files:
+    - ../secrets.yml
+  tasks:
+    - name: get svc_mail uid
+      shell: "id -u {{mailserver_bindUser}}"
+      register: bindUserUID
+      changed_when: False
+
+    - name: get svc_mail gid
+      shell: "id -g {{mailserver_bindUser}}"
+      register: bindUserGID
+      changed_when: False
+#DOCKER
+    - name: create docker network
+      docker_network:
+        name: primary
+        ipam_config:
+          - subnet: "172.18.0.0/16"
+#REPLICA
+    - name: get ip address for replica in primary network
+      shell: "docker inspect -f {{ '{{' }}.NetworkSettings.Networks.primary.IPAddress{{ '}}' }} {{replica_container_name}}"
+      register: replica_container_primary_ip
+      become: yes
+#POSTFIX
+
+    - name: deploy postfix
+      include:  postfix/postfix.yml
+# CERTIFICATES
+    - name: start acme.sh container
+      docker_container:
+        name: acme.sh
+        image: neilpang/acme.sh
+        pull: yes
+        state: started
+        detach: true
+        recreate: no
+        restart_policy: always
+        env:
+          CF_Token: "{{mail.CF_Token}}" 
+          #CF_Account_ID: "{{CF_Account_ID}}" 
+          CF_Zone_ID: "{{CF_Zone_ID}}" 
+        log_driver: json-file
+        log_options:
+          tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
+
+        volumes:
+          - "{{docker_dir}}/mail/ssl/:/acme.sh"
+        command: daemon
+    - name: wait for container to be ready
+      shell: |
+        until [ "`/usr/bin/docker inspect -f {{ '{{' }}.State.Running{{ '}}' }} acme.sh`"=="true" ]; do
+          sleep 0.1;
+        done;
+    - name: set default ca to LE
+      shell: |
+          docker exec acme.sh --set-default-ca  --server  letsencrypt 
+    - name: get cert
+      shell: |
+        docker exec acme.sh --issue --debug -d mail.{{domain_name}} --dns dns_cf \
+        --cert-file      /acme.sh/cert.pem  \
+        --key-file       /acme.sh/key.pem  \
+        --fullchain-file /acme.sh/fullchain.pem
+      register: result
+      failed_when: result.rc == 1
+      changed_when: result.rc == 0
+    - debug: var=result
+# Dovecot
+    - name: dovecot
+      include: dovecot/dovecot.yml
+
+    - name: include rspamd.yml
+      include: rspamd/rspamd.yml

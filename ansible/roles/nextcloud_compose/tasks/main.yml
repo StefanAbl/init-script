@@ -1,0 +1,103 @@
+- name: Setup NFS mount
+  become: true
+  block:
+    - name: Install helper package
+      apt:
+        name: nfs-common
+        state: present
+    - name: Configure NFS mount
+      ansible.posix.mount:
+        src: "{{ nextcloud.data_dir_nfs_source }}"
+        path: /data
+        opts: rw,relatime,vers=4.2,rsize=128000,wsize=128000,namlen=255,hard,proto=tcp,timeo=600,retrans=2
+        state: mounted
+        fstype: nfs4
+
+- name: Create necessary folders
+  file:
+    path: "{{ item.name }}"
+    state: directory
+    mode: "2775"
+    owner: "{{item.owner | default('root')}}"
+    group: "{{item.owner | default('root')}}"
+  become: true
+  with_items: 
+    - name: "/nextcloud_local"
+    - name: "/nextcloud_local/compose"
+    - name: "/nextcloud_local/db"
+      owner: 999
+    - name: "/nextcloud_local/webroot"
+      owner: www-data
+    - name: "/nextcloud_local/nginx"
+    - name: "/nextcloud_local/nginx/certs"
+    - name: "/nextcloud_local/secrets"
+    - name: "/nextcloud_local/dbdump"
+      owner: www-data
+    - name: "/nextcloud_local/compose/cron"
+    - name: "/nextcloud_local/compose/backup"
+    - name: "/nextcloud_local/promtail"
+    - name: "/nextcloud_local/promtail/positions"
+
+- name: Copy latest DB dump
+  become: true
+  shell: sudo -u www-data cp /data/dbBackup.sql /nextcloud_local/dbdump/dbBackup.sql
+
+- name: Copy Nginx configuration file
+  copy:
+    src: nginx.conf
+    dest: /nextcloud_local/nginx
+  become: true
+
+- name: Create files for secrets
+  shell: echo "{{ lookup('ansible.builtin.vars', item) }}" > /nextcloud_local/secrets/{{item}} && chmod 0600 /nextcloud_local/secrets/{{item}}
+  become: true
+  with_items: 
+    - nextcloud_maridb_root_password
+    - nextcloud_db_user_pass
+
+- name: Extract webroot
+  become: true
+  shell: 
+    cmd: sudo -u www-data tar -xf /data/webroot.tar -C /nextcloud_local/webroot/
+    creates: /nextcloud_local/webroot/config/config.php
+
+- name: Template Docker Compose file
+  become: true 
+  template:
+    src: docker-compose.yml
+    dest: /nextcloud_local/compose/
+
+- name: Template Dockerfile for cron image
+  become: true
+  template:
+    src: "{{ item }}.Dockerfile"
+    dest: "/nextcloud_local/compose/{{ item }}/Dockerfile"
+  with_items:
+    - cron
+    - backup
+
+- name: Template promtail config file
+  become: true
+  template:
+    src: promtail.yml
+    dest: /nextcloud_local/promtail/
+  vars:
+    username: "nextcloud"
+
+- name: Get Certificate from FreeIPA
+  become: yes
+  become_user: root
+  shell:
+    cmd: id; ipa-getcert request -r -f /nextcloud_local/nginx/certs/cert.crt -k /nextcloud_local/nginx/certs/key.key -N CN="{{ansible_facts.fqdn}}" -K "HTTP/{{ansible_facts.fqdn}}"@"{{ internal_domain|upper }}"
+    creates: /nextcloud_local/nginx/certs/cert.crt
+  register: get_cert_output
+
+- debug: var=get_cert_output
+
+- name: Start Services
+  become: true
+  community.docker.docker_compose:
+    project_src: /nextcloud_local/compose/
+    project_name: nextcloud
+    build: true
+    state: present

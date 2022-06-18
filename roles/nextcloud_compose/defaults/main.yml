@@ -1,3 +1,0 @@
-nextcloud:
-  data_dir_nfs_source: "10.13.2.10:/Volume2/nextcloud_data"
-  docker_image: "nextcloud:24.0.1-fpm"
