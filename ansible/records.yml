@@ -2,7 +2,7 @@
 - hosts: localhost
   #ansible-playbook --extra-vars "token=secret" records.yml
   vars_files:
-    - "secrets.yml"
+    - "group_vars/all/secrets.yml"
   tasks:
     - name: Set token
       set_fact:

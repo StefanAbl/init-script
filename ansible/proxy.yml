@@ -5,8 +5,6 @@
   become_method: sudo
   collections:
     - nginxinc.nginx_core
-  vars_files:
-  - secrets.yml
   roles:
     - promtail
     - nginx
