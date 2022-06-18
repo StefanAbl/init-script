@@ -1,6 +1,12 @@
 nfs_mount:
   - src: 10.13.2.10:/Media
     dest: /mnt/medien
+jellyfin:
+  extra_transcode_disk: /dev/vdb
+  user: svc_jellyfin
+  s3:
+    user: "{{ vault_jellyfin.s3.user }}"
+    password: "{{ vault_jellyfin.s3.password }}"
 promtail:
   user: jellyfin #Name of the user from above
   run_as_user: svc_jellyfin

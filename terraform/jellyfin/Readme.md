@@ -17,35 +17,7 @@ sudo userdel -r ubuntu
 sudo reboot
 ```
 
-Uses Minio to backup it's data
 
-## Minio
-A user from LDAP cannot be directly added to the `mc` command
-
-TODO remove svc_jellyfin user from minio
-
-Create bucket: `mc mb --p local/jellyfin-config`
-Add policy
-```shell
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-            "s3:ListBucket",
-            "s3:PutObject",
-            "s3:GetObject",
-            "s3:DeleteObject"
-        ],
-      "Effect": "Allow",
-      "Resource": [
-        "arn:aws:s3:::jellyfin-config/*", "arn:aws:s3:::jellyfin-config"
-      ],
-      "Sid": "BucketAccessForUser"
-    }
-  ]
-}
-```
 
 ## VM Template
 
