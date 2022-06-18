@@ -1,12 +1,11 @@
 ---
 - hosts: docker0.i.stabl.one
-  vars_files:
-    - secrets.yml
   vars_prompt:
     - name: ipa_admin_user_password
-      prompt: "Please enter password for IPA user {{ ipa_admin_user }}"
+      prompt: "Please enter password for IPA user"
       private: yes
   vars:
+    - ansible_become_pass: "{{ ipa_admin_user_password }}"
     - recreate: yes
     - promtail:
         user: docker0
@@ -57,23 +56,18 @@
         log_options:
           tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
 
-    - name: start nginx docker container
+    - name: Run Onlyoffice document server container
       become: yes
       docker_container:
-        name: nginx
-        image: nginx
+        name: onlyofficeDocumentserver
+        image: onlyoffice/documentserver
         state: started
-        detach: yes
-        recreate: "{{recreate}}"
-        networks:
-          - name: primary
+        pull: true
+        recreate: true
+        detach: true
+        restart_policy: unless-stopped
         published_ports:
-          - "80:80"
-          - "443:443"
-        volumes:
-          - "{{ nginx_config_dir }}nginx.conf:/etc/nginx/nginx.conf:ro"
-          - "{{ nginx_sites_dir }}:/etc/nginx/sites/:ro"
-          - "/etc/ipa/ca.crt:/etc/ipa/ca.crt:ro"
+          - "5000:80"
         log_driver: json-file
         log_options:
           tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"

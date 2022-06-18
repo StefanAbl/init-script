@@ -35,6 +35,7 @@
 
 
 - name: Create a network
+  become: true
   docker_network:
     name: "{{ internal_docker_proxy.network_name | default('primary', true) }}"
 - name: start nginx docker container
