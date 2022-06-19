@@ -47,7 +47,7 @@ webroot, nginx or Apache but nothing is set in stone.
 
 ## Role variables
 
-```
+```yaml
 # The user on the system that acme.sh will run as. Keep in mind this user
 # needs to already exist, this role will not create it.
 acme_sh_become_user: "root"
