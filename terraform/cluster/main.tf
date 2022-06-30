@@ -21,13 +21,15 @@ provider "proxmox" {
   pm_user         = "${var.user}@${var.domain}"
   pm_password     = var.pass
   pm_tls_insecure = "true"
-  #   pm_log_enable = true
-  #   pm_log_file = "terraform-plugin-proxmox.log"
-  #   pm_debug = true
-  #   pm_log_levels = {
-  #     _default = "debug"
-  #     _capturelog = ""
-  #  }
+  pm_parallel = 1
+  
+  # pm_log_enable   = true
+  # pm_log_file     = "terraform-plugin-proxmox.log"
+  # pm_debug        = true
+  # pm_log_levels = {
+  #   _default    = "debug"
+  #   _capturelog = ""
+  # }
 
 }
 

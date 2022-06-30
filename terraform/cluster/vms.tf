@@ -15,7 +15,7 @@ variable "vms" {
       memory = 2048
       disk   = "32G"
     },
-    master0 = {
+    master03 = {
       id     = 143
       ip     = "10.13.2.43"
       cores  = 2

@@ -12,7 +12,7 @@ resource "freeipa_host" "hostname" {
 
 resource "proxmox_vm_qemu" "proxmox_vm" {
   count                     = 1
-  id                        = var.id
+  vmid                      = var.id
   name                      = var.hostname
   target_node               = "proxmox0"
   clone                     = var.template
