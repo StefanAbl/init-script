@@ -2,3 +2,6 @@
 collections:
   - name: nginxinc.nginx_core
     version: 0.3.0
+roles:
+- src: xanmanning.k3s
+  version: v2.11.1
