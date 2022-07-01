@@ -1,0 +1,75 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# The following lines were added by compinstall
+
+zstyle ':completion:*' completer _complete _ignored
+zstyle :compinstall filename '/home/stefan/.zshrc'
+
+autoload -Uz compinit
+compinit
+# End of lines added by compinstall
+# Lines configured by zsh-newuser-install
+HISTFILE=~/.zfs_history
+HISTSIZE=1000
+SAVEHIST=1000
+bindkey -e
+bindkey '^R' history-incremental-search-backward
+# End of lines configured by zsh-newuser-install
+source ~/.zsh/powerlevel10k/powerlevel10k.zsh-theme
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+bindkey '\e.' insert-last-word
+insert-last-word-forward() zle insert-last-word 1
+zle -N insert-last-word-forward
+bindkey '\e,' insert-last-word-forward
+bindkey '^[[1;5D' backward-word
+bindkey '^[[1;5C' forward-word
+
+autoload -U select-word-style
+select-word-style bash
+
+alias gits="git status"
+alias -g GR="| grep"
+
+#BEGIN Preserve working directory
+ZSH_CACHE_DIR=~/.zsh
+# Flag indicating if we've previously jumped to last directory
+typeset -g ZSH_LAST_WORKING_DIRECTORY
+
+# Updates the last directory once directory is changed
+autoload -U add-zsh-hook
+add-zsh-hook chpwd chpwd_last_working_dir
+chpwd_last_working_dir() {
+  # Don't run in subshells
+  [[ "$ZSH_SUBSHELL" -eq 0 ]] || return 0
+  # Add ".$SSH_USER" suffix to cache file if $SSH_USER is set and non-empty
+  local cache_file="$ZSH_CACHE_DIR/last-working-dir${SSH_USER:+.$SSH_USER}"
+  pwd >| "$cache_file"
+}
+
+# Changes directory to the last working directory
+lwd() {
+  # Add ".$SSH_USER" suffix to cache file if $SSH_USER is set and non-empty
+  local cache_file="$ZSH_CACHE_DIR/last-working-dir${SSH_USER:+.$SSH_USER}"
+  [[ -r "$cache_file" ]] && cd "$(cat "$cache_file")"
+}
+
+# Jump to last directory automatically unless:
+# - this isn't the first time the plugin is loaded
+# - it's not in $HOME directory
+[[ -n "$ZSH_LAST_WORKING_DIRECTORY" ]] && return
+[[ "$PWD" != "$HOME" ]] && return
+
+lwd 2>/dev/null && ZSH_LAST_WORKING_DIRECTORY=1 || true
+
+#End Preserve working directory
