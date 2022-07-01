@@ -1,0 +1,3 @@
+- name: locale | set timezone
+  community.general.timezone:
+    name: "{{ timezone | default('Europe/Berlin') }}"
