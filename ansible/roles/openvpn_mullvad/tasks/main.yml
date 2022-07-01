@@ -15,7 +15,11 @@
 
 - include_tasks: config_files.yml
 
-# - include_tasks: iptables.yml
+- include_tasks: iptables.yml
+- name: Save current state of the firewall in system file
+  community.general.iptables_state:
+    state: saved
+    path: /etc/iptables/rules.v4
 
 - name: start openvpn
   systemd:
