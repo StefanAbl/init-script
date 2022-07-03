@@ -28,7 +28,6 @@ REPO="$(git config --get remote.origin.url | sed 's/.*://g' | sed 's/.git//g' | 
 echo "GitHub Repository is $OWNER/$REPO"
 
 flux bootstrap github \
---version=v0.12.1 \
 --owner=$OWNER \
 --repository=$REPO \
 --path=cluster/base \
@@ -46,7 +45,7 @@ Based on [Flux Guides](https://fluxcd.io/docs/guides/mozilla-sops/)
 
 ```bash
 export KEY_NAME="flux"
-export KEY_COMMENT="flux secrets"
+export KEY_COMMENT="key for flux secrets"
 
 gpg --batch --full-generate-key <<EOF
 %no-protection
