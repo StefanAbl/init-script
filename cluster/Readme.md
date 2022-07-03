@@ -32,9 +32,13 @@ flux bootstrap github \
 --owner=$OWNER \
 --repository=$REPO \
 --path=cluster/base \
+--branch=master \
+--kubeconfig=kubeconfig.yml \
 --personal \
 --network-policy=false
 ```
+
+[Change access token for cluster](https://github.com/fluxcd/flux2/discussions/2161)
 
 ### Setup Secrets Encryption for Cluster
 
