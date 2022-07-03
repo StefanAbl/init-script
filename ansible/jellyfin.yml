@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible.json
+---
+- hosts: jellyfin
+  vars_prompt:
+    - name: ipa_admin_user_password
+      prompt: "Please enter password for IPA user"
+      private: yes
+  vars:
+    - ansible_become_pass: "{{ ipa_admin_user_password }}"
+  roles:
+    - zsh
+    - minio_client
+    - nfs_mount
+    - promtail
+    - jellyfin_server_custom
+  tasks:
+
+  

@@ -1,0 +1,32 @@
+- name: Download p10k
+  git:
+    repo: https://github.com/romkatv/powerlevel10k.git
+    dest: "{{ lookup('env','HOME') }}/.zsh/powerlevel10k"
+- name: Download zsh-autosuggestions
+  git:
+    repo: https://github.com/zsh-users/zsh-autosuggestions
+    dest: "{{ lookup('env','HOME') }}/.zsh/zsh-autosuggestions"
+
+- name: "Copy config files to {{ lookup('env','HOME') }}"
+  copy:
+    dest: "{{ lookup('env','HOME') }}/.{{ item }}"
+    src: "{{ item }}"
+  with_items:
+  - zshrc
+  - zshrc.zni
+  - p10k.zsh
+
+- name: Make sure .bash_profile exists
+  file:
+    path: "{{ lookup('env','HOME') }}/.bash_profile"
+    state: touch
+
+- name: update .bash_profile to start zsh on login
+  blockinfile:
+    dest: "{{ lookup('env','HOME') }}/.bash_profile"
+    block: |
+      if [ "$SHELL" != "/usr/bin/zsh" -a -n "$SSH_TTY" -a -x /usr/bin/zsh ]; then
+        export SHELL="/usr/bin/zsh"
+        exec $SHELL -l
+      fi
+      export BASH_ENV=~/.bash_profile

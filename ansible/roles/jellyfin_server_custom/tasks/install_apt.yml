@@ -1,0 +1,33 @@
+- name: Install apt-transport-https
+  apt:
+    name: apt-transport-https
+    state: present
+- name: Enable universe repository
+  apt_repository:
+    repo: "{{ item }}"
+  loop:
+    - "deb http://archive.ubuntu.com/ubuntu/ {{ ansible_facts['lsb']['codename'] }} universe"
+    - "deb http://archive.ubuntu.com/ubuntu/ {{ ansible_facts['lsb']['codename'] }}-updates universe"
+    - "deb http://security.ubuntu.com/ubuntu/ {{ ansible_facts['lsb']['codename'] }}-security universe"
+  when: false
+- name: enable universe repository
+  shell: echo | DEBIAN_FRONTEND=noninteractive add-apt-repository universe
+- name: add jellyfin apt-key
+  apt_key: 
+    url: https://repo.jellyfin.org/ubuntu/jellyfin_team.gpg.key
+    state: present 
+- name: add jellyfin apt repository
+  apt_repository: 
+    repo: 'deb [arch=amd64] https://repo.jellyfin.org/ubuntu focal main' 
+    state: present 
+    filename: jellyfin 
+    update_cache: yes
+- name: Install jellyfin
+  apt:
+    name: jellyfin
+    state: present
+    update_cache: yes
+- name: Make sure Jellyfin is stopped
+  ansible.builtin.service:
+    name: jellyfin
+    state: stopped

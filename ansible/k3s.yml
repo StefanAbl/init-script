@@ -1,0 +1,19 @@
+---
+- hosts:
+  - k3s
+  become: true
+  gather_facts: true
+  any_errors_fatal: true
+  pre_tasks:
+  - name: Set ansible_host fact
+    set_fact:
+      ansible_host: "{{ ansible_host | default(ansible_eth0.ipv4.address ,true)}}"
+  - debug: var=ansible_host
+  - name: Pausing for 5 seconds...
+    pause:
+      seconds: 5
+  roles:
+  - common
+  - zsh
+  - k3s
+

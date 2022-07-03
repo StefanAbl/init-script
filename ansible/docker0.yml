@@ -1,0 +1,73 @@
+---
+- hosts: docker0.i.stabl.one
+  vars_prompt:
+    - name: ipa_admin_user_password
+      prompt: "Please enter password for IPA user"
+      private: yes
+  vars:
+    - ansible_become_pass: "{{ ipa_admin_user_password }}"
+    - recreate: yes
+    - promtail:
+        user: docker0
+  roles:
+    - docker
+    - docker_promtail
+    - authelia_docker
+    - portainer
+    - role: internal_docker_proxy
+      vars:
+        internal_docker_proxy:
+          nginx_dir: "{{nginx_config_dir}}"
+          sites:
+          - server_name: "{{ internal_authelia_fqdn }}"
+            upstream: "http://{{authelia_container_name}}"
+            record: authelia
+            protected: false
+          - server_name: "portainer.{{ansible_facts.fqdn}}"
+            upstream: "http://portainer:9000"
+            record: "portainer.{{ansible_facts.hostname}}"
+            protected: false
+          - server_name: "speedtracker.{{internal_domain}}"
+            upstream: "http://speedtracker"
+            record: "speedtracker"
+            protected: true
+  tasks:
+    - name: create docker volume for speedtracker
+      docker_volume:
+        name: speedtracker
+      become: yes
+
+    - name: create docker speedtracker container
+      become: yes
+      docker_container:
+        name: speedtracker
+        image: henrywhitaker3/speedtest-tracker
+        state: started
+        recreate: true
+        detach: true
+        restart_policy: unless-stopped
+        env:
+          OOKLA_EULA_GDPR=true
+        networks:
+          - name: primary
+        volumes:
+          - "speedtracker:/config"
+        log_driver: json-file
+        log_options:
+          tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
+
+    - name: Run Onlyoffice document server container
+      become: yes
+      docker_container:
+        name: onlyofficeDocumentserver
+        image: onlyoffice/documentserver
+        state: started
+        pull: true
+        recreate: true
+        detach: true
+        restart_policy: unless-stopped
+        published_ports:
+          - "5000:80"
+        log_driver: json-file
+        log_options:
+          tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"

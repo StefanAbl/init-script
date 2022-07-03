@@ -1,0 +1,19 @@
+
+- name: install zsh packages
+  action: >
+    {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes
+  with_items:
+    - zsh
+    - git
+    - tar
+  become: yes
+
+- include_tasks: configure.yml
+
+# Repeat as root
+- import_tasks: configure.yml
+  become: true
+
+- include_tasks: fonts.yml
+  when: zsh_install_fonts
+

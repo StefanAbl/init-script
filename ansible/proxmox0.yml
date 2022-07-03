@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible.json
+---
+- hosts: proxmox
+  vars_prompt:
+    - name: ipa_admin_user_password
+      prompt: Enter password for FreeIPA user
+      private: yes
+  vars:
+    - ansible_become_pass: "{{ ipa_admin_user_password }}"
+  roles:
+    - proxmox_ipa_cert
+    - ansible-acme-sh
+    - minio_server  
+  tasks:
