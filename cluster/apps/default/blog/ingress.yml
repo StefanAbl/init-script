@@ -13,15 +13,15 @@ spec:
   tls:
   - hosts:
     - flux-test.i.stabl.one
-  #   secretName: blog-cert
-  # rules:
-  #   - host: flux-test.i.stabl.one
-  #     http:
-  #       paths:
-  #         - path: "/"
-  #           pathType: Prefix
-  #           backend:
-  #             service:
-  #               name: blog
-  #               port:
-  #                 number: 8080
+    # secretName: blog-cert
+  rules:
+    - host: flux-test.i.stabl.one
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: blog
+                port:
+                  number: 8080
