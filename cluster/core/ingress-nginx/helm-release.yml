@@ -16,3 +16,6 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    controller:
+      admissionWebhooks:
+        enabled: false
