@@ -16,7 +16,7 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
-    configInLine:
+    configInline:
       address-pools:
       - name: default
         protocol: layer2
