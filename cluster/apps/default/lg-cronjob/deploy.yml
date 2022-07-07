@@ -1,0 +1,41 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: lg-cronjob
+spec:
+  schedule: "@daily"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: cronjob
+              image: curlimages/curl
+              imagePullPolicy: IfNotPresent
+              command:
+                - curl
+                - "https://developer.lge.com/secure/ResetDevModeSession.dev?sessionToken=$TOKEN"
+              resources: {}
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                privileged: false
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                runAsUser: 1000
+                runAsGroup: 1000
+              env:
+              - name: TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    name: lg-session-token
+                    key: token
+          restartPolicy: OnFailure
+          automountServiceAccountToken: false
+        metadata:
+          annotations:
+            container.apparmor.security.beta.kubernetes.io/cronjob: runtime/default
+            seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    metadata:
