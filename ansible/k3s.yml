@@ -15,4 +15,5 @@
   roles:
   - common
   - zsh
+  - nfs_mount
   - k3s

@@ -9,4 +9,5 @@
     opts: rw,relatime,vers=4.2,rsize=128000,wsize=128000,namlen=255,hard,proto=tcp,timeo=600,retrans=2
     state: mounted
     fstype: nfs4
+  when: nfs_mount is defined
   with_items: "{{nfs_mount}}"
