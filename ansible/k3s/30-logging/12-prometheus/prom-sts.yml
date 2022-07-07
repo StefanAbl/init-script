@@ -45,7 +45,7 @@ spec:
               readOnly: true
             - name: data
               mountPath: /data
-          resources: 
+          resources:
             limits:
               cpu: 1000m
               memory: 500Mi

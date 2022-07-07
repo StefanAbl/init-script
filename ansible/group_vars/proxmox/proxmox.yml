@@ -5,7 +5,7 @@ acme_sh_default_force_issue: False
 acme_sh_default_dns_provider: "dns_cf"
 acme_sh_default_dns_provider_api_keys:
   "CF_Token": "{{minio.cf_token}}"
-  "CF_Zone_ID": "{{CF_Zone_ID}}" 
+  "CF_Zone_ID": "{{CF_Zone_ID}}"
 acme_sh_domains:
   - domains:
     - "s3.{{internal_domain}}"

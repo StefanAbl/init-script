@@ -10,5 +10,5 @@
   roles:
     - proxmox_ipa_cert
     - ansible-acme-sh
-    - minio_server  
+    - minio_server
   tasks:

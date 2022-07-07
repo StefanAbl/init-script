@@ -1,12 +1,12 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible.json
 ---
-- hosts: 
+- hosts:
     - docker0.i.stabl.one
   vars_prompt:
     - name: ipa_user
       prompt: Please enter the name of the IPA admin user
     - name: ipa_pass
-      prompt: Please enter the password for the user 
+      prompt: Please enter the password for the user
       private: yes
   tasks:
     - name: Build Docker container
@@ -78,7 +78,7 @@
         ipa_user: "{{ipa_user}}"
         ipa_pass: "{{ipa_pass}}"
         cn: allow_svc_mail_to_mailserver
-        host: 
+        host:
           - linode0.i.stabl.one
         user:
           - svc_mail

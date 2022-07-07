@@ -1,4 +1,4 @@
-- name: Create a ext4 filesystem on /dev/vdb 
+- name: Create a ext4 filesystem on /dev/vdb
   community.general.filesystem:
     fstype: ext4
     dev: "{{ jellyfin.extra_transcode_disk }}"

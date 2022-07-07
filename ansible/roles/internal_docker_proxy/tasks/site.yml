@@ -9,7 +9,7 @@
     - protected: "{{protected}}"
     - upstream: "{{ upstream }}"
 
-- set_fact: 
+- set_fact:
     path: "{{ internal_docker_proxy.nginx_dir }}/sites/{{ server_name}}"
 - debug:
     var: ansible_hostname

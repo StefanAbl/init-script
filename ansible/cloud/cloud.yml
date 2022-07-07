@@ -52,9 +52,9 @@
         recreate: no
         restart_policy: always
         env:
-          CF_Token: "{{mail.CF_Token}}" 
-          #CF_Account_ID: "{{CF_Account_ID}}" 
-          CF_Zone_ID: "{{CF_Zone_ID}}" 
+          CF_Token: "{{mail.CF_Token}}"
+          #CF_Account_ID: "{{CF_Account_ID}}"
+          CF_Zone_ID: "{{CF_Zone_ID}}"
         log_driver: json-file
         log_options:
           tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
@@ -69,7 +69,7 @@
         done;
     - name: set default ca to LE
       shell: |
-          docker exec acme.sh --set-default-ca  --server  letsencrypt 
+          docker exec acme.sh --set-default-ca  --server  letsencrypt
     - name: get cert
       shell: |
         docker exec acme.sh --issue --debug -d mail.{{domain_name}} --dns dns_cf \

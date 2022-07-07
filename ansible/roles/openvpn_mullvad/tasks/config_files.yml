@@ -8,7 +8,7 @@
     dest: "/etc/openvpn/"
 
 - name: Create certificate file
-  copy: 
+  copy:
     content: "{{mullvad.ca_crt}}"
     dest: "{{ openvpnConfigDir }}mullvad_ca.crt"
 - name: Template mullvad_userpass.txt

@@ -17,7 +17,7 @@ promtail:
     run_as_user: # The user for the promtail process on the local machine. Defaults to www-data
     scrape_configs: # scrape configs for loki
     - job_name: system
-      pipeline_stages: 
+      pipeline_stages:
       static_configs:
       - targets:
          - localhost

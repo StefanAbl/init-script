@@ -176,7 +176,7 @@ def run_module():
         supports_check_mode=True
     )
     # Check for valid parameters
-        
+
     if ('state' in module.params and module.params['state'] is not None and module.params['state'] not in valid_states):
         module.fail_json(msg="Invalid state " + str(module.params['state']) + ". Valid are: " + ", ".join(valid_states) , **result)
     # if state = present then a valid type needs to be specified

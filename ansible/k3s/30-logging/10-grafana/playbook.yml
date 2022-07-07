@@ -10,7 +10,7 @@
     community.kubernetes.k8s:
       kubeconfig: /etc/rancher/k3s/k3s.yaml
       state: present
-      definition: 
+      definition:
         apiVersion: v1
         kind: Secret
         metadata:
@@ -30,7 +30,7 @@
       kubeconfig: /etc/rancher/k3s/k3s.yaml
       state: present
       apply: true
-      definition: 
+      definition:
         apiVersion: v1
         kind: ConfigMap
         metadata:
@@ -43,7 +43,7 @@
             {{ lookup('file', 'ldap.toml') }}
 
 
-  - name: apply grafana 
+  - name: apply grafana
     register: depl
     community.kubernetes.k8s:
       kubeconfig: /etc/rancher/k3s/k3s.yaml
@@ -58,7 +58,7 @@
       apply: yes
       definition: "{{ lookup('file', 'image-renderer.yml') | from_yaml_all | list }}"
 
-  - name: get pod 
+  - name: get pod
     community.kubernetes.k8s_info:
       kubeconfig: /etc/rancher/k3s/k3s.yaml
       kind: pod
@@ -78,6 +78,6 @@
     register: fail
     failed_when: false
   - name: Status of restarting
-    debug: 
+    debug:
       msg: "Failed to restart pod \n {{fail}}"
     when: (secret.changed or configMap.changed or depl.changed) and (fail.changed or fail.failed)

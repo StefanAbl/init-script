@@ -19,7 +19,7 @@ ingress:
     traefik.ingress.kubernetes.io/redirect-entry-point: https
 
 
-resources: 
+resources:
   limits:
     cpu: 1000m
     memory: 500Mi
@@ -28,7 +28,7 @@ resources:
     memory: 250Mi
 
 # Security
-podAnnotations: 
+podAnnotations:
   container.apparmor.security.beta.kubernetes.io/influxdb2: runtime/default
   seccomp.security.alpha.kubernetes.io/pod: runtime/default
 

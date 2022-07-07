@@ -1,8 +1,8 @@
 ingester:
   replicas: 3
-  podAnnotations: 
+  podAnnotations:
     container.apparmor.security.beta.kubernetes.io/loki: runtime/default
-  resources:  
+  resources:
     limits:
       cpu: 250m
       memory: 300Mi
@@ -10,10 +10,10 @@ ingester:
       cpu: 50m
       memory: 100Mi
 querier:
-  podAnnotations: 
+  podAnnotations:
     container.apparmor.security.beta.kubernetes.io/loki: runtime/default
   replicas: 3
-  resources:  
+  resources:
     limits:
       cpu: 2
       memory: 2048Mi
@@ -21,9 +21,9 @@ querier:
       cpu: 50m
       memory: 300Mi
 distributor:
-  podAnnotations: 
+  podAnnotations:
     container.apparmor.security.beta.kubernetes.io/loki: runtime/default
-  resources:  
+  resources:
     limits:
       cpu: 250m
       memory: 300Mi
@@ -31,9 +31,9 @@ distributor:
       cpu: 50m
       memory: 100Mi
 queryFrontend:
-  podAnnotations: 
+  podAnnotations:
     container.apparmor.security.beta.kubernetes.io/loki: runtime/default
-  resources:  
+  resources:
     limits:
       cpu: 250m
       memory: 300Mi
@@ -41,9 +41,9 @@ queryFrontend:
       cpu: 50m
       memory: 100Mi
 gateway:
-  podAnnotations: 
+  podAnnotations:
     container.apparmor.security.beta.kubernetes.io/nginx: runtime/default
-  resources:  
+  resources:
     limits:
       cpu: 250m
       memory: 300Mi
@@ -66,7 +66,7 @@ loki:
         - ALL
     allowPrivilegeEscalation: false
     privileged: false
-  podAnnotations: 
+  podAnnotations:
     seccomp.security.alpha.kubernetes.io/pod: runtime/default
   config: |
     auth_enabled: false
@@ -152,4 +152,3 @@ loki:
     frontend:
       log_queries_longer_than: 5s
       compress_responses: true
-

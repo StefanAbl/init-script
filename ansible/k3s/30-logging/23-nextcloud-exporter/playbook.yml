@@ -11,7 +11,7 @@
       community.kubernetes.k8s:
         kubeconfig: /etc/rancher/k3s/k3s.yaml
         state: present
-        definition: 
+        definition:
           apiVersion: v1
           kind: Secret
           metadata:
@@ -27,7 +27,7 @@
         kubeconfig: /etc/rancher/k3s/k3s.yaml
         state: present
         apply: true
-        definition: 
+        definition:
           apiVersion: v1
           kind: Service
           metadata:
@@ -48,7 +48,7 @@
         definition: |
           {{ lookup('template', 'deploy.yml') | from_yaml}}
 
-    # - name: get pod 
+    # - name: get pod
     #   community.kubernetes.k8s_info:
     #     kubeconfig: /etc/rancher/k3s/k3s.yaml
     #     kind: pod

@@ -11,7 +11,7 @@ update_ip:
       - stabl.one
   cf:
     token: "{{proxy.cf_token}}"
-    zones: 
+    zones:
       - name: stabl.one
         records:
           - "stabl.one"
@@ -29,7 +29,7 @@ promtail:
           replace: '**ipv6**:'
       - replace: #Replaces the query part of a URI
           Expression: '(?:(?:\/[A-Za-z0-9-._~]+))(\?.*?)(?:(?:"|\s))'
-          replace: ''  
+          replace: ''
       - match:
         selector: '{job="nginx_access_log"}'
         stages:
@@ -37,13 +37,13 @@ promtail:
             expressions:
               server_name: "server_name"
         - labels:
-            server_name: 
+            server_name:
       static_configs:
       - targets:
         - localhost
         labels:
           job: nginx_access_log
-          host: proxy 
+          host: proxy
           agent: promtail
           __path__: /var/log/nginx/json_access.log
     - job_name: error_log
@@ -86,7 +86,7 @@ servers:
       proxy_no_cache 1;
       proxy_cache off;
       # even if cached, don't try to use it
-      proxy_cache_bypass 1; 
+      proxy_cache_bypass 1;
     #extras to include in the server block
     extras: |
       # Content Security Policy

@@ -11,7 +11,7 @@
       become: yes
     - name: Create multipath configuration file
       become: yes
-      file: 
+      file:
         path: /etc/multipath.conf
         state: touch
     - name: Blacklist longhorn devices in multipath configuration file
@@ -72,7 +72,7 @@
   tasks:
   - name: install required apt packages
     apt:
-      name: 
+      name:
         - "python3-pip"
         - "apt-transport-https"
         - python3-pip
@@ -92,7 +92,7 @@
       repo: deb https://baltocdn.com/helm/stable/debian/ all main
       state: present
   - name: install helm using apt
-    apt: 
+    apt:
       name: helm
       state: latest
   - name: install helm diff
@@ -109,5 +109,5 @@
   tasks:
   - name: Allow K3s pods to resolve internal DNS names
     shell: |
-      sudo kubectl get cm -n kube-system coredns -o yaml | sed "s/forward . \/etc\/resolv.conf/forward . {{ipa_server_ip}}/g" | sudo kubectl apply -f - 
+      sudo kubectl get cm -n kube-system coredns -o yaml | sed "s/forward . \/etc\/resolv.conf/forward . {{ipa_server_ip}}/g" | sudo kubectl apply -f -
       sudo kubectl -n kube-system rollout restart deployment coredns

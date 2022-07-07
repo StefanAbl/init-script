@@ -22,19 +22,19 @@ variable "ssh_key" {
 }
 
 resource "proxmox_vm_qemu" "proxmox_vm" {
-  count             = 3 
+  count             = 3
   name              = "k3s-${count.index}"
   target_node       = "proxmox0"
   clone             = "hirsute-template"
   os_type           = "cloud-init"
   agent             = 1
-  cores             = 2 
+  cores             = 2
   cpu               = "host"
-  memory            = 4096 
+  memory            = 4096
   scsihw            = "virtio-scsi-pci"
 
 disk {
-    size            = "64G" 
+    size            = "64G"
 
     type            = "virtio"
     storage         = "NVMe"

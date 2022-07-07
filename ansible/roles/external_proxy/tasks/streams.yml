@@ -4,14 +4,14 @@
     dest: /etc/nginx/streams/{{item.name}}
   with_items: "{{streams | default([])}}"
 - name: Find streams which are no longer specified
-  find: 
-    paths: 
+  find:
+    paths:
       - /etc/nginx/streams
     excludes: "{{streams | default([]) | map(attribute='name') | list }}"
   register: found_streams
   changed_when: False
 - name: Remove sites which are no longer specified
-  file: 
+  file:
     path: "{{ item }}"
     state: absent
   with_items: "{{found_streams['files'] | map(attribute='path') | list}}"

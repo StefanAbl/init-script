@@ -21,7 +21,7 @@
     community.kubernetes.k8s:
       kubeconfig: /etc/rancher/k3s/k3s.yaml
       state: present
-      definition: "{{ lookup('template', 'pv-pvc.yml') | from_yaml_all | list }}" 
+      definition: "{{ lookup('template', 'pv-pvc.yml') | from_yaml_all | list }}"
 
   - name: install helm chart
     community.kubernetes.helm:

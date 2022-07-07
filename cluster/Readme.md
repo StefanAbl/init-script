@@ -67,7 +67,7 @@ kubectl create secret generic sops-gpg \
 gpg --list-secret-keys "${KEY_NAME}"
 ```
 
-Get the key fingerprint from the last command above. 
+Get the key fingerprint from the last command above.
 Create the file `.sops.yaml` with the following contents.
 
 ```yaml

@@ -12,7 +12,7 @@ jellyfin:
   # Use this disk to store temporary files while transcoding
   # The disk will be formatted and mounted on /transcode
   # If empty this step is skipped
-  extra_transcode_disk: /dev/vdb 
+  extra_transcode_disk: /dev/vdb
   # Configure Jellyfin to use a non default user
   # A group with the same name should exist
   user: svc_jellyfin

@@ -8,12 +8,12 @@
   become: yes
   when: stat_result.stat.exists
   changed_when: false
-  shell: 
+  shell:
     cmd: ipa-getcert status -f pveproxy-ssl.pem
     chdir: "/etc/pve/nodes/{{ ansible_facts.hostname }}/"
   register: status_result
 - name: Add service to FreeIPA
-  when: not stat_result.stat.exists and not status_result.rc == 0 
+  when: not stat_result.stat.exists and not status_result.rc == 0
   ipa_service:
     name: "HTTP/{{ ansible_facts.fqdn }}"
     state: present
@@ -23,7 +23,7 @@
     hosts: "{{ ansible_facts.fqdn }}"
 - name: Request Certificate from IPA
   become: yes
-  when: not stat_result.stat.exists and not status_result.rc == 0 
+  when: not stat_result.stat.exists and not status_result.rc == 0
   register: certificate_request_result
   shell:
     cmd: ipa-getcert request -r -f pveproxy-ssl.pem -k pveproxy-ssl.key -N CN="{{ ansible_facts.fqdn }}" -K "HTTP/{{ ansible_facts.fqdn }}@"{{ internal_domain|upper }}""

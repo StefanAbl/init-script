@@ -2,7 +2,7 @@
 This role will setup the main entrypoint for the homelab
 ## ACME validation
 Certificates are obtained via [acme.sh](https://github.com/acmesh-official/acme.sh.)
-Validation can be done via http01 validation or dns validation. 
+Validation can be done via http01 validation or dns validation.
 This can be specified on a per virtual server basis.
 For dns validation the necessary environment variables should be included in `acmesh.env_vars`
 Additionally the dns api which should be used by acme.sh should be specified, e.g. use Cloudflare with dns_cf.

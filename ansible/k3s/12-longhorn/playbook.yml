@@ -13,7 +13,7 @@
     community.kubernetes.k8s:
       kubeconfig: /etc/rancher/k3s/k3s.yaml
       state: present
-      definition: 
+      definition:
         apiVersion: v1
         kind: Secret
         metadata:

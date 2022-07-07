@@ -29,7 +29,7 @@
 ### Simple mail delivery
 Users can have mailbox user@domain. Mail should be delivered to dovecot so the user can read the mail in their mailbox
 ### Delivery to external mailboxes
-*Not working*  
+*Not working*
 If a user has a mail which points to an external mail server e.g. user@gmail.com, when mail is sent to user@domain the mail server should forward it to user@gmail.com
 ### Group Delivery
 From internal mail addresses mail can be sent to group@domain it will then be delivered to all users of these groups. The mail attribute in FreeIPA is used as destination, so it can also be sent to external addresses.

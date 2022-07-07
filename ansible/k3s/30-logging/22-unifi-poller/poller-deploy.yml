@@ -60,4 +60,3 @@ spec:
                 path: passwd.file
       automountServiceAccountToken: false
   strategy: {}
-

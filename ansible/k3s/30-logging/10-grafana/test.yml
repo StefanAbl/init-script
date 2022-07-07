@@ -5,7 +5,7 @@
   become_method: sudo
   tasks:
 
-  - name: get pod 
+  - name: get pod
     community.kubernetes.k8s_info:
       kubeconfig: /etc/rancher/k3s/k3s.yaml
       kind: pod
@@ -14,5 +14,5 @@
     register: pod
 
   - name: print name
-    debug: 
+    debug:
       msg: "Name: {{pod.resources[0].metadata.name}}"

@@ -51,5 +51,3 @@ spec:
             runAsGroup: 1000
       automountServiceAccountToken: false
   strategy: {}
-
-

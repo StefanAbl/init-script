@@ -1,5 +1,5 @@
       - name: Create Jellyfin systemd configuration file
-        file: 
+        file:
           path: /etc/systemd/system/jellyfin.service.d/override.conf
           state: touch
       - name: Configure Jellyfin to use svc_jellyfin user

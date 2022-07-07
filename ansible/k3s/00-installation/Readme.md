@@ -43,7 +43,7 @@ The hostname should be set to k3s-x by Terraform, but the domain still needs to 
 ```bash
 echo "Enter OTP for FreeIPA enrollment"
 read otp
-sudo apt update 
+sudo apt update
 sudo apt install -y freeipa-client
 sudo hostnamectl set-hostname $(hostname).i.stabl.one
 sudo ipa-client-install --enable-dns-updates --mkhomedir --password "$otp" && sudo reboot
@@ -61,7 +61,7 @@ sudo userdel -r ubuntu
 
 ## Install K3S
 
-First add the hosts to the Ansible hosts file.  
+First add the hosts to the Ansible hosts file.
 Add a variable called `k3s_token` to the secrets.yml Ansible vault
 
 Then run the `install_k3s.yml` script to install K3S.

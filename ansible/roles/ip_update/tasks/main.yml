@@ -1,6 +1,6 @@
 - name: make sure packages are present
   package:
-    name: 
+    name:
       - shellcheck
       - jq
     state: present

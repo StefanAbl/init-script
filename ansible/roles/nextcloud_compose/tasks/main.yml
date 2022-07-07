@@ -21,7 +21,7 @@
     owner: "{{item.owner | default('root')}}"
     group: "{{item.owner | default('root')}}"
   become: true
-  with_items: 
+  with_items:
     - name: "/nextcloud_local"
     - name: "/nextcloud_local/compose"
     - name: "/nextcloud_local/db"
@@ -51,18 +51,18 @@
 - name: Create files for secrets
   shell: echo "{{ lookup('ansible.builtin.vars', item) }}" > /nextcloud_local/secrets/{{item}} && chown www-data /nextcloud_local/secrets/{{item}} && chmod 0600 /nextcloud_local/secrets/{{item}}
   become: true
-  with_items: 
+  with_items:
     - nextcloud_maridb_root_password
     - nextcloud_db_user_pass
 
 - name: Extract webroot
   become: true
-  shell: 
+  shell:
     cmd: sudo -u www-data tar -xf /data/webroot.tar -C /nextcloud_local/webroot/
     creates: /nextcloud_local/webroot/config/config.php
 
 - name: Template Docker Compose file
-  become: true 
+  become: true
   template:
     src: docker-compose.yml
     dest: /nextcloud_local/compose/

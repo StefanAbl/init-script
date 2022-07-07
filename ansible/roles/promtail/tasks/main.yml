@@ -23,18 +23,17 @@
 
 - name: copy systemd service file
   become: true
-  template: 
+  template:
     src: promtail.service
     dest: /etc/systemd/system/
 - name: start promtail
   become: true
-  systemd: 
-    state: restarted 
-    name: promtail 
+  systemd:
+    state: restarted
+    name: promtail
     daemon_reload: yes
 - name: enable promtail systemd service
   become: true
-  systemd: 
-    enabled: true 
-    name: promtail 
-    
+  systemd:
+    enabled: true
+    name: promtail

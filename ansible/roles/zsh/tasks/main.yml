@@ -16,4 +16,3 @@
 
 - include_tasks: fonts.yml
   when: zsh_install_fonts
-

@@ -1,6 +1,6 @@
 - name: Install packages
   apt:
-    pkg: 
+    pkg:
       - nginx
       - git
       - shellcheck

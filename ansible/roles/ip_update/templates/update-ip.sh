@@ -5,7 +5,7 @@ ip6File="/tmp/.ip6"
 dynv6="/usr/bin/dynv6.sh"
 cf="/usr/bin/cf.sh"
 
-date 
+date
 ip4="$(curl -4 https://am.i.mullvad.net)"
 ip6=$(ip -6 addr list scope global $device | grep -v " fd" | sed -n 's/.*inet6 \([0-9a-f:]\+\).*/\1/p' | head -n 1)
 echo "ipv4 is $ip4"

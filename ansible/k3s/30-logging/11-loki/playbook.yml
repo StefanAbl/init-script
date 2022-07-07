@@ -31,7 +31,7 @@
 
   - debug:
       var: helmout
-  
+
   - name: Create basic auth file
     community.general.htpasswd:
       path: /root/.passwordfile
@@ -92,7 +92,7 @@
         podAnnotations:
           container.apparmor.security.beta.kubernetes.io/promtail: runtime/default
           seccomp.security.alpha.kubernetes.io/pod: runtime/default
-        resources: 
+        resources:
           limits:
             cpu: 200m
             memory: 128Mi
@@ -102,7 +102,7 @@
         config:
           lokiAddress: http://loki-loki-distributed-gateway.default.svc.cluster.local/loki/api/v1/push
           snippets:
-            extraRelabelConfigs: 
+            extraRelabelConfigs:
               - target_label: host
                 replacement: k3s.{{internal_domain}}
     register: helmout

@@ -11,7 +11,7 @@
     community.kubernetes.k8s:
       kubeconfig: /etc/rancher/k3s/k3s.yaml
       state: present
-      definition: 
+      definition:
         apiVersion: v1
         kind: ConfigMap
         metadata:
@@ -46,8 +46,8 @@
       kubeconfig: /etc/rancher/k3s/k3s.yaml
       state: present
       definition: "{{ lookup('template', 'prom-svc.yml') }}"
-  
-  - name: get pod 
+
+  - name: get pod
     community.kubernetes.k8s_info:
       kubeconfig: /etc/rancher/k3s/k3s.yaml
       kind: pod
@@ -66,5 +66,5 @@
     register: fail
     failed_when: false
   - name: Status of restarting
-    debug: 
+    debug:
       msg: "{{fail}}"

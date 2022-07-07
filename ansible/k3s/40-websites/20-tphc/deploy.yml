@@ -76,6 +76,6 @@ spec:
             runAsNonRoot: true
             runAsUser: 1000
       securityContext:
-        fsGroup: 1000 
+        fsGroup: 1000
       automountServiceAccountToken: false
 status: {}

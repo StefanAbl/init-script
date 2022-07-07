@@ -11,10 +11,11 @@ Some Application are hosted in a [k3s Kubernetes](./k3s) cluster and there is an
 
 - Install external Ansible collections with `ansible-galaxy collection install -r requirements.yml`
 - [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+- [Pre-Commit](https://pre-commit.com/)
 
 ## zsh.yml
 
 it will install zsh and powerlevel10k and configure it based on the users preference
 ```
-ansible-playbook -K -i hosts -u stefan zsh.yml 
+ansible-playbook -K -i hosts -u stefan zsh.yml
 ```

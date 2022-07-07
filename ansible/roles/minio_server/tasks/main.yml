@@ -25,7 +25,7 @@
 
 - name: Grant access to Minio Console to FreeIPA user {{ ipa_admin_user }}
   become: true
-  command: 
+  command:
     argv:
       - mc
       - admin

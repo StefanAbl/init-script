@@ -36,19 +36,19 @@ resource "proxmox_vm_qemu" "proxmox_vm" {
   clone             = "focal-template"
   os_type           = "cloud-init"
   agent             = 1
-  cores             = 2 
+  cores             = 2
   cpu               = "host"
-  memory            = 4096 
+  memory            = 4096
   scsihw            = "virtio-scsi-pci"
 
 disk {
-    size            = "16G" 
+    size            = "16G"
     type            = "virtio"
     storage         = "NVMe"
     backup          = 1
   }
 disk {
-    size            = "16G" 
+    size            = "16G"
     type            = "virtio"
     storage         = "NVMe"
   }
@@ -80,7 +80,7 @@ lifecycle {
       "sudo ipa-client-install --unattended --enable-dns-updates --mkhomedir --password \"${var.otp}\" && sudo userdel -rf ubuntu && sudo reboot"
     ]
   }
-  
+
   # Login to the ec2-user with the aws key.
   connection {
     type        = "ssh"

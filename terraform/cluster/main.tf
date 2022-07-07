@@ -22,7 +22,7 @@ provider "proxmox" {
   pm_password     = var.pass
   pm_tls_insecure = "true"
   pm_parallel = 1
-  
+
   # pm_log_enable   = true
   # pm_log_file     = "terraform-plugin-proxmox.log"
   # pm_debug        = true

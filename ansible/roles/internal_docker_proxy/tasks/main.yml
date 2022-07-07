@@ -25,7 +25,7 @@
     - authelia.conf
     - proxy.conf
 
-- include_tasks: site.yml 
+- include_tasks: site.yml
   vars:
     server_name: "{{item.server_name}}"
     upstream: "{{item.upstream}}"
@@ -57,4 +57,3 @@
       - "{{ internal_docker_proxy.nginx_dir }}/nginx.conf:/etc/nginx/nginx.conf:ro"
       - "{{ internal_docker_proxy.nginx_dir }}/sites/:/etc/nginx/sites/:ro"
       - "/etc/ipa/ca.crt:/etc/ipa/ca.crt:ro"
-

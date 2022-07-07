@@ -4,14 +4,14 @@
     dest: /etc/nginx/sites/{{item.name}}
   with_items: "{{servers}}"
 - name: Find sites which are no longer specified
-  find: 
-    paths: 
+  find:
+    paths:
       - /etc/nginx/sites
     excludes: "{{servers | map(attribute='name') | list }}"
   register: found_sites
   changed_when: False
 - name: Remove sites which are no longer specified
-  file: 
+  file:
     path: "{{ item }}"
     state: absent
   with_items: "{{found_sites['files'] | map(attribute='path') | list}}"

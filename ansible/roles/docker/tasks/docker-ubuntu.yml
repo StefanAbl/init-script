@@ -57,13 +57,13 @@
 - debug: var=docker_compose_current_version
 - debug: var=docker_compose_version
 - name: Install Docker-Compose
-  get_url: 
+  get_url:
     url : "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
     dest: /usr/local/bin/docker-compose
     mode: 'a+x'
     force: true
   when: >
-    docker_compose_version is defined and 
+    docker_compose_version is defined and
     ( docker_compose_current_version is not defined
     or docker_compose_current_version == ""
     or docker_compose_current_version is version(docker_compose_version, '<') )

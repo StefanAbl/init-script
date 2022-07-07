@@ -8,7 +8,7 @@ Make sure the version of the Docker image which should be used is the same as th
 
 Create Backup of webroot with `sudo tar -cf webroot.tar -C /var/www/nextcloud/ .` where `var/www/nextcloud` is the path to the webroot and the file in the data dir.
 
-Create a datbase dump with `mysqldump --single-transaction -h localhost --all-databases -uroot -p"$MARIADB_ROOT_PASSWORD" > dump.sql` 
+Create a datbase dump with `mysqldump --single-transaction -h localhost --all-databases -uroot -p"$MARIADB_ROOT_PASSWORD" > dump.sql`
 
 # TODO
 

@@ -11,7 +11,7 @@ ansible-playbook -K -i hosts k3s/12-longhorn/playbook.yml --ask-vault-pass
 ```
 
 2. Check that the deployment was successful
-   
+
    ```bash
    kubectl -n longhorn-system get pod
    ```

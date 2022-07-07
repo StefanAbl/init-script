@@ -41,16 +41,16 @@ resource "proxmox_vm_qemu" "proxmox_vm" {
   clone             = "ubuntu-20.04"
   os_type           = "cloud-init"
   agent             = 1
-  cores             = 4 
+  cores             = 4
   cpu               = "host"
-  memory            = 4096 
+  memory            = 4096
   scsihw            = "virtio-scsi-pci"
   guest_agent_ready_timeout = 120
   define_connection_info = false
 
 disk {
     slot            = 0
-    size            = "32G" 
+    size            = "32G"
     type            = "virtio"
     storage         = "NVMe"
     backup          = 1
@@ -83,7 +83,7 @@ lifecycle {
       "sudo ipa-client-install --unattended --enable-dns-updates --mkhomedir --password \"${var.otp}\" && sudo sh -c \"userdel -rf ubuntu && shutdown -r +0\""
     ]
   }
-  
+
   # Login to the ec2-user with the aws key.
   connection {
     type        = "ssh"

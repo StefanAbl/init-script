@@ -12,15 +12,15 @@ function backup(){
   if [ "$(ls -A "$DATADIR")" ]; then
     echo mc cp --recursive $DATADIR "$base/datadir"
     mc cp --recursive $DATADIR "$base/datadir"
-	else
+    else
     echo "$DATADIR is Empty"
-	fi
+    fi
   if [ "$(ls -A $CONFIGDIR)" ]; then
     echo mc cp --recursive $CONFIGDIR "$base/configdir"
     mc cp --recursive $CONFIGDIR "$base/configdir"
-	else
+    else
     echo "$CONFIGDIR is Empty"
-	fi
+    fi
 }
 
 date=$(date +%Y%m%d-%H%M)
@@ -31,7 +31,7 @@ if [ "$3" == "--restore" ]; then
 
 
   rm -rf ${DATADIR:?}/*
-  rm -rf ${CONFIGDIR:?}/* 
+  rm -rf ${CONFIGDIR:?}/*
 
   mc cp --recursive "$base"/datadir/jellyfin/ $DATADIR/
   chown -R "$5" $DATADIR
