@@ -1,0 +1,78 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://grafana.github.io/helm-charts
+      chart: grafana
+      version: 6.17.10
+      sourceRef:
+        kind: HelmRepository
+        name: grafana-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    imageRenderer:
+      enabled: true
+    grafana.ini:
+      server:
+        domain: grafana.k3s.i.${DOMAIN}
+        root_url: https://%(domain)s/
+        read_timeout: 10m
+      dataproxy:
+        timeout: 600
+      security:
+        disable_initial_admin_creation: true
+      auth.ldap:
+        enable: true
+        # config_file: /etc/grafana/ldap.toml
+      smtp:
+        enabled: true
+        host: mail.${DOMAIN}:587
+        user: ${GRAFANA_USER}@${DOMAIN}
+        password: ${GRAFANA_USER_PASS}
+        from_address: svc_grafana@${DOMAIN}
+        ehlo_identity: "grafana.k3s.i.${DOMAIN}"
+    extraConfigmapMounts:
+    - name: grafana-ldap-config
+      mountPath: /etc/grafana/
+      subPath: ldap.toml # (optional)
+    extraObjects:
+      - apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          namespace: monitoring
+          name: grafana-ldap-config
+          data:
+            ldap.toml: |
+              [[servers]]
+              host = "ipa.i.${DOMAIN}"
+              # Set to true if LDAP server should use an encrypted TLS connection (either with STARTTLS or LDAPS)
+              use_ssl = true
+              # set to true if you want to skip SSL cert validation
+              ssl_skip_verify = true
+              bind_dn = "uid=${GRAFANA_USER},cn=users,cn=accounts,dc=i,dc=stabl,dc=one"
+              bind_password = "${GRAFANA_USER_PASS}"
+
+              # User search filter, for example "(cn=%s)" or "(sAMAccountName=%s)" or "(uid=%s)"
+              # Allow login from email or username, example "(|(sAMAccountName=%s)(userPrincipalName=%s))"
+              search_filter = "(&(uid=%s)(memberof=cn=ipausers,cn=groups,cn=accounts,dc=i,dc=stabl,dc=one))"
+              search_base_dns = ["dc=i,dc=stabl,dc=one"]
+
+              # Specify names of the LDAP attributes your LDAP uses
+              [servers.attributes]
+              member_of = "memberOf"
+              email =  "mail"
+              name = "displayName"
+              username = "uid"
+
+              [[servers.group_mappings]]
+              group_dn = "cn=admins,cn=groups,cn=accounts,dc=i,dc=stabl,dc=one"
+              org_role = "Admin"
+              grafana_admin = true
+              # The Grafana organization database id, optional, if left out the default org (id 1) will be used
+              # org_id = 1
