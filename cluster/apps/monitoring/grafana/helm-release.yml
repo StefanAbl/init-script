@@ -27,6 +27,10 @@ spec:
         timeout: 600
       security:
         disable_initial_admin_creation: true
+      auth.ldap:
+        enabled: true
+        allow_sign_up: true
+        config_file: /etc/grafana/ldap.toml
       smtp:
         enabled: true
         host: mail.${DOMAIN}:587
