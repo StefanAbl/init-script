@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tphc
+  namespace: websites
+  annotations:
+    keel.sh/policy: "force"
+    keel.sh/trigger: poll     # enable active repository checking
+    keel.sh/pollSchedule: "@every 5m"
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tphc
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: tphc
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/webserver: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    spec:
+      volumes:
+        - name: run
+          emptyDir:
+            medium: ""
+        - name: log
+          emptyDir:
+            medium: ""
+        - name: cache
+          emptyDir:
+            medium: ""
+      containers:
+        - name: webserver
+          image: "ghcr.io/devstardi/thepixelhead.co"
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: "500m"
+              memory: 300Mi
+          ports:
+            - containerPort: 8000
+              name: website
+          volumeMounts:
+            - name: run
+              mountPath:  /var/run
+            - name: log
+              mountPath:  /var/log/nginx
+            - name: cache
+              mountPath:  /var/cache/nginx
+          readinessProbe:
+            httpGet:
+              path: /product.html
+              port: 8000
+              # httpHeaders:
+              # - name: Custom-Header
+              #   value: Awesome
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+      securityContext:
+        fsGroup: 1000
+      automountServiceAccountToken: false
+status: {}
