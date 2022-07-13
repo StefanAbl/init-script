@@ -4,3 +4,4 @@ resources:
   - ingress-nginx.yml
   - metallb-system.yml
   - cert-manager.yml
+  - websites.yml
