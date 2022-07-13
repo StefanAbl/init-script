@@ -51,7 +51,7 @@ spec:
           options:
             path: /var/lib/grafana/dashboards/default
     ldap:
-      enable: true
+      enabled: true
       config: |
         [[servers]]
         host = "ipa.i.${DOMAIN}"
