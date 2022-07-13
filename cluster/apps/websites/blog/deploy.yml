@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: blog
-  namespace: default
+  namespace: websites
   annotations:
     keel.sh/policy: "force"
     keel.sh/trigger: poll     # enable active repository checking
