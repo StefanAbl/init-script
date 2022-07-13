@@ -55,6 +55,7 @@ spec:
       config: |
         [[servers]]
         host = "ipa.i.${DOMAIN}"
+        port = 636
         # Set to true if LDAP server should use an encrypted TLS connection (either with STARTTLS or LDAPS)
         use_ssl = true
         # set to true if you want to skip SSL cert validation
