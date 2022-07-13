@@ -37,6 +37,18 @@ spec:
         password: ${GRAFANA_USER_PASS}
         from_address: svc_grafana@${DOMAIN}
         ehlo_identity: "grafana.k3s.i.${DOMAIN}"
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
     extraConfigmapMounts:
     - name: grafana-ldap-config
       mountPath: /etc/grafana/
