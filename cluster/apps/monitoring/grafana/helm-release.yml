@@ -27,9 +27,6 @@ spec:
         timeout: 600
       security:
         disable_initial_admin_creation: true
-      auth.ldap:
-        enable: true
-        # config_file: /etc/grafana/ldap.toml
       smtp:
         enabled: true
         host: mail.${DOMAIN}:587
@@ -49,42 +46,33 @@ spec:
           editable: true
           options:
             path: /var/lib/grafana/dashboards/default
-    extraConfigmapMounts:
-    - name: grafana-ldap-config
-      mountPath: /etc/grafana/
-      subPath: ldap.toml # (optional)
-    extraObjects:
-      - apiVersion: v1
-        kind: ConfigMap
-        metadata:
-          namespace: monitoring
-          name: grafana-ldap-config
-          data:
-            ldap.toml: |
-              [[servers]]
-              host = "ipa.i.${DOMAIN}"
-              # Set to true if LDAP server should use an encrypted TLS connection (either with STARTTLS or LDAPS)
-              use_ssl = true
-              # set to true if you want to skip SSL cert validation
-              ssl_skip_verify = true
-              bind_dn = "uid=${GRAFANA_USER},cn=users,cn=accounts,dc=i,dc=stabl,dc=one"
-              bind_password = "${GRAFANA_USER_PASS}"
+    ldap:
+      enable: true
+      config: |
+        [[servers]]
+        host = "ipa.i.${DOMAIN}"
+        # Set to true if LDAP server should use an encrypted TLS connection (either with STARTTLS or LDAPS)
+        use_ssl = true
+        # set to true if you want to skip SSL cert validation
+        ssl_skip_verify = true
+        bind_dn = "uid=${GRAFANA_USER},cn=users,cn=accounts,dc=i,dc=stabl,dc=one"
+        bind_password = "${GRAFANA_USER_PASS}"
 
-              # User search filter, for example "(cn=%s)" or "(sAMAccountName=%s)" or "(uid=%s)"
-              # Allow login from email or username, example "(|(sAMAccountName=%s)(userPrincipalName=%s))"
-              search_filter = "(&(uid=%s)(memberof=cn=ipausers,cn=groups,cn=accounts,dc=i,dc=stabl,dc=one))"
-              search_base_dns = ["dc=i,dc=stabl,dc=one"]
+        # User search filter, for example "(cn=%s)" or "(sAMAccountName=%s)" or "(uid=%s)"
+        # Allow login from email or username, example "(|(sAMAccountName=%s)(userPrincipalName=%s))"
+        search_filter = "(&(uid=%s)(memberof=cn=ipausers,cn=groups,cn=accounts,dc=i,dc=stabl,dc=one))"
+        search_base_dns = ["dc=i,dc=stabl,dc=one"]
 
-              # Specify names of the LDAP attributes your LDAP uses
-              [servers.attributes]
-              member_of = "memberOf"
-              email =  "mail"
-              name = "displayName"
-              username = "uid"
+        # Specify names of the LDAP attributes your LDAP uses
+        [servers.attributes]
+        member_of = "memberOf"
+        email =  "mail"
+        name = "displayName"
+        username = "uid"
 
-              [[servers.group_mappings]]
-              group_dn = "cn=admins,cn=groups,cn=accounts,dc=i,dc=stabl,dc=one"
-              org_role = "Admin"
-              grafana_admin = true
-              # The Grafana organization database id, optional, if left out the default org (id 1) will be used
-              # org_id = 1
+        [[servers.group_mappings]]
+        group_dn = "cn=admins,cn=groups,cn=accounts,dc=i,dc=stabl,dc=one"
+        org_role = "Admin"
+        grafana_admin = true
+        # The Grafana organization database id, optional, if left out the default org (id 1) will be used
+        # org_id = 1
