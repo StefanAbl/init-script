@@ -118,7 +118,7 @@ spec:
           isDefault: true
           type: loki
           access: proxy
-          url: http://loki-loki-distributed-gateway:3100
+          url: http://loki-loki-distributed-gateway
     dashboards:
       default:
         # Ref: https://grafana.com/grafana/dashboards/12175
