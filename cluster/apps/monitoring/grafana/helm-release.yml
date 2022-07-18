@@ -170,7 +170,7 @@ spec:
       hosts:
       - "grafana.k3s.i.${DOMAIN}"
       tls:
-        secretName: grafana-tls
+      - secretName: grafana-tls
         hosts:
         - "grafana.k3s.i.${DOMAIN}"
     ldap:
