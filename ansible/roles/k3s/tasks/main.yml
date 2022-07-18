@@ -1,5 +1,14 @@
 ---
 
+- ansible.posix.sysctl:
+    name: fs.inotify.max_user_watches
+    value: '60000'
+    state: present
+- ansible.posix.sysctl:
+    name: fs.inotify.max_user_instances
+    value: '512'
+    state: present
+
 - include: addons.yml
   tags:
   - addons
