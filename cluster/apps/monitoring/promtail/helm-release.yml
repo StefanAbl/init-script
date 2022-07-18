@@ -41,7 +41,8 @@ spec:
         cpu: 100m
         memory: 128Mi
     config:
-      lokiAddress: http://loki-loki-distributed-gateway/loki/api/v1/push
+      clients:
+      - url: http://loki-loki-distributed-gateway/loki/api/v1/push
       snippets:
         extraRelabelConfigs:
           - target_label: host
