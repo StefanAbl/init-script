@@ -19,8 +19,9 @@ spec:
     useStatefulSet: true
     extraConfigmapMounts:
     - name: litestream-config
-      configMap:
-          name: grafana-litestream
+      mountPath: /etc/litestream.yml
+      configMap: grafana-litestream
+      readonly: true
     extraInitContainers:
     - name: init-litestream
       image: litestream/litestream:0.3.8
