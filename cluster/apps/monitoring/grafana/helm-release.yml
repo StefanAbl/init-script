@@ -15,6 +15,13 @@ spec:
         name: grafana-charts
         namespace: flux-system
       interval: 5m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 7
   values:
     useStatefulSet: true
     extraConfigmapMounts:
