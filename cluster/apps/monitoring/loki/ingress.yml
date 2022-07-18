@@ -10,6 +10,7 @@ metadata:
     cert-manager.io/common-name: loki.k3s.i.${DOMAIN}
     nginx.ingress.kubernetes.io/auth-type: basic
     nginx.ingress.kubernetes.io/auth-secret: lokiauth
+    nginx.ingress.kubernetes.io/auth-secret-type: auth-map
     nginx.ingress.kubernetes.io/auth-realm: "Enter your credentials"
 
     nignx.ingress.kubernetes.io/force-ssl-redirect: "true"
