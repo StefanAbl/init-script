@@ -60,6 +60,36 @@ spec:
         runAsUser: 472
         fsGroup: 472
       containers:
+        - name: litestream
+          image: litestream/litestream:0.3.8
+          args: ['replicate']
+          volumeMounts:
+          - name: grafana
+            mountPath: /var/lib/grafana
+          - name: litestream-config
+            mountPath: /etc/litestream.yml
+            subPath: litestream.yml
+          env:
+          - name: LITESTREAM_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: grafana-litestream
+                key: access_key
+          - name: LITESTREAM_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: grafana-litestream
+                key: secret_key
+          ports:
+          - name: metrics
+            containerPort: 9090
+          resources:
+            limits:
+              memory: 200Mi
+              cpu: "1"
+            requests:
+              cpu: 100m
+              memory: 100Mi
         - image: grafana/grafana:8.5.3-ubuntu
           name: grafana
           env:
@@ -136,6 +166,9 @@ spec:
                 path: grafana.ini
               - key: "ldap.toml"
                 path: ldap.toml
+        - name: litestream-config
+          configMap:
+              name: grafana-litestream
       automountServiceAccountToken: false
   strategy: {}
 ---

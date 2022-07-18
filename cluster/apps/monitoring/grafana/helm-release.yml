@@ -16,6 +16,32 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    useStatefulSet: true
+    extraConfigmapMounts:
+    - name: litestream-config
+      configMap:
+          name: grafana-litestream
+    extraInitContainers:
+    - name: init-litestream
+      image: litestream/litestream:0.3.8
+      args: ['restore', '-if-db-not-exists', '-v', '/var/lib/grafana/grafana.db']
+      volumeMounts:
+      - name: storage
+        mountPath: "/var/lib/grafana"
+      - name: grafana-litestream
+        mountPath: /etc/litestream.yml
+        subPath: litestream.yml
+      env:
+      - name: LITESTREAM_ACCESS_KEY_ID
+        valueFrom:
+          secretKeyRef:
+            name: grafana-litestream
+            key: access_key
+      - name: LITESTREAM_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: grafana-litestream
+            key: secret_key
     imageRenderer:
       enabled: true
     grafana.ini:
@@ -44,7 +70,7 @@ spec:
         providers:
         - name: 'default'
           orgId: 1
-          folder: ''
+          folder: 'autoimported'
           type: file
           disableDeletion: false
           editable: true
@@ -54,7 +80,7 @@ spec:
       datasources.yaml:
         apiVersion: 1
         datasources:
-        - name: Prometheus
+        - name: Prometheus-Kube
           type: prometheus
           url: http://kube-prometheus-stack-prometheus:9090
           access: proxy
@@ -69,7 +95,7 @@ spec:
         calico-felix:
           gnetId: 12175
           revision: 5
-          datasource: Prometheus
+          datasource: Prometheus-Kube
         # Ref: https://grafana.com/grafana/dashboards/2842
         # minio:
         #   gnetId: 13502
@@ -92,10 +118,10 @@ spec:
         #   datasource: Prometheus
         flux-cluster:
           url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/cluster.json
-          datasource: Prometheus
+          datasource: Prometheus-Kube
         flux-control-plane:
           url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/control-plane.json
-          datasource: Prometheus
+          datasource: Prometheus-Kube
     sidecar:
       dashboards:
         enabled: true

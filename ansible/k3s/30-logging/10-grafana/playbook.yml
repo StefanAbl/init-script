@@ -3,8 +3,6 @@
 - hosts: k3s-0.i.stabl.one
   become: yes
   become_method: sudo
-  vars_files:
-   - ../../../secrets.yml
   tasks:
   - name: create secret
     community.kubernetes.k8s:
@@ -22,7 +20,42 @@
           password: "{{logging.grafana.bind_user.password}}"
           secret_key: "{{logging.grafana.secret_key}}"
     register: secret
+  - name: create litestream secret
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      definition:
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          namespace: default
+          name: grafana-litestream
+        type: Opaque
+        stringData:
+          access_key: "{{ logging.grafana.litestream.access_key}}"
+          secret_key: "{{ logging.grafana.litestream.secret_key}}"
 
+  - name: create litestream config map
+    register: configMap
+    community.kubernetes.k8s:
+      kubeconfig: /etc/rancher/k3s/k3s.yaml
+      state: present
+      apply: true
+      definition:
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          namespace: default
+          name: grafana-litestream
+        data:
+          litestream.yml: |
+            dbs:
+            - path: /var/lib/grafana/grafana.db
+              replicas:
+                - type: s3
+                  bucket: grafana
+                  path: grafana
+                  endpoint: https://s3.i.stabl.one:9000
 
   - name: create config map
     register: configMap
