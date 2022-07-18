@@ -36,7 +36,7 @@ spec:
       volumeMounts:
       - name: storage
         mountPath: "/var/lib/grafana"
-      - name: grafana-litestream
+      - name: litestream-config
         mountPath: /etc/litestream.yml
         subPath: litestream.yml
       env:
