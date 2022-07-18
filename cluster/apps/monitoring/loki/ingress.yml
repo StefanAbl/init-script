@@ -8,8 +8,10 @@ metadata:
     cert-manager.io/issuer-group: certmanager.freeipa.org
     cert-manager.io/issuer-kind: ClusterIssuer
     cert-manager.io/common-name: loki.k3s.i.${DOMAIN}
-    ingress.kubernetes.io/auth-type: basic
-    ingress.kubernetes.io/auth-secret: lokiauth
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: lokiauth
+    nginx.ingress.kubernetes.io/auth-realm: "Enter your credentials"
+
     nignx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   ingressClassName: nginx
