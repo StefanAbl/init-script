@@ -7,15 +7,15 @@ metadata:
     cert-manager.io/issuer: freeipa-issuer
     cert-manager.io/issuer-group: certmanager.freeipa.org
     cert-manager.io/issuer-kind: ClusterIssuer
-    cert-manager.io/common-name: blog.k3s.i.stabl.one
+    cert-manager.io/common-name: blog.k3s.i.${DOMAIN}
 spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - blog.k3s.i.stabl.one
+    - blog.k3s.i.${DOMAIN}
     secretName: blog-cert
   rules:
-  - host: blog.k3s.i.stabl.one
+  - host: blog.k3s.i.${DOMAIN}
     http:
       paths:
         - path: "/"

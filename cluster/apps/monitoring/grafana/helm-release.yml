@@ -114,11 +114,11 @@ spec:
           type: prometheus
           url: http://kube-prometheus-stack-prometheus:9090
           access: proxy
-        # - name: Loki
-        #   isDefault: true
-        #   type: loki
-        #   access: proxy
-        #   url: http://loki:3100
+        - name: Loki
+          isDefault: true
+          type: loki
+          access: proxy
+          url: http://loki-loki-distributed-gateway:3100
     dashboards:
       default:
         # Ref: https://grafana.com/grafana/dashboards/12175
@@ -166,7 +166,7 @@ spec:
         cert-manager.io/issuer: freeipa-issuer
         cert-manager.io/issuer-group: certmanager.freeipa.org
         cert-manager.io/issuer-kind: ClusterIssuer
-        cert-manager.io/common-name: grafana.k3s.i.stabl.one
+        cert-manager.io/common-name: grafana.k3s.i.${DOMAIN}
         nignx.ingress.kubernetes.io/force-ssl-redirect: "true"
       hosts:
       - "grafana.k3s.i.${DOMAIN}"

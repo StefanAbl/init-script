@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: loki-ingress
+  namespace: monitoring
+  annotations:
+    cert-manager.io/issuer: freeipa-issuer
+    cert-manager.io/issuer-group: certmanager.freeipa.org
+    cert-manager.io/issuer-kind: ClusterIssuer
+    cert-manager.io/common-name: loki.k3s.i.${DOMAIN}
+    ingress.kubernetes.io/auth-type: basic
+    ingress.kubernetes.io/auth-secret: lokiauth
+    nignx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - loki.k3s.i.${DOMAIN}
+    secretName: loki-cert
+  rules:
+    - host: loki.k3s.i.${DOMAIN}
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: loki-loki-distributed-gateway
+                port:
+                  number: 80

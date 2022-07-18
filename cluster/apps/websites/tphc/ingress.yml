@@ -8,15 +8,15 @@ metadata:
     # cert-manager.io/issuer: freeipa-issuer
     # cert-manager.io/issuer-group: certmanager.freeipa.org
     # cert-manager.io/issuer-kind: ClusterIssuer
-    # cert-manager.io/common-name: loki.k3s.i.stabl.one
+    # cert-manager.io/common-name: loki.k3s.i.${DOMAIN}
 spec:
   ingressClassName: nginx
   # tls:
   # - hosts:
-  #   - loki.k3s.i.stabl.one
+  #   - loki.k3s.i.${DOMAIN}
   #   secretName: loki-cert
   rules:
-    - host: tphc.k3s.i.stabl.one
+    - host: tphc.k3s.i.${DOMAIN}
       http:
         paths:
           - path: "/"

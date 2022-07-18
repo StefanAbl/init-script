@@ -11,4 +11,4 @@ data:
         - type: s3
           bucket: grafana
           path: grafana
-          endpoint: https://s3.i.stabl.one:9000
+          endpoint: https://s3.i.${DOMAIN}:9000
