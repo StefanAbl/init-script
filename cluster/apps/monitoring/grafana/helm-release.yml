@@ -29,6 +29,7 @@ spec:
       mountPath: /etc/litestream.yml
       configMap: grafana-litestream
       readonly: true
+      subPath: ""
     extraInitContainers:
     - name: init-litestream
       image: litestream/litestream:0.3.8
