@@ -4,3 +4,4 @@ resources:
   - prometheus-stack
   - grafana
   - loki
+  - event-exporter
