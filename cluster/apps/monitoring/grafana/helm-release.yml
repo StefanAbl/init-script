@@ -55,7 +55,7 @@ spec:
         image: litestream/litestream:0.3.8
         args: ['replicate']
         volumeMounts:
-        - name: grafana
+        - name: storage
           mountPath: /var/lib/grafana
         - name: litestream-config
           mountPath: /etc/litestream.yml
