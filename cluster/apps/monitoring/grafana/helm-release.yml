@@ -50,27 +50,27 @@ spec:
           secretKeyRef:
             name: grafana-litestream
             key: secret_key
-    extraContainers:
-    - name: litestream
-      image: litestream/litestream:0.3.8
-      args: ['replicate']
-      volumeMounts:
-      - name: grafana
-        mountPath: /var/lib/grafana
-      - name: litestream-config
-        mountPath: /etc/litestream.yml
-        subPath: litestream.yml
-      env:
-      - name: LITESTREAM_ACCESS_KEY_ID
-        valueFrom:
-          secretKeyRef:
-            name: grafana-litestream
-            key: access_key
-      - name: LITESTREAM_SECRET_ACCESS_KEY
-        valueFrom:
-          secretKeyRef:
-            name: grafana-litestream
-            key: secret_key
+    extraContainers: |
+      - name: litestream
+        image: litestream/litestream:0.3.8
+        args: ['replicate']
+        volumeMounts:
+        - name: grafana
+          mountPath: /var/lib/grafana
+        - name: litestream-config
+          mountPath: /etc/litestream.yml
+          subPath: litestream.yml
+        env:
+        - name: LITESTREAM_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: grafana-litestream
+              key: access_key
+        - name: LITESTREAM_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: grafana-litestream
+              key: secret_key
     imageRenderer:
       enabled: true
     grafana.ini:
