@@ -6,3 +6,4 @@ resources:
   - loki
   - event-exporter
   - promtail
+  - prometheus-external

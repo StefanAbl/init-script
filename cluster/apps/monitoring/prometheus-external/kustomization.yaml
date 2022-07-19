@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - prom-pv.yml
+  - prom-pvc.yml
+  - prom-sts.yml
+configMapGenerator:
+  - name: prometheus-external-config
+    files:
+      - "prometheus.yml"
