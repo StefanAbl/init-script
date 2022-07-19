@@ -6,5 +6,6 @@ resources:
   - prom-sts.yml
 configMapGenerator:
   - name: prometheus-external-config
+    namespace: monitoring
     files:
       - "prometheus.yml"
