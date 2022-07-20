@@ -9,3 +9,4 @@ resources:
   - prometheus-external
   - unifi-poller
   - nextcloud-exporter
+  - influxdb
