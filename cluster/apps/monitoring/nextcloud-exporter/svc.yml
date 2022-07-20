@@ -1,0 +1,11 @@
+ apiVersion: v1
+kind: Service
+metadata:
+  name: nc-exporter
+  namespace: monitoring
+spec:
+  selector:
+    app: nc-exporter
+  ports:
+  - port: 9205
+    targetPort: prom

@@ -8,3 +8,4 @@ resources:
   - promtail
   - prometheus-external
   - unifi-poller
+  - nextcloud-exporter
