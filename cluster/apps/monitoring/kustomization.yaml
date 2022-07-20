@@ -7,3 +7,4 @@ resources:
   - event-exporter
   - promtail
   - prometheus-external
+  - unifi-poller
