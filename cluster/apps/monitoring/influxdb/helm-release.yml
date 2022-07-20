@@ -30,14 +30,14 @@ spec:
     ingress:
       enabled: true
       ingressClassName: nginx
-      hostname: influxdb2.k3s.i.${DOMAIN}
+      hostname: flux.k3s.i.${DOMAIN}
       tls: true
       secretName: influxdb2-cert
       annotations:
         cert-manager.io/issuer: freeipa-issuer
         cert-manager.io/issuer-group: certmanager.freeipa.org
         cert-manager.io/issuer-kind: ClusterIssuer
-        cert-manager.io/common-name: influxdb2.k3s.i.${DOMAIN}
+        cert-manager.io/common-name: flux.k3s.i.${DOMAIN}
         nignx.ingress.kubernetes.io/force-ssl-redirect: "true"
     resources:
       limits:
