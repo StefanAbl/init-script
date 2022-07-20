@@ -4,8 +4,3 @@ resources:
   - deploy.yml
   - secret.yml
   - svc.yml
-configMapGenerator:
-  - name: unifi-poller
-    namespace: monitoring
-    files:
-    - poller.conf
