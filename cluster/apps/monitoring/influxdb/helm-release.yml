@@ -29,7 +29,7 @@ spec:
       size: 10Gi
     ingress:
       enabled: true
-      ingressClassName: nginx
+      className: nginx
       hostname: influxdb2.k3s.i.${DOMAIN}
       tls: true
       secretName: influxdb2-cert
