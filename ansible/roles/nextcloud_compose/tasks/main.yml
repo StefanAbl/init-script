@@ -26,6 +26,7 @@
     - name: "/nextcloud_local/compose"
     - name: "/nextcloud_local/db"
       owner: 999
+    - name: "/nextcloud_local/db_config"
     - name: "/nextcloud_local/webroot"
       owner: www-data
     - name: "/nextcloud_local/nginx"
@@ -46,6 +47,12 @@
   copy:
     src: nginx.conf
     dest: /nextcloud_local/nginx
+  become: true
+
+- name: Copy MariaDB configuration file
+  copy:
+    src: custom.cnf
+    dest: "/nextcloud_local/db_config"
   become: true
 
 - name: Create files for secrets

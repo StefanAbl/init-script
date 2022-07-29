@@ -10,6 +10,7 @@ services:
       - /nextcloud_local/secrets/nextcloud_maridb_root_password:/run/secrets/nextcloud_maridb_root_password:ro
       - /nextcloud_local/secrets/nextcloud_db_user_pass:/run/secrets/nextcloud_db_user_pass:ro
       - /nextcloud_local/dbdump/dbBackup.sql:/docker-entrypoint-initdb.d/dbBackup.sql:ro
+      - /nextcloud_local/db_config:/etc/mysql/conf.d:ro
     environment:
       - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/nextcloud_maridb_root_password
       - MARIADB_PASSWORD_FILE=/run/secrets/nextcloud_db_user_pass
