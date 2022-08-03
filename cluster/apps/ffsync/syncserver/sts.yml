@@ -69,6 +69,8 @@ spec:
           volumeMounts:
             - name: db
               mountPath: /data
+            - name: tmp
+              mountPath: /tmp
           resources:
             requests:
               memory: 100Mi
@@ -120,6 +122,8 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
       volumes:
+        - name: tmp
+          emptyDir: {}
         - name: db
           emptyDir: {}
         - name: litestream-config-volume
