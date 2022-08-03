@@ -18,6 +18,9 @@ spec:
         container.apparmor.security.beta.kubernetes.io/syncserver: runtime/default
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
     spec:
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
       init-containers:
       - name: init-litestream
         image: litestream/litestream:0.3.8
