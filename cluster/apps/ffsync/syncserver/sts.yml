@@ -21,7 +21,7 @@ spec:
       securityContext:
         runAsUser: 1001
         runAsGroup: 1001
-      init-containers:
+      initContainers:
       - name: init-litestream
         image: litestream/litestream:0.3.8
         args: ['restore', '-if-db-not-exists', '-v', '/data/syncserver.db']
