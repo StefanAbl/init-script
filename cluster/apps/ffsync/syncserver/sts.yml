@@ -25,7 +25,7 @@ spec:
         volumeMounts:
         - name: db
           mountPath: "/data"
-        - name: litestream-config
+        - name: litestream-config-volume
           mountPath: /etc/litestream.yml
           subPath: litestream.yml
         env:
@@ -87,7 +87,7 @@ spec:
           volumeMounts:
             - name: db
               mountPath: /data
-            - name: litestream-config
+            - name: litestream-config-volume
               mountPath: /etc/litestream.yml
               subPath: litestream.yml
           env:
@@ -119,5 +119,8 @@ spec:
       volumes:
         - name: db
           emptyDir: {}
+        - name: litestream-config-volume
+          configMap:
+              name: litestream-config
       automountServiceAccountToken: false
   updateStrategy: {}
