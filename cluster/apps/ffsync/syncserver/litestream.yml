@@ -1,0 +1,7 @@
+dbs:
+- path: /data/syncserver.db
+  replicas:
+  - type: s3
+    bucket: ffsync
+    path: ffsync
+    endpoint: https://s3.i.${DOMAIN}:9000

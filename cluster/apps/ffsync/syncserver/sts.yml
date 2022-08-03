@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: StatefulSet
+metadata:
+  name: syncserver
+spec:
+  selector:
+    matchLabels:
+      app: syncserver
+  serviceName: syncserver
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: syncserver
+    spec:
+      init-containers:
+      - name: init-litestream
+        image: litestream/litestream:0.3.8
+        args: ['restore', '-if-db-not-exists', '-v', '/data/syncserver.db']
+        volumeMounts:
+        - name: db
+          mountPath: "/data"
+        - name: litestream-config
+          mountPath: /etc/litestream.yml
+          subPath: litestream.yml
+        env:
+        - name: LITESTREAM_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: litestream
+              key: access_key
+        - name: LITESTREAM_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: litestream
+              key: secret_key
+      containers:
+      - name: syncserver
+        image: mozilla/syncserver
+        env:
+        - name: SYNCSERVER_PUBLIC_URL
+          value: https://ffsync.${OLD_DOMAIN}
+        - name: SYNCSERVER_SQLURI
+          value: sqlite:////data/syncserver.db
+        - name: SYNCSERVER_BATCH_UPLOAD_ENABLED
+          value: "true"
+        - name: SYNCSERVER_FORCE_WSGI_ENVIRON
+          value: "false"
+        - name: SYNCSERVER_FORWARDED_ALLOW_IPS
+          value: "*"
+        - name: PORT
+          value: "5001"
+        - name: SYNCSERVER_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: syncserver
+              key: token
+        ports:
+        - containerPort: 5001
+          name: web
+        volumeMounts:
+        - name: db
+          mountPath: /data
+      volumes:
+      - name: db
+        emptyDir:
+          medium: ""
