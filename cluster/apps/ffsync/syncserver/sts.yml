@@ -68,10 +68,10 @@ spec:
               mountPath: /data
           resources:
             requests:
-              memory: 100m
+              memory: 100Mi
               cpu: 50m
             limits:
-              memory: 400m
+              memory: 400Mi
               cpu: 500m
           securityContext:
             allowPrivilegeEscalation: false
@@ -103,10 +103,10 @@ spec:
                   key: secret_key
           resources:
             requests:
-              memory: 100m
+              memory: 100Mi
               cpu: 50m
             limits:
-              memory: 200m
+              memory: 200Mi
               cpu: 250m
           securityContext:
             allowPrivilegeEscalation: false
