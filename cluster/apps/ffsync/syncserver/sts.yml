@@ -13,76 +13,90 @@ spec:
     metadata:
       labels:
         app: syncserver
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/litestream: runtime/default
+        container.apparmor.security.beta.kubernetes.io/syncserver: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
     spec:
-      init-containers:
-      - name: init-litestream
-        image: litestream/litestream:0.3.8
-        args: ['restore', '-if-db-not-exists', '-v', '/data/syncserver.db']
-        volumeMounts:
-        - name: db
-          mountPath: "/data"
-        - name: litestream-config
-          mountPath: /etc/litestream.yml
-          subPath: litestream.yml
-        env:
-        - name: LITESTREAM_ACCESS_KEY_ID
-          valueFrom:
-            secretKeyRef:
-              name: litestream
-              key: access_key
-        - name: LITESTREAM_SECRET_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              name: litestream
-              key: secret_key
       containers:
-      - name: syncserver
-        image: mozilla/syncserver
-        env:
-        - name: SYNCSERVER_PUBLIC_URL
-          value: https://ffsync.${OLD_DOMAIN}
-        - name: SYNCSERVER_SQLURI
-          value: sqlite:////data/syncserver.db
-        - name: SYNCSERVER_BATCH_UPLOAD_ENABLED
-          value: "true"
-        - name: SYNCSERVER_FORCE_WSGI_ENVIRON
-          value: "false"
-        - name: SYNCSERVER_FORWARDED_ALLOW_IPS
-          value: "*"
-        - name: PORT
-          value: "5001"
-        - name: SYNCSERVER_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: syncserver
-              key: token
-        ports:
-        - containerPort: 5001
-          name: web
-        volumeMounts:
-        - name: db
-          mountPath: /data
-      - name: litestream
-        image: litestream/litestream:0.3.8
-        args: ['replicate']
-        volumeMounts:
-        - name: db
-          mountPath: /data
-        - name: litestream-config
-          mountPath: /etc/litestream.yml
-          subPath: litestream.yml
-        env:
-        - name: LITESTREAM_ACCESS_KEY_ID
-          valueFrom:
-            secretKeyRef:
-              name: litestream
-              key: access_key
-        - name: LITESTREAM_SECRET_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              name: litestream
-              key: secret_key
+        - name: syncserver
+          image: mozilla/syncserver:latest
+          env:
+            - name: SYNCSERVER_PUBLIC_URL
+              value: https://ffsync.${OLD_DOMAIN}
+            - name: SYNCSERVER_SQLURI
+              value: sqlite:////data/syncserver.db
+            - name: SYNCSERVER_BATCH_UPLOAD_ENABLED
+              value: "true"
+            - name: SYNCSERVER_FORCE_WSGI_ENVIRON
+              value: "false"
+            - name: SYNCSERVER_FORWARDED_ALLOW_IPS
+              value: "*"
+            - name: PORT
+              value: "5001"
+            - name: SYNCSERVER_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: syncserver
+                  key: token
+          ports:
+            - containerPort: 5001
+              name: web
+          volumeMounts:
+            - name: db
+              mountPath: /data
+          resources:
+            requests:
+              memory: 100m
+              cpu: 50m
+            limits:
+              memory: 400m
+              cpu: 500m
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+        - name: litestream
+          image: litestream/litestream:0.3.8
+          args: ['replicate']
+          volumeMounts:
+            - name: db
+              mountPath: /data
+            - name: litestream-config
+              mountPath: /etc/litestream.yml
+              subPath: litestream.yml
+          env:
+            - name: LITESTREAM_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: litestream
+                  key: access_key
+            - name: LITESTREAM_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: litestream
+                  key: secret_key
+          resources:
+            requests:
+              memory: 100m
+              cpu: 50m
+            limits:
+              memory: 200m
+              cpu: 250m
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
       volumes:
-      - name: db
-        emptyDir:
-          medium: ""
+        - name: db
+          emptyDir: {}
+      automountServiceAccountToken: false
+  updateStrategy: {}
