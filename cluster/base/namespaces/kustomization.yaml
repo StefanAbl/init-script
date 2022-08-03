@@ -6,3 +6,4 @@ resources:
   - cert-manager.yml
   - websites.yml
   - monitoring.yml
+  - ffsync.yml
