@@ -6,6 +6,8 @@ resources:
   - litestream-secret.yml
   - service.yml
   - ingress.yml
+generatorOptions:
+  disableNameSuffixHash: true
 configMapGenerator:
   - name: litestream-config
     namespace: ffsync
