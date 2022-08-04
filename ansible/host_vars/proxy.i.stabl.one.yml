@@ -31,13 +31,13 @@ promtail:
           Expression: '(?:(?:\/[A-Za-z0-9-._~]+))(\?.*?)(?:(?:"|\s))'
           replace: ''
       - match:
-        selector: '{job="nginx_access_log"}'
-        stages:
-        - json:
-            expressions:
-              server_name: "server_name"
-        - labels:
-            server_name:
+          selector: '{job="nginx_access_log"}'
+          stages:
+          - json:
+              expressions:
+                server_name: "server_name"
+          - labels:
+              server_name:
       static_configs:
       - targets:
         - localhost
@@ -131,7 +131,7 @@ servers:
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection "upgrade";
   - name: ffsync.thorn.dynv6.net
-    upstream: https://10.13.2.106:5001
+    upstream: https://syncserver.k3s.i.stabl.one
     verification: dns
     api: dns_dynv6
   - name: unifi.thorn.dynv6.net
