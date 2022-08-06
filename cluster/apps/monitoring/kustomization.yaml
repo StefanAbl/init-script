@@ -10,3 +10,4 @@ resources:
   - unifi-poller
   - nextcloud-exporter
   - influxdb
+  - node-problem-detector
