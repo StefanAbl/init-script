@@ -160,6 +160,11 @@ spec:
           gnetId: 11313
           revision: 8
           datasource: Prometheus-External
+        # Ref: https://grafana.com/grafana/dashboards/15549
+        node-problem-detector:
+          gnetId: 15549
+          revision: 1
+          datasource: Prometheus-Kube
         flux-cluster:
           url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/cluster.json
           datasource: Prometheus-Kube
