@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: document-server
+  namespace: default
+  annotations:
+    cert-manager.io/issuer: freeipa-issuer
+    cert-manager.io/issuer-group: certmanager.freeipa.org
+    cert-manager.io/issuer-kind: ClusterIssuer
+    cert-manager.io/common-name: document-server.k3s.i.${DOMAIN}
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - document-server.k3s.i.${DOMAIN}
+    secretName: document-server-cert
+  rules:
+  - host: document-server.k3s.i.${DOMAIN}
+    http:
+      paths:
+        - path: "/"
+          pathType: Prefix
+          backend:
+            service:
+              name: document-server
+              port:
+                number: 80
