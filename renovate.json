@@ -32,7 +32,7 @@
         "cluster/.+\\helm-release.ya?ml$"
       ],
       "matchStrings": [
-        "registryUrl=(?<registryUrl>\\S+) chart=(?<depName>\\S+)\n.*?(?<currentValue>[^-\\s]*)\n",
+        "registryUrl=(?<registryUrl>\\S+)\n\\s*chart: (?<depName>\\S+)\n.*?(?<currentValue>[^-\\s]*)\n",
         "datasource=(?<datasource>\\S+) image=(?<depName>\\S+)\n.*?-\\s(.*?)\/(?<currentValue>[^/]+)\/[^/]+\n"
       ],
       "datasourceTemplate": "{{#if datasource}}{{{datasource}}}{{else}}helm{{/if}}"
