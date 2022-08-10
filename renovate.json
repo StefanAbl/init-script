@@ -6,6 +6,9 @@
   "kubernetes": {
     "fileMatch": [
       "cluster/.+\\.ya?ml$"
+    ],
+    "ignorePaths": [
+      "cluster/.+/helm-release\\.ya?ml$"
     ]
   },
   "regexManagers": [
