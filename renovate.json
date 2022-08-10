@@ -11,6 +11,12 @@
     "ghcr.io/fluxcd/notification-controller",
     "ghcr.io/fluxcd/source-controller"
   ],
+  "flux": {
+    "fileMatch": ["cluster/.+\\.ya?ml$"]
+  },
+  "helm-values": {
+    "fileMatch": ["cluster/.+\\.ya?ml$"]
+  },
   "kubernetes": {
     "fileMatch": [
       "cluster/.+\\.ya?ml$"
@@ -23,7 +29,7 @@
     {
       "description": "Process CRD dependencies",
       "fileMatch": [
-        "cluster/crds/.+\\.ya?ml$"
+        "cluster/.+\\helm-release.ya?ml$"
       ],
       "matchStrings": [
         "registryUrl=(?<registryUrl>\\S+) chart=(?<depName>\\S+)\n.*?(?<currentValue>[^-\\s]*)\n",
