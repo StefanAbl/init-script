@@ -23,7 +23,7 @@ spec:
         runAsGroup: 1001
       initContainers:
       - name: init-litestream
-        image: litestream/litestream:0.3.8
+        image: litestream/litestream:0.3.9
         args: ['restore', '-if-db-not-exists', '-v', '/data/syncserver.db']
         volumeMounts:
         - name: db
@@ -87,7 +87,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
         - name: litestream
-          image: litestream/litestream:0.3.8
+          image: litestream/litestream:0.3.9
           args: ['replicate']
           volumeMounts:
             - name: db

@@ -32,7 +32,7 @@ spec:
       subPath: ""
     extraInitContainers:
     - name: init-litestream
-      image: litestream/litestream:0.3.8
+      image: litestream/litestream:0.3.9
       args: ['restore', '-if-db-not-exists', '-v', '/var/lib/grafana/grafana.db']
       volumeMounts:
       - name: storage
@@ -53,7 +53,7 @@ spec:
             key: secret_key
     extraContainers: |
       - name: litestream
-        image: litestream/litestream:0.3.8
+        image: litestream/litestream:0.3.9
         args: ['replicate']
         volumeMounts:
         - name: storage
