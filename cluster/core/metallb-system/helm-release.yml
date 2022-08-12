@@ -2,7 +2,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: metallb
-  namespace: metallb-sytem
+  namespace: metallb-system
 spec:
   interval: 5m
   chart:
@@ -15,10 +15,3 @@ spec:
         name: metallb
         namespace: flux-system
       interval: 5m
-  values:
-    configInline:
-      address-pools:
-      - name: default
-        protocol: layer2
-        addresses:
-        - 10.13.2.30-10.13.2.39
