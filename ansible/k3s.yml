@@ -17,3 +17,9 @@
   - zsh
   - nfs_mount
   - k3s
+  tasks:
+  - name: Stop snapd
+    systemd:
+      state: stopped
+      enabled: no
+      name: snapd
