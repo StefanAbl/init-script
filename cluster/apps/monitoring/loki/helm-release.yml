@@ -26,7 +26,7 @@ spec:
     ingester:
       replicas: 3
       podAnnotations:
-        container.apparmor.security.beta.kubernetes.io/loki: runtime/default
+        container.apparmor.security.beta.kubernetes.io/ingester: runtime/default
       resources:
         limits:
           cpu: 250m
@@ -36,7 +36,7 @@ spec:
           memory: 100Mi
     querier:
       podAnnotations:
-        container.apparmor.security.beta.kubernetes.io/loki: runtime/default
+        container.apparmor.security.beta.kubernetes.io/querier: runtime/default
       replicas: 3
       resources:
         limits:
@@ -47,7 +47,7 @@ spec:
           memory: 300Mi
     distributor:
       podAnnotations:
-        container.apparmor.security.beta.kubernetes.io/loki: runtime/default
+        container.apparmor.security.beta.kubernetes.io/distributor: runtime/default
       resources:
         limits:
           cpu: 250m
@@ -57,7 +57,7 @@ spec:
           memory: 100Mi
     queryFrontend:
       podAnnotations:
-        container.apparmor.security.beta.kubernetes.io/loki: runtime/default
+        container.apparmor.security.beta.kubernetes.io/query-frontend: runtime/default
       resources:
         limits:
           cpu: 250m
