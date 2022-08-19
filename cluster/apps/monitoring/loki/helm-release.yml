@@ -148,6 +148,7 @@ spec:
           join_members:
             - {{ include "loki.fullname" . }}-memberlist
         limits_config:
+          split_queries_by_interval: 15m
           ingestion_rate_mb: 10
           ingestion_burst_size_mb: 20
           max_concurrent_tail_requests: 20
@@ -177,7 +178,6 @@ spec:
           align_queries_with_step: true
           max_retries: 5
           # parallelize queries in 15min intervals
-          split_queries_by_interval: 15m
           cache_results: true
 
           results_cache:
