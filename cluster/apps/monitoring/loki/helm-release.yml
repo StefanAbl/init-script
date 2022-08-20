@@ -24,7 +24,7 @@ spec:
       retries: 5
   values:
     ingester:
-      replicas: 3
+      replicas: 2
       podAnnotations:
         container.apparmor.security.beta.kubernetes.io/ingester: runtime/default
       resources:
@@ -37,7 +37,7 @@ spec:
     querier:
       podAnnotations:
         container.apparmor.security.beta.kubernetes.io/querier: runtime/default
-      replicas: 3
+      replicas: 2
       resources:
         limits:
           cpu: 2
