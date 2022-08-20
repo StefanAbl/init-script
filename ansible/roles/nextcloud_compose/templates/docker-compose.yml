@@ -76,9 +76,11 @@ services:
     image: grafana/promtail
     restart: always
     command: -config.file /etc/promtail.yml
+    user: "33"
     group_add:
       - www-data
     volumes:
       - /data:/data:ro
       - /nextcloud_local/promtail/promtail.yml:/etc/promtail.yml:ro
       - /nextcloud_local/promtail/positions:/var/promtail/positions
+      - /etc/ssl/certs/:/etc/ssl/certs:ro
