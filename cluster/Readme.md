@@ -34,7 +34,8 @@ flux bootstrap github \
 --branch=master \
 --kubeconfig=kubeconfig.yml \
 --personal \
---network-policy=false
+--network-policy=false \
+--components-extra=image-reflector-controller,image-automation-controller
 ```
 
 [Change access token for cluster](https://github.com/fluxcd/flux2/discussions/2161)
