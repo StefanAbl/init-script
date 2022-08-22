@@ -4,6 +4,8 @@ metadata:
   name: blog
   namespace: websites
 spec:
+  imageRepositoryRef:
+    name: blog
   filterTags:
     pattern: '^(?P<ts>\d{14})'
     extract: '$ts'
