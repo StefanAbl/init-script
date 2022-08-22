@@ -5,9 +5,8 @@ metadata:
   namespace: websites
   annotations:
     keel.sh/policy: "force"
-    keel.sh/trigger: poll     # enable active repository checking
+    keel.sh/trigger: poll # enable active repository checking
     keel.sh/pollSchedule: "@every 5m"
-
 spec:
   replicas: 1
   selector:
@@ -38,7 +37,7 @@ spec:
             medium: ""
       containers:
         - name: webserver
-          image: "ghcr.io/stefanabl/blog:main" # {"$imagepolicy": "websites:blog"}
+          image: "ghcr.io/stefanabl/blog:20220822140244" # {"$imagepolicy": "websites:blog"}
           # Needed for keel to work without semver tags
           imagePullPolicy: Always
           resources:
@@ -53,11 +52,11 @@ spec:
               name: website
           volumeMounts:
             - name: run
-              mountPath:  /var/run
+              mountPath: /var/run
             - name: log
-              mountPath:  /var/log/nginx
+              mountPath: /var/log/nginx
             - name: cache
-              mountPath:  /var/cache/nginx
+              mountPath: /var/cache/nginx
           readinessProbe:
             httpGet:
               path: /index.html
