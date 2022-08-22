@@ -35,6 +35,7 @@ flux bootstrap github \
 --kubeconfig=kubeconfig.yml \
 --personal \
 --network-policy=false \
+--read-write-key \
 --components-extra=image-reflector-controller,image-automation-controller
 ```
 
