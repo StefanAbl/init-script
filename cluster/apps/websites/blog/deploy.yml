@@ -38,7 +38,7 @@ spec:
             medium: ""
       containers:
         - name: webserver
-          image: "ghcr.io/stefanabl/blog:main"
+          image: "ghcr.io/stefanabl/blog:main" # {"$imagepolicy": "websites:blog"}
           # Needed for keel to work without semver tags
           imagePullPolicy: Always
           resources:
