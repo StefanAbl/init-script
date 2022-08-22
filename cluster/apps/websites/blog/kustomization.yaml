@@ -4,3 +4,5 @@ resources:
 - deploy.yml
 - ingress.yml
 - svc.yml
+- image-repository.yml
+- image-policy.yml

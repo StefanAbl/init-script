@@ -1,0 +1,12 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImagePolicy
+metadata:
+  name: blog
+  namespace: websites
+spec:
+  filterTags:
+    pattern: '^(?P<ts>\d{14})'
+    extract: '$ts'
+  policy:
+    numerical:
+      order: asc
