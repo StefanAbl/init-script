@@ -1,0 +1,6 @@
+version: '3'
+
+includes:
+  ansible:
+    taskfile: ./ansible
+    dir: ./ansible
