@@ -51,3 +51,8 @@
     owner: root
     group: root
     mode: '0750'
+- name: Make sure Jellyfin is started
+  become: true
+  ansible.builtin.service:
+    name: jellyfin
+    state: started

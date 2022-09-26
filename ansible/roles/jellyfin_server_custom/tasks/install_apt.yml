@@ -25,7 +25,7 @@
 - name: Install jellyfin
   apt:
     name: jellyfin
-    state: present
+    state: latest
     update_cache: yes
 - name: Make sure Jellyfin is stopped
   ansible.builtin.service:
