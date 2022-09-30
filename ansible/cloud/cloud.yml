@@ -14,8 +14,6 @@
     promtail:
       user: linode0
 
-  vars_files:
-    - ../secrets.yml
   tasks:
     - name: get svc_mail uid
       shell: "id -u {{mailserver_bindUser}}"
@@ -83,6 +81,6 @@
 # Dovecot
     - name: dovecot
       include: dovecot/dovecot.yml
-
+# Rspamd
     - name: include rspamd.yml
       include: rspamd/rspamd.yml
