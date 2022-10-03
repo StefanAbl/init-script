@@ -16,26 +16,13 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
-    extraEnvVars:
-      - name: RABBITMQ_COMBINED_CERT_PATH
-        value: /tmp/rabbitmq_combined_keys.pem
-    extraVolumes:
-    - name: certs
-      emptyDir: {}
-    - name: configfiledir
-      emptyDir: {}
-    extraVolumeMounts:
-    - name: certs
-      mountPath: /tmp/
-    - name: configfiledir
-      mountPath: /opt/bitnami/rabbitmq/
     podAnnotations:
       container.apparmor.security.beta.kubernetes.io/rabbitmq: runtime/default
       seccomp.security.alpha.kubernetes.io/pod: runtime/default
     containerSecurityContext:
       capabilities:
         drop: ["ALL"]
-      readOnlyRootFilesystem: true
+      readOnlyRootFilesystem: false
       enabled: true
       runAsUser: 1001
       runAsNonRoot: true
