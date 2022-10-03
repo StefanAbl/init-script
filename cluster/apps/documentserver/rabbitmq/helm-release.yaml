@@ -28,7 +28,7 @@ spec:
     - name: certs
       mountPath: /tmp/
     - name: configfiledir
-      mountPath: /opt/bitnami/rabbitmq/etc/rabbitmq/
+      mountPath: /opt/bitnami/rabbitmq/
     podAnnotations:
       container.apparmor.security.beta.kubernetes.io/rabbitmq: runtime/default
       seccomp.security.alpha.kubernetes.io/pod: runtime/default
