@@ -18,13 +18,13 @@ spec:
   values:
     extraEnvVars:
       - name: RABBITMQ_COMBINED_CERT_PATH
-        value: /certpath/rabbitmq.crt
+        value: /tmp/rabbitmq_combined_keys.pem
     extraVolumes:
     - name: certs
       emptyDir: {}
     extraVolumeMounts:
     - name: certs
-      mountPath: /certpath/
+      mountPath: /tmp/
     podAnnotations:
       container.apparmor.security.beta.kubernetes.io/rabbitmq: runtime/default
       seccomp.security.alpha.kubernetes.io/pod: runtime/default
