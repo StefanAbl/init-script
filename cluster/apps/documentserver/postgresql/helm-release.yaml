@@ -16,17 +16,22 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
-    podAnnotations:
-      container.apparmor.security.beta.kubernetes.io/postgresql: runtime/default
-      seccomp.security.alpha.kubernetes.io/pod: runtime/default
-    containerSecurityContext:
-      capabilities:
-        drop: ["ALL"]
-      readOnlyRootFilesystem: true
-      enabled: true
-      runAsUser: 1001
-      runAsNonRoot: true
-      priviledged: false
+    primary:
+      podAnnotations:
+        container.apparmor.security.beta.kubernetes.io/postgresql: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+      containerSecurityContext:
+        capabilities:
+          drop: ["ALL"]
+        readOnlyRootFilesystem: true
+        enabled: true
+        runAsUser: 1001
+        runAsNonRoot: true
+        priviledged: false
+
+      persistence:
+        storageClass: nfs-client
+        size: 1Gi
     resources:
       limits:
         cpu: 200m
@@ -37,7 +42,3 @@ spec:
     #
     auth:
       database: postgres
-    primary:
-      persistence:
-        storageClass: nfs-client
-        size: 1Gi
