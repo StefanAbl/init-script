@@ -17,7 +17,8 @@ spec:
       interval: 5m
   values:
     extraEnvVars:
-      RABBITMQ_COMBINED_CERT_PATH: /certpath/rabbitmq.crt
+      - name: RABBITMQ_COMBINED_CERT_PATH
+        value: /certpath/rabbitmq.crt
     extraVolumes:
     - name: certs
       emptyDir: {}
