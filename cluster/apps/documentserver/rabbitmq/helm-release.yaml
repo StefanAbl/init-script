@@ -16,6 +16,8 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    persistence:
+      enabled: false
     clustering:
       enabled: false
       forceBoot: true
