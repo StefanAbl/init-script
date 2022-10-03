@@ -16,6 +16,14 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    extraEnvVars:
+      RABBITMQ_COMBINED_CERT_PATH: /certpath/rabbitmq.crt
+    extraVolumes:
+    - name: certs
+      emptyDir: {}
+    extraVolumeMounts:
+    - name: certs
+      mountPath: /certpath/
     podAnnotations:
       container.apparmor.security.beta.kubernetes.io/rabbitmq: runtime/default
       seccomp.security.alpha.kubernetes.io/pod: runtime/default
