@@ -23,7 +23,7 @@ spec:
       containerSecurityContext:
         capabilities:
           drop: ["ALL"]
-        readOnlyRootFilesystem: true
+        readOnlyRootFilesystem: false
         enabled: true
         runAsUser: 1001
         runAsNonRoot: true
