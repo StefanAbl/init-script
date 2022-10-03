@@ -16,6 +16,7 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    clustering.enabled: false
     podAnnotations:
       container.apparmor.security.beta.kubernetes.io/rabbitmq: runtime/default
       seccomp.security.alpha.kubernetes.io/pod: runtime/default
@@ -28,8 +29,8 @@ spec:
       runAsNonRoot: true
     resources:
       limits:
-        cpu: 200m
-        memory: 128Mi
+        cpu: 1000m
+        memory: 512Mi
       requests:
         cpu: 100m
         memory: 128Mi
