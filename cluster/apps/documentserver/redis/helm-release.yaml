@@ -17,21 +17,21 @@ spec:
       interval: 5m
   values:
     architecture: standalone
-    podAnnotations:
-      container.apparmor.security.beta.kubernetes.io/redis: runtime/default
-      seccomp.security.alpha.kubernetes.io/pod: runtime/default
-    containerSecurityContext:
-      capabilities:
-        drop: ["ALL"]
-      readOnlyRootFilesystem: true
-      enabled: true
-      runAsUser: 1001
-      runAsNonRoot: true
-      priviledged: false
-    resources:
-      limits:
-        cpu: 200m
-        memory: 128Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
+    master:
+      podAnnotations:
+        container.apparmor.security.beta.kubernetes.io/redis: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+      containerSecurityContext:
+        capabilities:
+          drop: ["ALL"]
+        readOnlyRootFilesystem: true
+        enabled: true
+        runAsUser: 1001
+        runAsNonRoot: true
+      resources:
+        limits:
+          cpu: 200m
+          memory: 128Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
