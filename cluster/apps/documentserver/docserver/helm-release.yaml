@@ -18,7 +18,6 @@ spec:
   values:
     log:
       level: TRACE
-
     webProxy:
       enabled: true
       http: "http://docsrv.${DOMAIN}"
@@ -48,8 +47,6 @@ spec:
         cert-manager.io/issuer-group: certmanager.freeipa.org
         cert-manager.io/issuer-kind: ClusterIssuer
         cert-manager.io/common-name: document-server.k3s.i.${DOMAIN}
-        nginx.ingress.kubernetes.io/configuration-snippet: |
-          more_set_headers "Host: docsrv.${DOMAIN}";
       host: document-server.k3s.i.${DOMAIN}
       ssl:
         enabled: true
