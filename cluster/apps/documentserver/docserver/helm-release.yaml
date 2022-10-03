@@ -16,6 +16,11 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    webProxy:
+      enabled: true
+      http: "http://docsrv.${DOMAIN}"
+      https: "https://docsrv.${DOMAIN}"
+      noProxy: "localhost,127.0.0.1,docservice,document-server.k3s.i.${DOMAIN}"
     persistence:
       storageClass: nfs-client
       size: 1Gi
