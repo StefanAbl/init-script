@@ -26,7 +26,6 @@ spec:
       enabled: true
       runAsUser: 1001
       runAsNonRoot: true
-      priviledged: false
     resources:
       limits:
         cpu: 200m
