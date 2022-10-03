@@ -27,7 +27,6 @@ spec:
         enabled: true
         runAsUser: 1001
         runAsNonRoot: true
-        priviledged: false
 
       persistence:
         storageClass: nfs-client
