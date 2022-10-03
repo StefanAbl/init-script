@@ -16,7 +16,9 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
-    clustering.enabled: false
+    clustering:
+      enabled: false
+      forceBoot: true
     podAnnotations:
       container.apparmor.security.beta.kubernetes.io/rabbitmq: runtime/default
       seccomp.security.alpha.kubernetes.io/pod: runtime/default
