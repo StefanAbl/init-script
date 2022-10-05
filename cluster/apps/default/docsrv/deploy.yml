@@ -1,0 +1,39 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: document-server
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: document-server
+  template:
+    metadata:
+      labels:
+        app: document-server
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/document-server: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    spec:
+      containers:
+        - name: document-server
+          image: onlyoffice/documentserver
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 50m
+            limits:
+              memory: 512Mi
+              cpu: 1000m
+          ports:
+            - containerPort: 80
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: false
+      automountServiceAccountToken: false
