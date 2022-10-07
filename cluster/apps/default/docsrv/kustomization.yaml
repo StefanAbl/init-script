@@ -4,3 +4,4 @@ resources:
   - deploy.yml
   - service.yml
   - ingress.yml
+  - secret.yml

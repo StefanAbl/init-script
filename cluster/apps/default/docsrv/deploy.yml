@@ -24,6 +24,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name:  docsrv-token
+                  namespace: default
                   key:  token
           resources:
             requests:
