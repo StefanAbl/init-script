@@ -19,21 +19,47 @@ spec:
       containers:
         - name: document-server
           image: onlyoffice/documentserver
+          env:
+            - name:  JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name:  docsrv-token
+                  key:  token
           resources:
             requests:
               memory: 128Mi
               cpu: 50m
             limits:
-              memory: 512Mi
-              cpu: 1000m
+              memory: 2048Mi
+              cpu: 2000m
+          livenessProbe:
+            httpGet:
+              port: 80
+            initialDelaySeconds: 60
+            timeoutSeconds: 10
           ports:
             - containerPort: 80
           securityContext:
             allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            privileged: false
-            readOnlyRootFilesystem: false
-            runAsNonRoot: false
+          capabilities:
+            add:
+            - chown
+            - dac_override
+            - fowner
+            - fsetid
+            # - kill
+            - setgid
+            - setuid
+            # - setpcap
+            # - net_bind_service
+            # - net_raw
+            # - sys_chroot
+            # - mknod
+            # - audit_write
+            # - setfcap
+            drop:
+            - All
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
       automountServiceAccountToken: false
