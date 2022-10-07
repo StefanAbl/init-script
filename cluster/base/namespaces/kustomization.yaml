@@ -7,4 +7,3 @@ resources:
   - websites.yml
   - monitoring.yml
   - ffsync.yml
-  - documentserver.yml
