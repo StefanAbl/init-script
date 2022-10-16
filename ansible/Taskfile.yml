@@ -1,9 +1,12 @@
 version: '3'
 
 tasks:
+  proxy:
+    cmds:
+      - ansible-playbook -i hosts --ask-vault-pass -K proxy.yml
   jellyfin:
     cmds:
-      - ansible-playbook  -i hosts --ask-vault-pass  jellyfin.yml
+      - ansible-playbook -i hosts --ask-vault-pass jellyfin.yml
   mailserver:
     cmds:
-      - ansible-playbook  -i hosts --ask-vault-pass  -K cloud/cloud.yml
+      - ansible-playbook -i hosts --ask-vault-pass -K cloud/cloud.yml

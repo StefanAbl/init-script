@@ -123,7 +123,7 @@ servers:
     extras: |
       client_max_body_size 100000G;
   - name: docsrv.stabl.one
-    upstream: http://10.13.2.106:5000
+    upstream: http://10.13.2.31
     verification: dns
     allow_embedding: True
     api: dns_cf
