@@ -1,8 +1,6 @@
 ---
-- hosts: all
+- hosts: linode0.i.stabl.one
   become: yes
-  vars_files:
-    - ../secrets.yml
   vars:
     replica: true
     replica_container_name: replica
@@ -10,8 +8,10 @@
     freeipa_dir: "{{docker_dir}}/replica"
   vars_prompt:
     - name: ipa_admin_user_password
-      prompt: "Please provide the password for user IPA user {{ipa_admin_user}}"
+      prompt: "Please provide the password for user IPA ipa admin user"
       private: yes
+  roles:
+  - ../roles/common
   tasks:
     - name: create macvlan network
       docker_network:
@@ -37,12 +37,12 @@
     - name: write options to file
       lineinfile:
         path: "{{ freeipa_dir }}/ipa-replica-install-options"
-        line: "-U --no-ntp -d -P {{ipa_admin_user}} -w {{ipa_admin_user_password}}"
+        line: "-U --no-ntp -d -P {{ipa_admin_user}} -w {{ipa_admin_user_password}} --skip-conncheck --no-ui-redirect --force-join --server ipa1.i.stabl.one --domain i.stabl.one"
 
     - name: start freeipa replica docker
       docker_container:
         name: replica
-        image: "freeipa/freeipa-server:centos-8-4.8.7"
+        image: "freeipa/freeipa-server:fedora-35-4.9.8"
         state: started
         detach: true
         recreate: no
@@ -67,3 +67,8 @@
         log_options:
           tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
         #command: "ipa-replica-install -U --no-ntp -P {{ipa_admin_user}} -w $(cat /password)"
+
+    - name: Delete options file
+      file:
+        path: "{{ freeipa_dir }}/ipa-replica-install-options"
+        state: absent

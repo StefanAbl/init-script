@@ -10,3 +10,6 @@ tasks:
   mailserver:
     cmds:
       - ansible-playbook -i hosts --ask-vault-pass -K cloud/cloud.yml
+  cloud-replica:
+    cmds:
+      - ansible-playbook -i hosts --ask-vault-pass -K cloud/setup_replica.yml
