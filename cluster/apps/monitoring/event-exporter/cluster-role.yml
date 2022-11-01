@@ -1,0 +1,24 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  namespace: monitoring
+  name: flux-viewer
+rules:
+- apiGroups: ["helm.toolkit.fluxcd.io"]
+  resources: ["helmreleases"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: ["image.toolkit.fluxcd.io/v1beta1"]
+  resources: ["imagepolicies", "imagerepositories", "imageupdateautomations"]
+  verbs: ["get", "watch", "list"]
+
+- apiGroups: ["kustomize.toolkit.fluxcd.io"]
+  resources: ["kustomizations"]
+  verbs: ["get", "watch", "list"]
+
+- apiGroups: [" notification.toolkit.fluxcd.io"]
+  resources: ["alerts", "providers", "receivers"]
+  verbs: ["get", "watch", "list"]
+
+- apiGroups: ["source.toolkit.fluxcd.io/v1beta2"]
+  resources: ["buckets", "gitrepo", "hc", "helmrepo", "ocirepo"]
+  verbs: ["get", "watch", "list"]

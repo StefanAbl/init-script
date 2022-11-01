@@ -5,3 +5,5 @@ resources:
   - deploy.yml
   - svc-account.yml
   - config-map.yml
+  - cluster-role.yml
+  - custom-cluster-role-binding.yml
