@@ -20,5 +20,5 @@ rules:
   verbs: ["get", "watch", "list"]
 
 - apiGroups: ["source.toolkit.fluxcd.io/v1beta2"]
-  resources: ["buckets", "gitrepo", "hc", "helmrepo", "ocirepo"]
+  resources: ["buckets", "gitrepo", "helmcharts", "helmrepositories", "ocirepositories"]
   verbs: ["get", "watch", "list"]
