@@ -7,7 +7,7 @@ rules:
 - apiGroups: ["helm.toolkit.fluxcd.io"]
   resources: ["helmreleases"]
   verbs: ["get", "watch", "list"]
-- apiGroups: ["image.toolkit.fluxcd.io/v1beta1"]
+- apiGroups: ["image.toolkit.fluxcd.io"]
   resources: ["imagepolicies", "imagerepositories", "imageupdateautomations"]
   verbs: ["get", "watch", "list"]
 
@@ -19,6 +19,6 @@ rules:
   resources: ["alerts", "providers", "receivers"]
   verbs: ["get", "watch", "list"]
 
-- apiGroups: ["source.toolkit.fluxcd.io/v1beta2"]
+- apiGroups: ["source.toolkit.fluxcd.io"]
   resources: ["buckets", "gitrepo", "helmcharts", "helmrepositories", "ocirepositories"]
   verbs: ["get", "watch", "list"]
