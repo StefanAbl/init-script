@@ -58,7 +58,7 @@ spec:
     compactor:
       enabled: true
       podAnnotations:
-        container.apparmor.security.beta.kubernetes.io/distributor: runtime/default
+        container.apparmor.security.beta.kubernetes.io/compactor: runtime/default
       resources:
         limits:
           cpu: 250m
