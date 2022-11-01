@@ -34,9 +34,10 @@ mail_file="$(mktemp)"
   echo ""
   ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net zpool list
   ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net zfs list
-} >>"$mail_file"
 
-ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 "org.freedesktop.login1.Manager.PowerOff" boolean:true
+  echo "Shuting down remote server"
+  ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 "org.freedesktop.login1.Manager.PowerOff" boolean:true
+} >>"$mail_file"
 
 curl --url 'smtp://mail.stabl.one:587' --ssl-reqd \
   --mail-from "$mail_account" --mail-rcpt "$mail_dest" \
