@@ -31,6 +31,7 @@ services:
       - /nextcloud_local/webroot:/var/www/html
       - /data:/data
       - /etc/ssl/certs/:/etc/ssl/certs:ro
+      - /nextcloud_local/php-config/php-config.conf:/usr/local/etc/php-fpm.d/zz-custom.conf:ro
     depends_on:
       - db
       - redis
@@ -56,6 +57,7 @@ services:
     volumes:
       - /nextcloud_local/webroot:/var/www/html
       - /data:/data
+      - /etc/ssl/certs/:/etc/ssl/certs:ro
     entrypoint: /cron.sh
     depends_on:
       - db
