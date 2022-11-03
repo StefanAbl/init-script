@@ -1,0 +1,5 @@
+[Unit]
+Description=Run Nextcloud Corrupt Files Reporting Script
+
+[Service]
+ExecStart=/usr/bin/bash -c '/etc/nc_reports.sh'

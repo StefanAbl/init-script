@@ -8,6 +8,7 @@
   vars:
     - ansible_become_pass: "{{ ipa_admin_user_password }}"
   roles:
+    - nextcloud_corupt_files_reporter
     - proxmox_ipa_cert
     - ansible-acme-sh
     - minio_server

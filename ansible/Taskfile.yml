@@ -16,3 +16,6 @@ tasks:
   nextcloud:
     cmds:
       - ansible-playbook -i hosts --ask-vault-pass -K nextcloud.yml
+  proxmox0:
+    cmds:
+      - ansible-playbook -i hosts --ask-vault-pass proxmox0.yml
