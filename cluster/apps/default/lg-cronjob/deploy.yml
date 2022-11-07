@@ -33,7 +33,6 @@ spec:
                 valueFrom:
                   secretKeyRef:
                     name: lg-session-token
-                    namespace: default
                     key: token
           restartPolicy: OnFailure
           automountServiceAccountToken: false
