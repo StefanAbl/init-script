@@ -16,7 +16,7 @@ spec:
               command:
                 - curl
                 - -v
-                - "https://developer.lge.com/secure/ResetDevModeSession.dev?sessionToken=$TOKEN"
+              args: ["https://developer.lge.com/secure/ResetDevModeSession.dev?sessionToken=$(TOKEN)"]
               resources: {}
               securityContext:
                 allowPrivilegeEscalation: false
