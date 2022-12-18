@@ -1,5 +1,25 @@
 #!/bin/bash
 
+# Retries a command on failure.
+# $1 - the max number of attempts
+# $2... - the command to run
+
+retry() {
+    local -r -i max_attempts="$1"; shift
+    local -i attempt_num=1
+    until "$@"
+    do
+        if ((attempt_num==max_attempts))
+        then
+            echo "Attempt $attempt_num failed and there are no more attempts left!"
+            return 1
+        else
+            echo "Attempt $attempt_num failed! Trying again in $attempt_num seconds..."
+            sleep $((attempt_num++))
+        fi
+    done
+}
+
 mail_account="{{syncoid_backup_mail_user}}@{{domain_name}}"
 mail_pw="{{syncoid_backup_mail_user_password}}"
 mail_dest="{{ipa_admin_user}}@{{domain_name}}"
@@ -36,7 +56,7 @@ mail_file="$(mktemp)"
   ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net zfs list
 
   echo "Shuting down remote server"
-  ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 "org.freedesktop.login1.Manager.PowerOff" boolean:true
+  retry 5 ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 "org.freedesktop.login1.Manager.PowerOff" boolean:true
 } >>"$mail_file"
 
 curl --url 'smtp://mail.stabl.one:587' --ssl-reqd \
