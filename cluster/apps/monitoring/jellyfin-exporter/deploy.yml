@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin-exporter
+  namespace: monitoring
+  # annotations:
+spec:
+  selector:
+    matchLabels:
+      app: jellyfin-exporter
+  template:
+    metadata:
+      labels:
+        app: jellyfin-exporter
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/jellyfin-exporter: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    spec:
+      containers:
+        - name: jellyfin-exporter
+          image: ghcr.io/stefanabl/jellyfin-prometheus-exporter:20221218213341
+          env:
+            - name: JF_URL
+              value: "https://stream.${DOMAIN}/"
+            - name: TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: token
+                  name: jellyfin-exporter
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+          ports:
+            - containerPort: 8080
+              name: prom
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+      automountServiceAccountToken: false
+  strategy: {}

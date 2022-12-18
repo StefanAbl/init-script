@@ -11,3 +11,4 @@ resources:
   - nextcloud-exporter
   - influxdb
   - node-problem-detector
+  - jellyfin-exporter

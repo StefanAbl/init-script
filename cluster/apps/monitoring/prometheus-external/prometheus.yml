@@ -25,6 +25,10 @@ scrape_configs:
     scrape_interval: 30s
     static_configs:
     - targets: ['nc-exporter:9205']
+  - job_name: jellyfin-exporter
+    scrape_interval: 30s
+    static_configs:
+    - targets: ['jellyfin-exporter:8080']
   # - job_name: keel-exporter
   #   scrape_interval: 30s
   #   static_configs:
