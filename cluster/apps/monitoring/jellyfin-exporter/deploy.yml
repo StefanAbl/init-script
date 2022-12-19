@@ -21,7 +21,7 @@ spec:
           image: ghcr.io/stefanabl/jellyfin-prometheus-exporter:20221218213341
           env:
             - name: JF_URL
-              value: "https://stream.${DOMAIN}/"
+              value: "https://jellyfin0.i.${DOMAIN}/"
             - name: TOKEN
               valueFrom:
                 secretKeyRef:
