@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: jellyfin-exporter
-          image: ghcr.io/stefanabl/jellyfin-prometheus-exporter:20221225094107
+          image: ghcr.io/stefanabl/jellyfin-prometheus-exporter:20221227184747
           env:
             - name: JF_URL
               value: "https://jellyfin0.i.${DOMAIN}:8920/"
