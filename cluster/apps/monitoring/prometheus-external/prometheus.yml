@@ -39,7 +39,7 @@ scrape_configs:
       #
       # sources: as-collected | raw | average | sum | volume
       # default is: average
-      #source: [as-collected]
+      source: [as-collected, average]
       #
       # server name for this prometheus - the default is the client IP
       # for Netdata to uniquely identify it
