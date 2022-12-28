@@ -123,6 +123,8 @@ spec:
           type: loki
           access: proxy
           url: http://loki-loki-distributed-gateway
+    plugins:
+      - marcusolsson-json-datasource
     dashboards:
       default:
         # Ref: https://grafana.com/grafana/dashboards/12175
