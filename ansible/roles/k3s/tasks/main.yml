@@ -6,7 +6,7 @@
     state: present
 - ansible.posix.sysctl:
     name: fs.inotify.max_user_instances
-    value: '1024'
+    value: '8192'
     state: present
 
 - include: addons.yml
