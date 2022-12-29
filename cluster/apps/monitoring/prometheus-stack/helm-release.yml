@@ -82,19 +82,18 @@ spec:
           memory: 1Gi
         limits:
           memory: 2Gi
-    prometheusSpec:
-      resources:
-        requests:
-          cpu: 500m
-          memory: 1Gi
-        limits:
-          memory: 2Gi
     prometheus:
       ingress:
         enabled: false
       thanosService:
         enabled: true
       prometheusSpec:
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            memory: 2Gi
         replicas: 1
         replicaExternalLabelName: "replica"
         ruleSelectorNilUsesHelmValues: false
