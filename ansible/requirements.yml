@@ -3,5 +3,6 @@ collections:
   - name: nginxinc.nginx_core
     version: 0.3.0
 roles:
-- src: xanmanning.k3s
+- name  : xanmanning.k3s
   version: v3.3.1
+  src: https://github.com/PyratLabs/ansible-role-k3s.git

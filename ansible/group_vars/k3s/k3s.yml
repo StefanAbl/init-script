@@ -6,7 +6,7 @@
 #
 
 # Use a specific version of k3s
-k3s_release_version: "v1.24.3+k3s1"
+k3s_release_version: "v1.26.0+k3s1"
 
 # Install using hard links rather than symbolic links.
 # ...if you are using the system-upgrade-controller you will need to use hard links rather than symbolic links as the controller will not be able to follow symbolic links.
@@ -22,7 +22,7 @@ k3s_debug: false
 # HA settings
 k3s_etcd_datastore: true
 k3s_registration_address: 10.13.2.40 # equal to kubevip_address
-k3s_registration_domain: k8s-api.i.stabl.one
+k3s_registration_domain: 10.13.2.40
 
 k3s_server_manifests_templates:
 - "calico/calico-installation.yaml.j2"
@@ -35,7 +35,7 @@ k3s_server_manifests_urls:
   filename: tigera-operator.yaml
 
 # Values for Kube-VIP
-kube_vip_tag_version: v0.4.4
+kube_vip_tag_version: v0.5.7
 kubevip_interface: eth0
 
 kubeconfig_local_path: ../cluster/kubeconfig.yml
