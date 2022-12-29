@@ -93,7 +93,7 @@ spec:
             cpu: 500m
             memory: 1Gi
           limits:
-            memory: 2Gi
+            memory: 3Gi
         replicas: 1
         replicaExternalLabelName: "replica"
         ruleSelectorNilUsesHelmValues: false
