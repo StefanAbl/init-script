@@ -75,16 +75,16 @@ spec:
         enabled: true
         port: 2381
         targetPort: 2381
-    prometheus:
-      ingress:
-        enabled: false
+    prometheusOperator:
       resources:
         requests:
           cpu: 500m
           memory: 1Gi
         limits:
-          cpu: "2"
-          memory: 3Gi
+          memory: 2Gi
+    prometheus:
+      ingress:
+        enabled: false
       thanosService:
         enabled: true
       prometheusSpec:
