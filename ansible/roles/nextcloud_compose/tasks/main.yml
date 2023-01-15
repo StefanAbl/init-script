@@ -39,6 +39,7 @@
     - name: "/nextcloud_local/promtail"
     - name: "/nextcloud_local/promtail/positions"
       owner: www-data
+    - name: "/nextcloud_local/php-config"
 
 - name: Copy latest DB dump
   become: true
@@ -54,6 +55,12 @@
   copy:
     src: custom.cnf
     dest: "/nextcloud_local/db_config"
+  become: true
+
+- name: Copy PHP configuration files
+  copy:
+    src: php-config.conf
+    dest: "/nextcloud_local/php-config"
   become: true
 
 - name: Create files for secrets
