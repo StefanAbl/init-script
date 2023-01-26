@@ -125,6 +125,8 @@ spec:
       podAnnotations:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
       config: |
+        common:
+          compactor_address: {{ include "loki.compactorFullname" . }}:3100
         auth_enabled: false
 
         server:
@@ -202,8 +204,7 @@ spec:
           results_cache:
             cache:
               enable_fifocache: true
-              fifocache:
-                max_size_items: 1024
+              embedded_cache:
                 validity: 24h
         frontend_worker:
           frontend_address: {{ include "loki.queryFrontendFullname" . }}:9095
