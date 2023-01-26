@@ -205,7 +205,8 @@ spec:
             cache:
               enable_fifocache: true
               embedded_cache:
-                validity: 24h
+                enabled: true
+                ttl: 24h
         frontend_worker:
           frontend_address: {{ include "loki.queryFrontendFullname" . }}:9095
           #Empty line needed after endraw
