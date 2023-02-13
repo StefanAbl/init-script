@@ -1,0 +1,22 @@
+version: 3
+
+tasks:
+  updateModules:
+    cmds:
+      - task: updateModuleForDirectory
+        vars:
+          DIR: cluster
+      - task: updateModuleForDirectory
+        vars:
+          DIR: cluster/modules/vm
+      - task: updateModuleForDirectory
+        vars:
+          DIR: jellyfin
+      - task: updateModuleForDirectory
+        vars:
+          DIR: nextcloud
+  updateModuleForDirectory:
+    cmds:
+      - echo $PWD
+      - terraform init -upgrade
+    dir: "{{ .DIR }}"

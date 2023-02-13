@@ -4,3 +4,9 @@ includes:
   ansible:
     taskfile: ./ansible
     dir: ./ansible
+  cluster:
+    taskfile: ./cluster
+    dir: ./cluster
+  tf:
+    taskfile: ./terraform
+    dir: ./terraform
