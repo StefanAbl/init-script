@@ -43,7 +43,7 @@ spec:
             etcd:
               enabled: true
     kubelet:
-      enabled: true
+      enabled: false #TODO change when more resources
       serviceMonitor:
         metricRelabelings:
         - action: replace
@@ -96,6 +96,17 @@ spec:
           limits:
             memory: 3Gi
         replicas: 1
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                  - worker02.i.stabl.one
+
         replicaExternalLabelName: "replica"
         ruleSelectorNilUsesHelmValues: false
         serviceMonitorSelectorNilUsesHelmValues: false
