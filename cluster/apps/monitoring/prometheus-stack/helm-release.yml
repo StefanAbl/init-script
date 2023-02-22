@@ -95,7 +95,7 @@ spec:
             memory: 1Gi
           limits:
             memory: 3Gi
-        replicas: 1
+        replicas: 0 #TODO re-enable when more resources are available
         affinity:
           nodeAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
