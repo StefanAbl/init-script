@@ -10,3 +10,19 @@ includes:
   tf:
     taskfile: ./terraform
     dir: ./terraform
+
+tasks:
+  getTokenFromLGTV:
+    vars:
+      IP: "10.13.100.147"
+      TEMP:
+        sh: mktemp
+    cmds:
+      - |
+        cat << EOF > {{.TEMP}}
+        #\!/bin/bash
+        cat $HOME/.webos/tv/novacom-devices.json | jq -r '.[] | select(.name == \"tv\") | .passphrase'
+        EOF
+      - chmod +x {{.TEMP}}
+      - DISPLAY=":0.0" SSH_ASKPASS="{{.TEMP}}" setsid ssh prisoner@{{.IP}} -p 9922 -i ~/.ssh/tv_webos -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa cat /var/luna/preferences/devmode_enabled ; echo
+      - rm {{.TEMP}}
