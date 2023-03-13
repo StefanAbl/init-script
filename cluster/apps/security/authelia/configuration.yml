@@ -29,6 +29,9 @@ authentication_backend:
 storage:
   local:
     path: /config/db.sqlite3
+notifier:
+  filesystem:
+    filename: /dev/stdout
 
 
 access_control:
