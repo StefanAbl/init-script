@@ -109,6 +109,14 @@ spec:
         subPath: configuration.yml
         mountPath: /config/configuration.yml
         readOnly: true
+      db:
+        enabled: true
+        type: emptyDir
+        name: db
+        mountPath: /db/
+        readOnly: false
+        shared:
+          medium: "Memory"
     topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
