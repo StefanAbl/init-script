@@ -101,6 +101,7 @@ spec:
         tls:
           - hosts:
               - *host
+            secretName: authelia-cert
     podSecurityContext:
       runAsUser: 568
       runAsGroup: 568
