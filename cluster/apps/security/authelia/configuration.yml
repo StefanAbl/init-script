@@ -33,7 +33,10 @@ storage:
 notifier:
   filesystem:
     filename: /dev/stdout
-
+telemetry:
+  metrics:
+    enabled: true
+    address: "tcp://0.0.0.0:8080"
 
 access_control:
   default_policy: deny
