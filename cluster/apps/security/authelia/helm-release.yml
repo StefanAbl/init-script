@@ -88,6 +88,11 @@ spec:
             add_header X-Frame-Options "SAMEORIGIN";
             add_header X-XSS-Protection "1; mode=block";
           hajimari.io/icon: mdi:shield-account
+          cert-manager.io/issuer: freeipa-issuer
+          cert-manager.io/issuer-group: certmanager.freeipa.org
+          cert-manager.io/issuer-kind: ClusterIssuer
+          cert-manager.io/common-name: authelia.k3s.i.${DOMAIN}
+          nignx.ingress.kubernetes.io/force-ssl-redirect: "true"
         hosts:
           - host: &host authelia.k3s.i.${DOMAIN}
             paths:
