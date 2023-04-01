@@ -13,6 +13,9 @@ tasks:
   cloud-replica:
     cmds:
       - ansible-playbook -i hosts --ask-vault-pass -K cloud/setup_replica.yml
+  cloud-backup:
+    cmds:
+      - ansible-playbook -i hosts --ask-vault-pass -K cloud/cloud.yml --start-at-task="start backup tasks"
   nextcloud:
     cmds:
       - ansible-playbook -i hosts --ask-vault-pass -K nextcloud.yml

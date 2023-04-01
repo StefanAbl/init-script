@@ -84,3 +84,8 @@
 # Rspamd
     - name: include rspamd.yml
       include: rspamd/rspamd.yml
+# Backup
+    - name: start backup tasks
+      shell: exit 0
+    - name: include backup.yml
+      include: backup/backup.yml

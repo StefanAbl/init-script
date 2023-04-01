@@ -1,0 +1,12 @@
+{
+    "version": "10",
+    "aliases": {
+        "local": {
+            "url": "https://s3.{{ internal_domain }}:9000",
+            "accessKey": "{{ mailserver_s3_access_key }}",
+            "secretKey": "{{ mailserver_s3_secreet_key }}",
+            "api": "s3v4",
+            "path": "auto"
+        }
+    }
+}
