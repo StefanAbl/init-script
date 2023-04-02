@@ -48,6 +48,12 @@ scrape_configs:
     scrape_interval: 60s
     static_configs:
       - targets: ['proxmox0.i.${DOMAIN}:19999']
+  - job_name: speedtest-exporter
+    scrape_interval: 1h
+    scrape_timeout: 5m
+    static_configs:
+      - targets:
+          - "speedtest-exporter:9798"
   # - job_name: keel-exporter
   #   scrape_interval: 30s
   #   static_configs:

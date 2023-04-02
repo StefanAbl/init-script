@@ -12,3 +12,4 @@ resources:
   - influxdb
   - node-problem-detector
   - jellyfin-exporter
+  - speedtest-exporter
