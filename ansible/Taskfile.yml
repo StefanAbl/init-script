@@ -25,6 +25,9 @@ tasks:
   docker0:
     cmds:
       - ansible-playbook -i hosts --ask-vault-pass docker0.yml
+  docker1:
+    cmds:
+      - ansible-playbook -i hosts --ask-vault-pass docker1.yml
   k3s:
     cmds:
       - ansible-playbook -i hosts --ask-vault-pass -K k3s.yml
