@@ -1,0 +1,13 @@
+promtail:
+  user: "{{ansible_facts['hostname']}}" #Name of the user from above
+  run_as_user: dirsrv
+  scrape_configs: # scrape configs for loki
+  - job_name: system
+    static_configs:
+    - targets:
+      - localhost
+      labels:
+        host: "{{ansible_facts['fqdn']}}"
+        app: promtail
+        agent: promtail
+        __path__: /var/log/dirsrv/slapd-I-STABL-ONE/access

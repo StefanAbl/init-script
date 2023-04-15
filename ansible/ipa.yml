@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible.json
+---
+- hosts: ipa
+  vars_prompt:
+    - name: ipa_admin_user_password
+      prompt: "Please enter password for IPA user"
+      private: yes
+  vars:
+    - ansible_become_pass: "{{ ipa_admin_user_password }}"
+  roles:
+    - promtail
+  tasks:
