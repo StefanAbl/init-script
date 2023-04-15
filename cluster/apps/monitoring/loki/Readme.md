@@ -2,8 +2,10 @@
 
 ## Generate new htpassword for basicauth
 
+```bash
 sudo apt install apache2-utils
 htpasswd -n username
+```
 
 
 Install Loki using the [official helm chart](https://github.com/grafana/helm-charts/tree/main/charts/loki-distributed)
