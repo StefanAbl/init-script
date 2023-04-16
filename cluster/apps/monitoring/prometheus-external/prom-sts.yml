@@ -31,7 +31,7 @@ spec:
       # serviceAccountName: prometheus
       containers:
         - name: prometheus
-          image: prom/prometheus:v2.42.0
+          image: prom/prometheus:v2.43.0
           args:
             - "--config.file=/config/prometheus.yml"
             - "--storage.tsdb.path=/data"
