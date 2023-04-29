@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: kube-prometheus-stack
-      version: 45.7.1
+      version: 45.23.0
       sourceRef:
         kind: HelmRepository
         name: prometheus-community-charts
@@ -43,7 +43,7 @@ spec:
             etcd:
               enabled: true
     kubelet:
-      enabled: false #TODO change when more resources
+      enabled: true
       serviceMonitor:
         metricRelabelings:
         - action: replace
@@ -95,17 +95,17 @@ spec:
             memory: 1Gi
           limits:
             memory: 3Gi
-        replicas: 0 #TODO re-enable when more resources are available
-        affinity:
-          nodeAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-              preference:
-                matchExpressions:
-                - key: kubernetes.io/hostname
-                  operator: In
-                  values:
-                  - worker02.i.stabl.one
+        replicas: 1
+        # affinity:
+        #   nodeAffinity:
+        #     preferredDuringSchedulingIgnoredDuringExecution:
+        #     - weight: 1
+        #       preference:
+        #         matchExpressions:
+        #         - key: kubernetes.io/hostname
+        #           operator: In
+        #           values:
+        #           - worker02.i.stabl.one
 
         replicaExternalLabelName: "replica"
         ruleSelectorNilUsesHelmValues: false
