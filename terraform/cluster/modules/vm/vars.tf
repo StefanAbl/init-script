@@ -22,3 +22,7 @@ variable "template" {
 variable "domain" {
   type = string
 }
+variable "target_node" {
+  type = string
+  default = "proxmox0"
+}

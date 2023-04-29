@@ -44,6 +44,7 @@ module "create_vms" {
   memory   = each.value.memory
   disk     = each.value.disk
   ip       = each.value.ip
-  template = "ubuntu-22.04"
+  template = each.value.template
   domain   = var.domain
+  target_node = each.value.target_node
 }

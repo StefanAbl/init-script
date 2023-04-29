@@ -14,28 +14,30 @@ resource "proxmox_vm_qemu" "proxmox_vm" {
   count                     = 1
   vmid                      = var.id
   name                      = var.hostname
-  target_node               = "proxmox0"
+  target_node               = var.target_node
   clone                     = var.template
   os_type                   = "cloud-init"
   agent                     = 1
   cores                     = var.cores
+  vcpus                     = 0
   cpu                       = "host"
   memory                    = var.memory
   scsihw                    = "virtio-scsi-pci"
   guest_agent_ready_timeout = 120
   define_connection_info    = false
+  qemu_os                   = "other"
 
   disk {
     slot    = 0
     size    = var.disk
     type    = "virtio"
-    storage = "NVMe"
-    backup  = 1
+    storage = var.target_node == "proxmox0" ? "NVMe" : "local-zfs"
+    backup  = false
   }
   network {
     model  = "virtio"
     bridge = "vmbr0"
-    tag    = 2
+    tag    = var.target_node == "proxmox0" ? 2 : -1
   }
   lifecycle {
     ignore_changes = [
