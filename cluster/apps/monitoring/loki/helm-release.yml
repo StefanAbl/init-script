@@ -24,7 +24,7 @@ spec:
       retries: 5
   values:
     ingester:
-      replicas: 2
+      replicas: 3
       maxUnavailable: 1
       podAnnotations:
         container.apparmor.security.beta.kubernetes.io/ingester: runtime/default
@@ -38,7 +38,7 @@ spec:
     querier:
       podAnnotations:
         container.apparmor.security.beta.kubernetes.io/querier: runtime/default
-      replicas: 2
+      replicas: 3
       maxUnavailable: 1
       resources:
         limits:
