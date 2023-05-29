@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: nc-exporter
-          image: xperimental/nextcloud-exporter:0.6.0
+          image: xperimental/nextcloud-exporter:0.6.1
           args:
             - "--server"
             - "https://cloud.${DOMAIN}"
