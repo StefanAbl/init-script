@@ -22,6 +22,9 @@ tasks:
   proxmox0:
     cmds:
       - ansible-playbook -i hosts --ask-vault-pass proxmox0.yml
+  proxmox-servers:
+    cmds:
+      - ansible-playbook -i hosts --ask-vault-pass proxmox-servers.yml
   docker1:
     cmds:
       - ansible-playbook -i hosts --ask-vault-pass docker1.yml

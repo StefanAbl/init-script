@@ -17,6 +17,8 @@ docker1.i.stabl.one
 
 [proxmox]
 proxmox0.i.stabl.one
+proxmox1.i.stabl.one
+proxmox2.i.stabl.one
 
 [desktop]
 desktop.i.stabl.one
@@ -34,6 +36,7 @@ master03.i.stabl.one
 [k3s_worker]
 worker01.i.stabl.one
 worker02.i.stabl.one
+worker03.i.stabl.one
 
 [k3s:children]
 k3s_master

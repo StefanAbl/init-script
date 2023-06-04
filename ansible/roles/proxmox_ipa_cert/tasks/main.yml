@@ -14,11 +14,11 @@
 - name: check if certificate exists
   become: yes
   when: stat_result.stat.exists
-  changed_when: false
-  failed_when: status_result != 0 and "No request found that matched arguments." not in status_result.stdout
   shell:
     cmd: ipa-getcert status -f /etc/ssl/pve-ipa//pveproxy-ssl.pem
-  register: status_result
+  register: cert_check_result
+  changed_when: false
+  failed_when: cert_check_result != 0 and "No request found that matched arguments." not in cert_check_result.stdout
 
 - name: Add service to FreeIPA
   ipa_service:
@@ -31,7 +31,7 @@
 
 - name: Request Certificate from IPA
   become: yes
-  when: not stat_result.stat.exists and ( status_result.rc is defined and not status_result.rc == 0 )
+  when: not stat_result.stat.exists or ( cert_check_result.rc is defined and not cert_check_result.rc == 0 )
   register: certificate_request_result
   shell:
     cmd: >-
