@@ -22,9 +22,13 @@
     state: present
     filename: jellyfin
     update_cache: yes
-- name: Install jellyfin
+- name: Install packages
   apt:
-    name: jellyfin
+    name:
+    - jellyfin
+    - jellyfin-ffmpeg5
+    - intel-opencl-icd
+    - intel-gpu-tools
     state: latest
     update_cache: yes
 - name: Make sure Jellyfin is stopped

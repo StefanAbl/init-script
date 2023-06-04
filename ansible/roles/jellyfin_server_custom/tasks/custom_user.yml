@@ -1,24 +1,29 @@
-      - name: Create Jellyfin systemd configuration file
-        file:
-          path: /etc/systemd/system/jellyfin.service.d/override.conf
-          state: touch
-      - name: Configure Jellyfin to use svc_jellyfin user
-        blockinfile:
-          path: /etc/systemd/system/jellyfin.service.d/override.conf
-          block: |
-            [Service]
-            User={{jellyfin.user}}
-            Restart=always
-            Environment="JELLYFIN_USER={{jellyfin.user}}"
-      - name: Change ownership of jellyfin folders
-        file:
-          path: "{{item}}"
-          state: directory
-          owner: "{{jellyfin.user}}"
-          group: "{{jellyfin.user}}"
-          recurse: true
-        with_items:
-          - /var/lib/jellyfin
-          - /var/cache/jellyfin
-          - /var/log/jellyfin
-          - /etc/jellyfin
+- name: Create Jellyfin systemd configuration file
+  file:
+    path: /etc/systemd/system/jellyfin.service.d/override.conf
+    state: touch
+- name: Configure Jellyfin to use svc_jellyfin user
+  blockinfile:
+    path: /etc/systemd/system/jellyfin.service.d/override.conf
+    block: |
+      [Service]
+      User={{jellyfin.user}}
+      Restart=always
+      Environment="JELLYFIN_USER={{jellyfin.user}}"
+- name: Change ownership of jellyfin folders
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: "{{jellyfin.user}}"
+    group: "{{jellyfin.user}}"
+    recurse: true
+  with_items:
+    - /var/lib/jellyfin
+    - /var/cache/jellyfin
+    - /var/log/jellyfin
+    - /etc/jellyfin
+- name: Add user to render group to be able to use HW transocding
+  user:
+    name: "{{jellyfin.user}}"
+    groups: render
+    append: true
