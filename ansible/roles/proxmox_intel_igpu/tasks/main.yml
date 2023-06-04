@@ -1,0 +1,26 @@
+- name: Ensure graphics drivers are blacklisted
+  become: true
+  lineinfile:
+    path: /etc/default/grub
+    regex: GRUB_CMDLINE_LINUX_DEFAULT.*
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on i915.enable_gvt=1 iommu=pt pcie_acs_override=downstream,multifunction video=efifb:off video=vesa:off vfio_iommu_type1.allow_unsafe_interrupts=1 kvm.ignore_msrs=1 modprobe.blacklist=radeon,nouveau,nvidia,nvidiafb,nvidia-gpu"'
+    state: present
+  notify: Update Grub
+
+- name: Add vfio modules
+  become: true
+  blockinfile:
+    dest: /etc/modules
+    block: |
+      # Modules required for PCI passthrough
+      vfio
+      vfio_iommu_type1
+      vfio_pci
+      vfio_virqfd
+
+      # Modules required for Intel GVT-g Split
+      kvmgt
+  notify: Update initramfs
+
+- debug:
+    msg: If changes were made by the previous commands please reboot the server

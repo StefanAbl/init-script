@@ -1,0 +1,7 @@
+- name: Update Grub
+  become: true
+  command: update-grub
+
+- name: Update initramfs
+  become: true
+  command: update-initramfs -u -k all
