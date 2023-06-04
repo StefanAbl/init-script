@@ -5,4 +5,3 @@ resources:
   - ingress-nginx
   - nfs-subdir
   - cert-manager
-  - longhorn
