@@ -26,6 +26,7 @@ spec:
           worker: true
     ingress:
       enabled: true
+      ingressClassName: nginx
       host: longhorn.k3s.i.${DOMAIN}
       tls: true
       annotations:
