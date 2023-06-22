@@ -1,6 +1,10 @@
 version: '3'
 
 tasks:
+  restart-helm:
+    cmds:
+      - flux --kubeconfig=kubeconfig.yml suspend helmrelease -n {{.CLI_ARGS}}
+      - flux --kubeconfig=kubeconfig.yml resume helmrelease -n {{.CLI_ARGS}}
   rotate-flux-token:
     cmds:
       - kubectl --kubeconfig ./kubeconfig.yml -n flux-system delete secret flux-system

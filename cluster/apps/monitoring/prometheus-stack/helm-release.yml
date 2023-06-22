@@ -118,7 +118,10 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              storageClassName: "nfs-client"
+              spec:
+                selector:
+                  matchLabels:
+                    app.kubernetes.io/name: prometheus-stack
               resources:
                 requests:
                   storage: 10Gi
