@@ -7,6 +7,6 @@ spec:
   resources:
     requests:
       storage: 10Gi
-  volumeMode: longhorn
+  storageClassName: longhorn
   accessModes:
     - ReadWriteOnce
