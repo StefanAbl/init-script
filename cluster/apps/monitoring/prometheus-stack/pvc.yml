@@ -1,11 +1,12 @@
 apiVersion: v1
-kind: PersistentVolume
+kind: PersistentVolumeClaim
 metadata:
   name: prometheus-stack
   namespace: monitoring
 spec:
-  storageClassName: longhorn
-  capacity:
-    storage: 10Gi
+  resources:
+    requests:
+      storage: 10Gi
+  volumeMode: longhorn
   accessModes:
-  - ReadWriteOnce # required
+    - ReadWriteOnce
