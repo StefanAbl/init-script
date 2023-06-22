@@ -22,8 +22,7 @@ spec:
       defaultClassReplicaCount: 2
       defaultNodeSelector:
         enable: true
-        selector:
-          worker: true
+        selector: "worker"
     ingress:
       enabled: true
       ingressClassName: nginx
