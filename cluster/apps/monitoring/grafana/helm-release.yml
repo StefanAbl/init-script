@@ -24,7 +24,7 @@ spec:
       retries: 7
   values:
     persistence:
-      enable: true
+      enabled: true
       storageClassName: longhorn
       size: 1Gi
     useStatefulSet: true
