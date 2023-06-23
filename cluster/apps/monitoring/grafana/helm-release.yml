@@ -23,6 +23,10 @@ spec:
     remediation:
       retries: 7
   values:
+    persistence:
+      enable: true
+      storageClassName: longhorn
+      size: 1Gi
     useStatefulSet: true
     extraConfigmapMounts:
     - name: litestream-config
