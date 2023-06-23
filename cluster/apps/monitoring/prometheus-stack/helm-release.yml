@@ -120,10 +120,9 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              spec:
-                selector:
-                  matchLabels:
-                    app-name: prometheus-stack
+              selector:
+                matchLabels:
+                  app-name: prometheus-stack
               resources:
                 requests:
                   storage: 15Gi
