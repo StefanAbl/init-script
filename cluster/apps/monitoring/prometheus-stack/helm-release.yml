@@ -122,9 +122,8 @@ spec:
             spec:
               spec:
                 selector:
-                  matchLabels:
-                    app.kubernetes.io/name: prometheus-stack
+                  name: prometheus-stack
               resources:
                 requests:
-                  storage: 10Gi
+                  storage: 15Gi
         additionalScrapeConfigs:
