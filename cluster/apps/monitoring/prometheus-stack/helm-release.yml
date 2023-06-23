@@ -95,17 +95,19 @@ spec:
             memory: 1Gi
           limits:
             memory: 3Gi
+            cpu: 2000m
         replicas: 1
-        # affinity:
-        #   nodeAffinity:
-        #     preferredDuringSchedulingIgnoredDuringExecution:
-        #     - weight: 1
-        #       preference:
-        #         matchExpressions:
-        #         - key: kubernetes.io/hostname
-        #           operator: In
-        #           values:
-        #           - worker02.i.stabl.one
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                  - worker02.i.${DOMAIN}
+                  - worker03.i.${DOMAIN}
 
         replicaExternalLabelName: "replica"
         ruleSelectorNilUsesHelmValues: false
