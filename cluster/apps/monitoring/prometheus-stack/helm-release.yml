@@ -122,7 +122,8 @@ spec:
             spec:
               spec:
                 selector:
-                  name: prometheus-stack
+                  matchLabels:
+                    app-name: prometheus-stack
               resources:
                 requests:
                   storage: 15Gi

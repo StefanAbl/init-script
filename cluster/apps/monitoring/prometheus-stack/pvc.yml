@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: prometheus-stack
   namespace: monitoring
+  labels:
+    app-name: prometheus-stack
 spec:
   resources:
     requests:
