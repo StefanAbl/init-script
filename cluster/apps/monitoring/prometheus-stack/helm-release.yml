@@ -139,9 +139,6 @@ spec:
           volumeClaimTemplate:
             storageClassName: "longhorn"
             spec:
-              selector:
-                matchLabels:
-                  app-name: prometheus-stack
               resources:
                 requests:
                   storage: 15Gi
