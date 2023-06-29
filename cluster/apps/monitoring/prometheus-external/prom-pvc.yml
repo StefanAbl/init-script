@@ -1,13 +1,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: prometheus-external
+  name: prometheus-external-longhorn
   namespace: monitoring
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
-  storageClassName: nfs-client
-  volumeName: prometheus-external-vol-0
+      storage: 20Gi
+  storageClassName: longhorn
