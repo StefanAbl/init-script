@@ -25,6 +25,7 @@ spec:
   values:
     image:
       repository: INCORRECT
+      tag: INCORRECT
     persistence:
       enabled: true
       storageClass: longhorn
