@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - prom-pv.yml
   - prom-pvc.yml
+  - prom-pvc2.yml
   - prom-sts.yml
   - prom-svc.yml
 configMapGenerator:

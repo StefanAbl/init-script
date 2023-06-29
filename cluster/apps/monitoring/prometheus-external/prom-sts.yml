@@ -12,7 +12,7 @@ spec:
     matchLabels:
       app: prometheus-external
   serviceName: prometheus-external
-  replicas: 1
+  replicas: 0
   podManagementPolicy: Parallel
   template:
     metadata:
