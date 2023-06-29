@@ -23,9 +23,11 @@ spec:
     remediation:
       retries: 5
   values:
+    image:
+      repository: INCORRECT
     persistence:
       enabled: true
-      storageClass: nfs-client
+      storageClass: longhorn
       size: 10Gi
     ingress:
       enabled: true
