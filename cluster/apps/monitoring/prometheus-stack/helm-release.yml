@@ -20,6 +20,7 @@ spec:
     remediation:
       retries: 10
   upgrade:
+    timeout: 15m
     remediation:
       retries: 10
   postRenderers:
@@ -95,6 +96,8 @@ spec:
         port: 2381
         targetPort: 2381
     prometheusOperator:
+      admissionWebhooks:
+        timeoutSeconds: 30
       resources:
         requests:
           cpu: 500m
