@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: solar-exporter
+spec:
+  selector:
+    matchLabels:
+      app: solar-exporter
+  template:
+    metadata:
+      labels:
+        app: solar-exporter
+    spec:
+      containers:
+      - name: solar-exporter
+        image: docker pull ghcr.io/stefanabl/solar-exporter
+        tag: 20230702071144
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 9090
+        envFrom:
+          - secretRef:
+              name: solar-exporter
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+      - name: ssh
+        image: ubuntu
+        command: ["/bin/bash"]
+        args: ["/keys/cmd.sh"]
+        volumeMounts:
+        - name: keys
+          mountPath: "/keys"
+          readOnly: true
+        livenessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 60
+          timeoutSeconds: 5
+          # use something like "curl --timeout 30 localhost:8080/status | grep 401 Unauthorized "
+          tcpSocket:
+            port: 8080
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+      volumes:
+      - name: keys
+        secret:
+          secretName: solar-exporter
+          items:
+          - key: priv-key
+            path: id_rsa
+          - key: pub-key
+            path: id_rsa.pub
+          - key: command
+            path: cmd.sh

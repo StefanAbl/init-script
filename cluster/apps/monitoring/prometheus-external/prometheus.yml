@@ -29,8 +29,11 @@ scrape_configs:
     scrape_interval: 30s
     static_configs:
     - targets: ['jellyfin-exporter:8080']
+  - job_name: solar-exporter
+    scrape_interval: 60s
+    static_configs:
+    - targets: ['solar-exporter:9090']
   - job_name: 'netdata-scrape'
-
     metrics_path: '/api/v1/allmetrics'
     params:
       # format: prometheus | prometheus_all_hosts
