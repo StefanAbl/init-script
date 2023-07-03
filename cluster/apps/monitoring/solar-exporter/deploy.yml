@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: solar-exporter
-        image: docker pull ghcr.io/stefanabl/solar-exporter
+        image: ghcr.io/stefanabl/solar-exporter
         tag: 20230702071144
         resources:
           limits:
