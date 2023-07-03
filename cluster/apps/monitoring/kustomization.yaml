@@ -13,3 +13,4 @@ resources:
   - node-problem-detector
   - jellyfin-exporter
   - speedtest-exporter
+  - solar-exporter
