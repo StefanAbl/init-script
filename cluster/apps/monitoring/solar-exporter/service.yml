@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: solar-exporter
+  namespace: monitoring
 spec:
   selector:
     app: solar-exporter
