@@ -36,7 +36,7 @@ spec:
           runAsUser: 1000
           runAsGroup: 1000
       - name: ssh
-        image: ubuntu
+        image: ghcr.io/stefanabl/docker-ssh-client:20230703133452
         command: ["/bin/bash"]
         args: ["/keys/cmd.sh"]
         volumeMounts:
