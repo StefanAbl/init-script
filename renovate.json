@@ -37,5 +37,15 @@
       ],
       "datasourceTemplate": "{{#if datasource}}{{{datasource}}}{{else}}helm{{/if}}"
     }
+  ],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["patch"],
+      "matchCurrentVersion": "!/^0/",
+      "matchManagers": ["regex"],
+      "matchPackageNames": ["promtail"],
+      "automerge": true
+    }
   ]
+
 }
