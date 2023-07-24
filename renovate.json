@@ -42,7 +42,7 @@
     {
       "matchUpdateTypes": ["patch"],
       "matchCurrentVersion": "!/^0/",
-      "matchManagers": ["regex"],
+      "matchDatasources": ["helm"],
       "matchPackageNames": ["promtail"],
       "automerge": true
     }
