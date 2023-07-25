@@ -43,6 +43,7 @@
       "matchUpdateTypes": ["patch"],
       "matchCurrentVersion": "!/^0/",
       "matchDatasources": ["helm"],
+      "ignoreTests": true,
       "matchPackageNames": ["promtail"],
       "automerge": true
     }
