@@ -46,6 +46,14 @@
       "ignoreTests": true,
       "matchPackageNames": ["promtail", "grafana", "loki-distributed"],
       "automerge": true
+    },
+    {
+      "matchUpdateTypes": ["patch", "minor"],
+      "matchCurrentVersion": "!/^0/",
+      "matchDatasources": ["docker"],
+      "ignoreTests": true,
+      "matchPackageNames": ["prom/prometheus"],
+      "automerge": true
     }
   ]
 
