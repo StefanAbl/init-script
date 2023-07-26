@@ -44,7 +44,7 @@
       "matchCurrentVersion": "!/^0/",
       "matchDatasources": ["helm"],
       "ignoreTests": true,
-      "matchPackageNames": ["promtail", "grafana", "loki-distributed"],
+      "matchPackageNames": ["promtail", "grafana", "loki-distributed", "redis"],
       "automerge": true
     },
     {
