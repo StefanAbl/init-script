@@ -4,6 +4,7 @@ resources:
   - prometheus-stack
   - grafana
   - loki
+  - loki-minio
   - event-exporter
   - promtail
   - prometheus-external

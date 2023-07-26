@@ -1,0 +1,33 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: minio-loki
+  namespace: monitoring
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://charts.min.io/
+      chart: minio
+      version: 5.0.13
+      sourceRef:
+        kind: HelmRepository
+        name: minio-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    replicas: 3
+    persistence:
+      enabled: true
+      storageClass: longhorn
+      size: 20Gi
+    users:
+    - accessKey: "${LOKI_MINIO_USER}"
+      secretKey: "${LOKI_MINIO_PASS}"
+      policy: readwrite
+    buckets:
+     - name: loki
+       policy: none
+       purge: false
+       versioning: false
+       objectlocking: false
