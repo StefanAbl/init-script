@@ -18,6 +18,10 @@ spec:
   values:
     mode: standalone
     replicas: 1
+    resources:
+      requests:
+        memory: 500Mi
+
     persistence:
       enabled: true
       storageClass: longhorn
