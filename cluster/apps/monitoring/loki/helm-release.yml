@@ -136,7 +136,7 @@ spec:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
       config: |
         common:
-          compactor_address: {{ include "loki.compactorFullname" . }}:3100
+          compactor_address: http://{{ include "loki.compactorFullname" . }}:3100
         auth_enabled: false
 
         server:
