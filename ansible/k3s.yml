@@ -24,3 +24,13 @@
       state: stopped
       enabled: no
       name: snapd
+  - name: Disable unattended upgrades for servers
+    when: k3s_control_node
+    lineinfile:
+      path: /etc/apt/apt.conf.d/20auto-upgrades
+      search_string: 'APT::Periodic::Unattended-Upgrade "1";'
+      line: 'APT::Periodic::Unattended-Upgrade "0";'
+  - name: Restart unattended upgrades systemd service
+    systemd:
+      state: restarted
+      name: unattended-upgrades.service
