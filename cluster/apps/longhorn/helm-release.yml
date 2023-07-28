@@ -20,6 +20,7 @@ spec:
       kubeletRootDir: /var/lib/kubelet
     persistence:
       defaultClassReplicaCount: 2
+      reclaimPolicy: Retain
       defaultNodeSelector:
         enable: true
         selector: "worker"
