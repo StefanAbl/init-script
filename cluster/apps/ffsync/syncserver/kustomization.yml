@@ -6,6 +6,7 @@ resources:
   - litestream-secret.yml
   - service.yml
   - ingress.yml
+  - pvc.yml
 configMapGenerator:
   - name: litestream-config
     namespace: ffsync
