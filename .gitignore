@@ -7,3 +7,4 @@ mullvad_userpass.txt
 .terraform
 kubeaudit
 terraform-plugin-proxmox.log
+.idea
