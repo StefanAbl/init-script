@@ -70,8 +70,5 @@ spec:
         - name: db
           persistentVolumeClaim:
             claimName: syncserver
-        - name: litestream-config-volume
-          configMap:
-              name: litestream-config
       automountServiceAccountToken: false
   updateStrategy: {}
