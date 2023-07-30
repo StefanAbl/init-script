@@ -3,12 +3,6 @@ kind: Kustomization
 resources:
   - sts.yml
   - secret.yml
-  - litestream-secret.yml
   - service.yml
   - ingress.yml
   - pvc.yml
-configMapGenerator:
-  - name: litestream-config
-    namespace: ffsync
-    files:
-      - "litestream.yml"
