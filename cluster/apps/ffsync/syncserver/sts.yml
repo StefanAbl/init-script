@@ -14,7 +14,6 @@ spec:
       labels:
         app: syncserver
       annotations:
-        container.apparmor.security.beta.kubernetes.io/litestream: runtime/default
         container.apparmor.security.beta.kubernetes.io/syncserver: runtime/default
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
     spec:
