@@ -28,54 +28,6 @@ spec:
       storageClassName: longhorn
       size: 1Gi
     useStatefulSet: true
-    extraConfigmapMounts:
-    - name: litestream-config
-      mountPath: /etc/litestream.yml
-      configMap: grafana-litestream
-      readonly: true
-      subPath: ""
-    extraInitContainers:
-    - name: init-litestream
-      image: litestream/litestream:0.3.9
-      args: ['restore', '-if-db-not-exists', '-v', '/var/lib/grafana/grafana.db']
-      volumeMounts:
-      - name: storage
-        mountPath: "/var/lib/grafana"
-      - name: litestream-config
-        mountPath: /etc/litestream.yml
-        subPath: litestream.yml
-      env:
-      - name: LITESTREAM_ACCESS_KEY_ID
-        valueFrom:
-          secretKeyRef:
-            name: grafana-litestream
-            key: access_key
-      - name: LITESTREAM_SECRET_ACCESS_KEY
-        valueFrom:
-          secretKeyRef:
-            name: grafana-litestream
-            key: secret_key
-    extraContainers: |
-      - name: litestream
-        image: litestream/litestream:0.3.9
-        args: ['replicate']
-        volumeMounts:
-        - name: storage
-          mountPath: /var/lib/grafana
-        - name: litestream-config
-          mountPath: /etc/litestream.yml
-          subPath: litestream.yml
-        env:
-        - name: LITESTREAM_ACCESS_KEY_ID
-          valueFrom:
-            secretKeyRef:
-              name: grafana-litestream
-              key: access_key
-        - name: LITESTREAM_SECRET_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              name: grafana-litestream
-              key: secret_key
     imageRenderer:
       enabled: true
     grafana.ini:
