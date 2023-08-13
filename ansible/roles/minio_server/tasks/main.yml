@@ -10,7 +10,7 @@
       become: yes
 - name: Flush handlers
   meta: flush_handlers
-- name: Wait 300 seconds for port 22 to become open and contain "OpenSSH"
+- name: Wait for port 9000
   wait_for:
     port: 9000
     host: 'localhost'
@@ -28,9 +28,29 @@
   command:
     argv:
       - mc
-      - admin
+      - idp
+      - ldap
       - policy
-      - set
+      - attach
       - local
       - consoleAdmin
-      - user='uid={{ipa_admin_user}},cn=users,cn=accounts,{{base_dn}}'
+      - --user
+      - 'uid={{ipa_admin_user}},cn=users,cn=accounts,{{base_dn}}'
+  register: resp
+  failed_when: resp.rc != 0 and "The specified policy change is already in effect." not in resp.stderr
+
+- name: Create Minio buckets
+  become: true
+  command:
+    argv:
+     - mc
+     - mb
+     - "local/{{ item }}"
+     - --ignore-existing
+  with_items:
+    - "{{minio_server_buckets}}"
+
+- name: Create Service accounts
+  with_items:
+  - "{{minio_server_svcaccts}}"
+  include_tasks: create_svcacct.yml

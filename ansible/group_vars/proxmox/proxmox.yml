@@ -16,4 +16,14 @@ acme_sh_domains:
 minio_server_opts: "--certs-dir /etc/ssl/ansible/s3.{{internal_domain}}/"
 minio_server_env_extra: "MINIO_SERVER_URL=\"https://s3.i.stabl.one:9000\""
 minio_server_datadirs:
-  - /NVMe/fast_data
+  - /Volume2/minio
+minio_server_buckets:
+ - longhorn
+ - mail-backup
+minio_server_svcaccts:
+  - name: "{{longhorn.s3_user}}"
+    pass: "{{longhorn.s3_pass}}"
+    bucket: longhorn
+  - name: "{{ mailserver_s3_access_key }}"
+    pass: "{{ mailserver_s3_secreet_key }}"
+    bucket: mail-backup

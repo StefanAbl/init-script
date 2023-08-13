@@ -10,5 +10,6 @@
   roles:
     - nextcloud_corupt_files_reporter
     - ansible-acme-sh
+    - syncoid_backup
     - minio_server
   tasks:

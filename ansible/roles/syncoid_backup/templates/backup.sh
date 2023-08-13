@@ -28,7 +28,7 @@ logfile="/var/log/backup.log"
 logtemp="$(mktemp)"
 status=0
 
-vols="nextcloud_data share2 docker0 docker1 ProxmoxBackupDir VeeamBackup"
+vols="nextcloud_data share2 docker0 docker1 ProxmoxBackupDir VeeamBackup minio"
 export LC_ALL="en_US.UTF-8"
 for d in $vols; do
   syncoid --no-privilege-elevation --sshport 27022 --sshkey /root/.ssh/id_rsa --sendoptions="w" "Volume2/$d" "proxmox@alarmanlage.dynv6.net:backup0/$d" 2>&1 | tee -a "$logtemp"
@@ -55,8 +55,21 @@ mail_file="$(mktemp)"
   ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net zpool list
   ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net zfs list
 
-  echo "Shuting down remote server"
-  retry 5 ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 "org.freedesktop.login1.Manager.PowerOff" boolean:true
+   sleep 5m
+  if [[ $status == 0 ]]; then
+    echo "Shuting down remote server"
+    retry 5 ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 "org.freedesktop.login1.Manager.PowerOff" boolean:true
+    sleep 5m
+    if ssh -o ConnectTimeout=10 -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net /bin/true ; then
+      echo "Shutdown failed trying again in 10m"
+      sleep 10m
+      ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 "org.freedesktop.login1.Manager.PowerOff" boolean:true
+    else
+      echo "Shutdown successful"
+    fi
+  else
+    echo "Backup was not successfull not shutting down remote server"
+  fi
 } >>"$mail_file"
 
 curl --url 'smtp://mail.stabl.one:587' --ssl-reqd \

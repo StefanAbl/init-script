@@ -1,0 +1,39 @@
+- name: Create temporary file
+  ansible.builtin.tempfile:
+    state: file
+    suffix: temp
+  register: tempfile
+
+- name: Template policy file
+  template:
+    src: policy.json
+    dest: "{{ tempfile.path }}"
+  vars:
+    bucket: "{{item.bucket}}"
+
+- command:
+    argv:
+    - mc
+    - admin
+    - user
+    - svcacct
+    - add
+    - --access-key
+    - "{{item.name}}"
+    - --secret-key
+    - "{{item.pass}}"
+    - --policy
+    - "{{ tempfile.path }}"
+    - local
+    - "{{ipa_admin_user}}"
+  become: true
+  register: resp
+  failed_when: resp.rc != 0 and "the service account access key already taken" not in resp.stderr
+  changed_when: resp.rc == 0
+
+
+- name: Remove the temporary file
+  ansible.builtin.file:
+    path: "{{ tempfile.path }}"
+    state: absent
+  when: tempfile.path is defined
