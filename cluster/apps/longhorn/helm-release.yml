@@ -24,6 +24,9 @@ spec:
       defaultNodeSelector:
         enable: true
         selector: "worker"
+    defaultSettings:
+        backupTarget: s3://longhorn@region/
+        backupTargetCredentialSecret: backup-secret
     ingress:
       enabled: true
       ingressClassName: nginx
