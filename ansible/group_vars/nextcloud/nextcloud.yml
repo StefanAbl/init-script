@@ -1,0 +1,2 @@
+promtail:
+  user: "{{ansible_facts['hostname']}}" #Name of the user from above

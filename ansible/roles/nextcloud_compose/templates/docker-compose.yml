@@ -16,11 +16,21 @@ services:
       - MARIADB_PASSWORD_FILE=/run/secrets/nextcloud_db_user_pass
       - MYSQL_DATABASE=owncloud
       - MYSQL_USER=owncloud
+    logging:
+      driver: json-file
+      options:
+        tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
+
 
   redis:
     image: "redis:alpine"
     restart: always
     command: redis-server
+    logging:
+      driver: json-file
+      options:
+        tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
+
 
   app:
     image: "{{nextcloud.docker_image}}"
@@ -35,6 +45,11 @@ services:
     depends_on:
       - db
       - redis
+    logging:
+      driver: json-file
+      options:
+        tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
+
 
   web:
     image: nginx
@@ -50,6 +65,11 @@ services:
       - /nextcloud_local/webroot:/var/www/html:ro
     volumes_from:
       - app
+    logging:
+      driver: json-file
+      options:
+        tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
+
 
   cron:
     build: ./cron
@@ -62,6 +82,11 @@ services:
     depends_on:
       - db
       - redis
+    logging:
+      driver: json-file
+      options:
+        tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
+
 
   backup:
     build: ./backup
@@ -73,6 +98,11 @@ services:
     entrypoint: /cron.sh
     depends_on:
       - db
+    logging:
+      driver: json-file
+      options:
+        tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
+
 
   logs:
     image: grafana/promtail
@@ -86,3 +116,7 @@ services:
       - /nextcloud_local/promtail/promtail.yml:/etc/promtail.yml:ro
       - /nextcloud_local/promtail/positions:/var/promtail/positions
       - /etc/ssl/certs/:/etc/ssl/certs:ro
+    logging:
+      driver: json-file
+      options:
+        tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"

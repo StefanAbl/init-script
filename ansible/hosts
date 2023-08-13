@@ -1,8 +1,10 @@
-nextcloud.i.stabl.one
 linode0.i.stabl.one ansible_host=mail.stabl.one
 replica-cloud.i.stabl.one
 vpn-cloud.i.stabl.one
 proxy.i.stabl.one
+
+[nextcloud]
+nextcloud.i.stabl.one
 
 [jellyfin]
 jellyfin0.i.stabl.one
