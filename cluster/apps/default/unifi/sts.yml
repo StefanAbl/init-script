@@ -18,12 +18,12 @@ spec:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
     spec:
       securityContext:
-        runAsUser: 1001
-        runAsGroup: 1001
+        runAsUser: 999
+        runAsGroup: 999
       initContainers:
       - name: fix-permissions
         image: busybox
-        command: ["sh", "-c", "chown -R 1001:1001 /unifi"]
+        command: ["sh", "-c", "chown -R 999:999 /unifi"]
         securityContext:
           runAsUser: 0
           runAsNonRoot: false
@@ -36,6 +36,8 @@ spec:
           env:
             - name: TZ
               value: EUROPE/BERLIN
+            - name: UNIFI_STDOUT
+              value: "true"
           ports:
             - containerPort: 8080
               name: inform
