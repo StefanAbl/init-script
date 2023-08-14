@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: unifi-http
+spec:
+  selector:
+    app: unifi
+  ports:
+  - port: 8080
+    targetPort: 8080
+  - port: 8443
+    targetPort: 8443
+  - port: 3478
+    targetPort: 3478
+    protocol: UDP

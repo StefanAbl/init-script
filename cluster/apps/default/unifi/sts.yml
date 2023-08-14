@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: unifi
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: unifi
+  serviceName: unifi
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: unifi
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/unifi: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    spec:
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+      containers:
+        - name: unifi
+          image: jacobalberty/unifi:v7.4.162
+          env:
+            - name: TZ
+              value: EUROPE/BERLIN
+          ports:
+            - containerPort: 8080
+              name: inform
+            - containerPort: 8443
+              name: ui
+            - containerPort: 3478
+              name: stun
+              protocol: UDP
+          volumeMounts:
+            - name: unifi
+              mountPath: /unifi
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: 250m
+            limits:
+              memory: 2Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: unifi
+          persistentVolumeClaim:
+            claimName: unifi
+      automountServiceAccountToken: false
+  updateStrategy: {}

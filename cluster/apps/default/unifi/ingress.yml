@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: unifi
+  namespace: default
+  annotations:
+    cert-manager.io/issuer: freeipa-issuer
+    cert-manager.io/issuer-group: certmanager.freeipa.org
+    cert-manager.io/issuer-kind: ClusterIssuer
+    cert-manager.io/common-name: unifi.k3s.i.${DOMAIN}
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - unifi.k3s.i.${DOMAIN}
+    secretName: unifi-cert
+  rules:
+  - host: unifi.k3s.i.${DOMAIN}
+    http:
+      paths:
+        - path: "/"
+          pathType: Prefix
+          backend:
+            service:
+              name: unifi
+              port:
+                number: 8443
