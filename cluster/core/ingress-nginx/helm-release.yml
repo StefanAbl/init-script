@@ -19,3 +19,7 @@ spec:
     controller:
       admissionWebhooks:
         enabled: false
+    udp:
+      3478: default/unifi
+    tcp:
+      8080: default/unifi

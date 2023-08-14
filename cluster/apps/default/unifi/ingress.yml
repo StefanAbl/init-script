@@ -8,6 +8,11 @@ metadata:
     cert-manager.io/issuer-group: certmanager.freeipa.org
     cert-manager.io/issuer-kind: ClusterIssuer
     cert-manager.io/common-name: unifi.k3s.i.${DOMAIN}
+
+    # This is necessary as otherwise there will be an error
+    # This is because the unifi controller only offers a port for HTTPS for the web UI
+    # Bad Request
+    # This combination of host and port requires TLS.
     nginx.ingress.kubernetes.io/backend-protocol: HTTPS
 spec:
   ingressClassName: nginx
