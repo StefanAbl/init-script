@@ -20,6 +20,6 @@ spec:
       admissionWebhooks:
         enabled: false
     udp:
-      3478: default/unifi
+      "3478": "default/unifi:3478"
     tcp:
-      8080: default/unifi
+      "8080": "default/unifi:8080"
