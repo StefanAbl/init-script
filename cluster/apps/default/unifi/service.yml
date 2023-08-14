@@ -1,7 +1,8 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: unifi-http
+  name: unifi
+  namespace: default
 spec:
   selector:
     app: unifi
