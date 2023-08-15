@@ -135,9 +135,21 @@ servers:
     verification: dns
     api: dns_dynv6
   - name: unifi.thorn.dynv6.net
-    upstream: https://192.168.2.15:8443
+    upstream: https://unifi.k3s.i.stabl.one
     verification: dns
     api: dns_dynv6
+    extras_location: |
+      #Next 3 lines to fix the WebSocket error in Unifi portal
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+    extras: |
+      listen 8443 ssl;
+      listen [::]:8443 ssl;
+  - name: unifi.stabl.one
+    upstream: https://unifi.k3s.i.stabl.one
+    verification: dns
+    api: dns_cf
     extras_location: |
       #Next 3 lines to fix the WebSocket error in Unifi portal
       proxy_http_version 1.1;

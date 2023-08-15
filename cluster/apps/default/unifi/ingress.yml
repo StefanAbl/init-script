@@ -14,6 +14,13 @@ metadata:
     # Bad Request
     # This combination of host and port requires TLS.
     nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+
+    # Necessary to upload larger backup files
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    # Required when there is another proxy between the browser and the ingress
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header Origin '';
+      proxy_set_header Referer '';
 spec:
   ingressClassName: nginx
   tls:
