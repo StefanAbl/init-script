@@ -36,8 +36,20 @@ storage:
     database: authelia
     username: authelia
 notifier:
-  filesystem:
-    filename: /dev/stdout
+  smtp:
+    host: mail.${DOMAIN}
+    port: 587
+    timeout: 5s
+    # configured in secret
+    # username: test
+    # password: password
+    sender: "Authelia <svc_authelia@${DOMAIN}>"
+    identifier: auth.${DOMAIN}
+    subject: "[Authelia] {title}"
+    startup_check_address: svc_authelia@${DOMAIN}
+    disable_require_tls: true
+    disable_starttls: false
+    disable_html_emails: false
 telemetry:
   metrics:
     enabled: true
