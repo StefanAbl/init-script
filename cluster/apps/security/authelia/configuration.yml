@@ -50,6 +50,10 @@ access_control:
       networks: ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
   rules:
     - domain:
+      - "longhorn.k3s.i.${DOMAIN}"
+      policy: two_factor
+      subject: [["user:stefan"]]
+    - domain:
       - "*.i.${DOMAIN}"
       policy: one_factor
       subject: [["user:stefan"]]
