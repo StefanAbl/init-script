@@ -30,8 +30,11 @@ authentication_backend:
     groups_filter: (&(member={dn})(objectclass=groupOfNames))
 
 storage:
-  local:
-    path: /db/db.sqlite3
+  postgres:
+    host: postgresql.security.svc.cluster.local
+    port: 5432
+    database: authelia
+    username: authelia
 notifier:
   filesystem:
     filename: /dev/stdout

@@ -45,6 +45,13 @@ spec:
     envFrom:
       - secretRef:
           name: authelia-secret
+    env:
+      - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name:  authelia-db-secret
+            namespace: security
+            key:  userPassword
     enableServiceLinks: false
     service:
       main:
