@@ -69,17 +69,9 @@ access_control:
       - "*.i.${DOMAIN}"
       policy: one_factor
       subject: [["user:stefan"]]
-    # - domain: ["grafana.devbu.io"]
-    #   policy: bypass
-    # - domain: ["letsblockit.devbu.io"]
-    #   resources: ["^/lists.*$"]
-    #   policy: bypass
-    # - domain: ["navidrome.devbu.io"]
-    #   resources: ["^/rest.*$"]
-    #   policy: bypass
-    # - domain: ["navidrome.devbu.io"]
-    #   resources: ["^/metrics.*$"]
-    #   policy: deny
-    # - domain: ["wizarr.devbu.io"]
-    #   resources: ["^/join.*$", "^/j/.*$", "^/setup.*$", "^/static/.*$"]
-    #   policy: bypass
+
+identity_providers:
+  oidc:
+    cors:
+      endpoints: ["authorization", "token", "revocation", "introspection"]
+      allowed_origins_from_client_redirect_uris: true
