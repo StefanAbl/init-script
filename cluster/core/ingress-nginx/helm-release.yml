@@ -17,6 +17,8 @@ spec:
       interval: 5m
   values:
     controller:
+      config:
+        use-forwarded-headers: true # TODO remove when exposing directly to the internet
       admissionWebhooks:
         enabled: false
     udp:
