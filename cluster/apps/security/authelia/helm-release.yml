@@ -39,13 +39,15 @@ spec:
       replicas: 1
       strategy: RollingUpdate
     image:
-      repository: ghcr.io/authelia/authelia
+      repository: jmalloc/echo-server
       tag: 4.37.5
     args: ["--config", "/config/configuration.yml"]
     envFrom:
       - secretRef:
           name: authelia-secret
     env:
+      - name: PORT
+        value: 80
       - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD
         valueFrom:
           secretKeyRef:
