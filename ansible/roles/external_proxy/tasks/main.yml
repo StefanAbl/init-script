@@ -74,6 +74,8 @@
     name: renew certificates
     job: 'bash /root/cert.sh && systemctl restart nginx'
     weekday: "1"
+    hour: "7"
+    minute: "30"
 
 
 - name: test nginx configuration

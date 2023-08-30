@@ -166,3 +166,7 @@ servers:
     upstream: https://blog.k3s.i.stabl.one
     verification: dns
     api: dns_cf
+  - name: auth.stabl.one
+    upstream: https://authelia.k3s.i.stabl.one
+    verification: dns
+    api: dns_cf
