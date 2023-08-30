@@ -95,6 +95,7 @@ spec:
             add_header Pragma "no-cache";
             add_header X-Frame-Options "SAMEORIGIN";
             add_header X-XSS-Protection "1; mode=block";
+            proxy_set_header X-Original-URL $scheme://$http_host$request_uri;
           hajimari.io/icon: mdi:shield-account
           cert-manager.io/issuer: freeipa-issuer
           cert-manager.io/issuer-group: certmanager.freeipa.org
