@@ -32,7 +32,7 @@ spec:
       enabled: true
     grafana.ini:
       server:
-        domain: grafana.k3s.i.${DOMAIN}
+        domain: grafana.${DOMAIN}
         root_url: https://%(domain)s/
         read_timeout: 10m
       dataproxy:
