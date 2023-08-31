@@ -57,16 +57,15 @@ spec:
         groups_attribute_path: groups
         name_attribute_path: name
         use_pkce: true
+        allowed_groups: admins
       auth.generic_oauth.group_mapping:
         org_id: 1
         role_attribute_path: |
-          contains(groups[*], 'admins') && 'Admin' || contains(groups[*], 'people') && 'Viewer'
+          contains(groups[*], 'admins') && 'Admin'
       auth.basic:
         enabled: false
-      auth.ldap:
-        enabled: true
-        allow_sign_up: true
-        config_file: /etc/grafana/ldap.toml
+      auth.anonymous:
+        enabled: false
       smtp:
         enabled: true
         host: mail.${DOMAIN}:587
@@ -184,34 +183,3 @@ spec:
       - secretName: grafana-tls
         hosts:
         - "grafana.k3s.i.${DOMAIN}"
-    ldap:
-      enabled: true
-      config: |
-        [[servers]]
-        host = "ipa.i.${DOMAIN}"
-        port = 636
-        # Set to true if LDAP server should use an encrypted TLS connection (either with STARTTLS or LDAPS)
-        use_ssl = true
-        # set to true if you want to skip SSL cert validation
-        ssl_skip_verify = true
-        bind_dn = "uid=${GRAFANA_USER},cn=users,cn=accounts,dc=i,dc=stabl,dc=one"
-        bind_password = "${GRAFANA_USER_PASS}"
-
-        # User search filter, for example "(cn=%s)" or "(sAMAccountName=%s)" or "(uid=%s)"
-        # Allow login from email or username, example "(|(sAMAccountName=%s)(userPrincipalName=%s))"
-        search_filter = "(&(uid=%s)(memberof=cn=ipausers,cn=groups,cn=accounts,dc=i,dc=stabl,dc=one))"
-        search_base_dns = ["dc=i,dc=stabl,dc=one"]
-
-        # Specify names of the LDAP attributes your LDAP uses
-        [servers.attributes]
-        member_of = "memberOf"
-        email =  "mail"
-        name = "displayName"
-        username = "uid"
-
-        [[servers.group_mappings]]
-        group_dn = "cn=admins,cn=groups,cn=accounts,dc=i,dc=stabl,dc=one"
-        org_role = "Admin"
-        grafana_admin = true
-        # The Grafana organization database id, optional, if left out the default org (id 1) will be used
-        # org_id = 1
