@@ -31,8 +31,7 @@ spec:
     imageRenderer:
       enabled: true
     env:
-      - name: GF_FEATURE_TOGGLES_ENABLE
-        value: publicDashboards
+      GF_FEATURE_TOGGLES_ENABLE: publicDashboards
     grafana.ini:
       server:
         domain: grafana.${DOMAIN}
