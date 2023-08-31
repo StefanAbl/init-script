@@ -30,6 +30,9 @@ spec:
     useStatefulSet: true
     imageRenderer:
       enabled: true
+    env:
+      - name: GF_FEATURE_TOGGLES_ENABLE
+        value: publicDashboards
     grafana.ini:
       server:
         domain: grafana.${DOMAIN}
@@ -63,8 +66,6 @@ spec:
         role_attribute_path: |
           contains(groups[*], 'admins') && 'Admin'
       auth.basic:
-        enabled: false
-      auth.anonymous:
         enabled: false
       smtp:
         enabled: true
