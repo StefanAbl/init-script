@@ -16,7 +16,7 @@ scrape_configs:
   #   tls_config:
   #     insecure_skip_verify: true
   - job_name: minio-job
-    bearer_token: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ3OTE3MDY1NTcsImlzcyI6InByb21ldGhldXMiLCJzdWIiOiJTQ2x1S0NZZUpHbFhUTm9RaThtc1NMVkRxZ1hySmdPdXBwdFZPZDFVb2s1YzN4ZzlSWSJ9.xIWGp2YCfgsA1CBEli-HUqlYPCwd43R8V3deU9TJZ4YbUAsHB6hmqMHbzMPxm-tAdCGkVY4o-RX8s666TXMH8Q
+    bearer_token: ${MINIO_PROM_TOKEN}
     metrics_path: /minio/v2/metrics/cluster
     scheme: https
     static_configs:
@@ -61,18 +61,18 @@ scrape_configs:
   #   scrape_interval: 30s
   #   static_configs:
   #   - targets: ['keel-exporter.default.svc.cluster.local:8080']
-  # - job_name: Longhorn
-  #   scrape_interval: 30s
-  #   kubernetes_sd_configs:
-  #   - api_server: 'https://kubernetes'
-  #     tls_config:
-  #       ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-  #     bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-  #     role: pod
-  #     namespaces:
-  #       names:
-  #       - longhorn-system
-  #     selectors:
-  #     - role: "pod"
-  #       label: "app=longhorn-manager"
-  #   metrics_path: /metrics
+  - job_name: Longhorn
+    scrape_interval: 30s
+    kubernetes_sd_configs:
+    - api_server: 'https://kubernetes'
+      tls_config:
+        ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+      role: pod
+      namespaces:
+        names:
+        - longhorn-system
+      selectors:
+      - role: "pod"
+        label: "app=longhorn-manager"
+    metrics_path: /metrics
