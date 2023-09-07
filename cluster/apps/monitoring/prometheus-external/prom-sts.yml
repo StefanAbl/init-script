@@ -4,9 +4,7 @@ metadata:
   name: prometheus-external
   namespace: monitoring
   annotations:
-    keel.sh/policy: "major"
-    keel.sh/trigger: poll     # enable active repository checking
-    keel.sh/approvals: "1"    # required approvals to update
+    reloader.stakater.com/auto: "true"
 spec:
   selector:
     matchLabels:
