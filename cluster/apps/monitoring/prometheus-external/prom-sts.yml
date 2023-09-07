@@ -26,7 +26,7 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
       automountServiceAccountToken: false
-      # serviceAccountName: prometheus
+      serviceAccountName: prometheus
       containers:
         - name: prometheus
           image: prom/prometheus:v2.46.0

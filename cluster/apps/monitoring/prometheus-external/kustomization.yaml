@@ -5,6 +5,7 @@ resources:
   - prom-pvc.yml
   - prom-sts.yml
   - prom-svc.yml
+  - prom-rbac.yml
 configMapGenerator:
   - name: prometheus-external-config
     namespace: monitoring
