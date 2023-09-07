@@ -71,7 +71,7 @@ scrape_configs:
       role: pod
       namespaces:
         names:
-        - longhorn-system
+        - longhorn
       selectors:
       - role: "pod"
         label: "app=longhorn-manager"
