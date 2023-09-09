@@ -15,10 +15,14 @@ spec:
       annotations:
         container.apparmor.security.beta.kubernetes.io/unifi-poller: runtime/default
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
+        reloader.stakater.com/auto: "true"
     spec:
       containers:
         - name: unifi-poller
           image: golift/unifi-poller:v2.8.3
+          args:
+            - -c
+            - /config/poller.conf
           resources:
             requests:
               memory: "64Mi"
@@ -50,7 +54,7 @@ spec:
             name: unifi-poller
             items:
               - key: "poller.conf"
-                path: unifi-poller.conf
+                path: poller.conf
         - name: creds
           secret:
             secretName: unifi-poller

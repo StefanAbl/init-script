@@ -3,10 +3,6 @@ kind: Deployment
 metadata:
   name: blog
   namespace: websites
-  annotations:
-    keel.sh/policy: "force"
-    keel.sh/trigger: poll # enable active repository checking
-    keel.sh/pollSchedule: "@every 5m"
 spec:
   replicas: 1
   selector:
@@ -37,9 +33,7 @@ spec:
             medium: ""
       containers:
         - name: webserver
-          image: "ghcr.io/stefanabl/blog:20230903143513" # {"$imagepolicy": "websites:blog"}
-          # Needed for keel to work without semver tags
-          imagePullPolicy: Always
+          image: "ghcr.io/stefanabl/blog:20230903143513"
           resources:
             requests:
               cpu: 100m
