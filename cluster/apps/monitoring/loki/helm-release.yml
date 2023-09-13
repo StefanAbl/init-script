@@ -121,17 +121,25 @@ spec:
         http_server_write_timeout: 15m
       storageConfig:
         boltdb_shipper:
-          shared_store: filesystem
+          shared_store: s3
           active_index_directory: /var/loki/index
           cache_location: /var/loki/cache
           cache_ttl: 168h
-        filesystem:
-          directory: /var/loki/chunks
-
+        # filesystem:
+          # directory: /var/loki/chunks
         aws:
           s3: http://${LOKI_MINIO_USER}:${LOKI_MINIO_PASS}@minio-loki.monitoring.svc.cluster.local.:9000/loki
           insecure: true
           s3forcepathstyle: true
+      schemaConfig:
+        configs:
+        - from: '2020-09-07'
+          store: boltdb-shipper
+          object_store: s3
+          schema: v11
+          index:
+            prefix: loki_index_
+            period: 24h
 
 
 
@@ -173,11 +181,8 @@ spec:
           max_transfer_retries: 0
           wal:
             dir: /var/loki/wal
-        querier:
-          query_timeout: 15m
-          engine:
-            timeout: 15m
         limits_config:
+          query_timeout: 15m
           enforce_metric_name: false
           reject_old_samples: true
           reject_old_samples_max_age: 168h
