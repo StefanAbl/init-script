@@ -21,6 +21,9 @@ spec:
     resources:
       requests:
         memory: 500Mi
+        cpu: 200m
+      limits:
+        memory: 2Gi
 
     persistence:
       enabled: true
