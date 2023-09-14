@@ -33,7 +33,7 @@ spec:
             medium: ""
       containers:
         - name: webserver
-          image: "ghcr.io/stefanabl/blog:20230903143513"
+          image: "ghcr.io/stefanabl/blog:20230914203913"
           resources:
             requests:
               cpu: 100m
