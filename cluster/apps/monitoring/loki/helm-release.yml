@@ -104,6 +104,10 @@ spec:
 
 
     loki:
+      image:
+        # This is due to https://github.com/grafana/loki/issues/10529
+        # also remove query_ready_index_num_days form the limits ocnfig
+        tag: 2.9.1 #TODO remove on next update
       containerSecurityContext:
         readOnlyRootFilesystem: true
         capabilities:
@@ -188,6 +192,7 @@ spec:
           reject_old_samples_max_age: 168h
           max_cache_freshness_per_query: 10m
           split_queries_by_interval: 15m
+          query_ready_index_num_days: 1
 
         {{- if .Values.loki.schemaConfig}}
         schema_config:
