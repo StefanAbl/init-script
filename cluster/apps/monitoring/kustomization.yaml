@@ -15,3 +15,4 @@ resources:
   - jellyfin-exporter
   - speedtest-exporter
   - solar-exporter
+  - prometheus-blackbox-exporter
