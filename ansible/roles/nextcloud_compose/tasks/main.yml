@@ -36,6 +36,7 @@
       owner: www-data
     - name: "/nextcloud_local/compose/cron"
     - name: "/nextcloud_local/compose/backup"
+    - name: "/nextcloud_local/compose/nextcloud"
     - name: "/nextcloud_local/promtail"
     - name: "/nextcloud_local/promtail/positions"
       owner: www-data
@@ -84,10 +85,11 @@
 
 - name: Template Dockerfile for cron image
   become: true
-  template:
+  copy:
     src: "{{ item }}.Dockerfile"
     dest: "/nextcloud_local/compose/{{ item }}/Dockerfile"
   with_items:
+    - nextcloud
     - cron
     - backup
 

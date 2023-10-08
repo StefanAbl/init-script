@@ -33,7 +33,7 @@ services:
 
 
   app:
-    image: "{{nextcloud.docker_image}}"
+    build: ./nextcloud
     restart: always
     links:
       - db
