@@ -151,7 +151,7 @@ spec:
           gnetId: 13665
           revision: 4
           datasource: Prometheus-External
-        # Ref: https://grafana.com/grafana/dashboards/15549
+        # Ref: https://grafana.com/grafana/dashboards/13659
         blackbox-exporter:
           gnetId: 13659
           revision: 1

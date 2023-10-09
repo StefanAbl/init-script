@@ -82,7 +82,17 @@ scrape_configs:
       module: [http_2xx]  # Look for a HTTP 200 response.
     static_configs:
       - targets:
-        - https://prometheus.io   # Target to probe with https.
+        - https://s3.i.${DOMAIN}
+        - https://ipa.i.${DOMAIN}
+        - https://ipa0.i.${DOMAIN}
+        - https://ipa1.i.${DOMAIN}
+        - https://influxdb2.k3s.i.${DOMAIN}
+        - https://loki.k3s.i.${DOMAIN}
+        - https://unifi.${DOMAIN}
+        - https://docsrv.${DOMAIN}
+        - https://auth.${DOMAIN}
+        - https://cloud.${DOMAIN}
+        - https://stream.${DOMAIN}
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
