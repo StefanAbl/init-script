@@ -17,3 +17,12 @@ spec:
         namespace: flux-system
       interval: 15m
   values:
+    extraVolumes:
+      - name: ca-certs
+        hostPath:
+          path: /etc/ssl/certs/ca-certificates.crt
+          type: File
+    extraVolumeMounts:
+      - name: ca-certs
+        mountPath: /etc/ssl/certs/ca-certificates.crt
+        readOnly: true
