@@ -82,12 +82,12 @@ scrape_configs:
       module: [http_2xx]  # Look for a HTTP 200 response.
     static_configs:
       - targets:
-        - https://s3.i.${DOMAIN}
+        - https://s3.i.${DOMAIN}:9091
         - https://ipa.i.${DOMAIN}
         - https://ipa0.i.${DOMAIN}
         - https://ipa1.i.${DOMAIN}
         - https://influxdb2.k3s.i.${DOMAIN}
-        - https://loki.k3s.i.${DOMAIN}
+        - http://loki-loki-distributed-gateway/
         - https://unifi.${DOMAIN}
         - https://docsrv.${DOMAIN}
         - https://auth.${DOMAIN}
