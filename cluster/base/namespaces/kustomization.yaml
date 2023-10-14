@@ -9,3 +9,4 @@ resources:
   - ffsync.yml
   - security.yml
   - longhorn.yml
+  - media.yml
