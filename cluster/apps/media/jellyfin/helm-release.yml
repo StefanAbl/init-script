@@ -27,6 +27,8 @@ spec:
     - name: node-feature-discovery
       namespace: kube-system
   values:
+    global:
+      nameOverride: *app
     defaultPodOptions:
       securityContext:
         runAsUser: 568
