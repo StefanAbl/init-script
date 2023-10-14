@@ -6,3 +6,5 @@ resources:
   - nfs-subdir
   - cert-manager
   - reloader
+  - node-feature-discovery
+  - intel-gpu-plugin
