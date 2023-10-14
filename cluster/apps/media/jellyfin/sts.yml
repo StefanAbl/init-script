@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: &app jellyfin
+  namespace: media
+spec:
+  selector:
+    matchLabels:
+      app: *app
+  serviceName: *app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: *app
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: feature.node.kubernetes.io/custom-intel-gpu
+                    operator: In
+                    values:
+                      - "true"
+      volumes:
+        - name: cache
+          emptyDir: {}
+        - name: transcode
+          emptyDir:
+            sizeLimit: 16Gi
+        - name: config
+          persistentVolumeClaim:
+            claimName: jellyfin-config-v1
+        - name: media
+          nfs:
+            server: proxmox0.i.${DOMAIN}
+            path: /Media
+        - name: ca-certs
+          hostPath:
+            path: /etc/ssl/certs/ca-certificates.crt
+            type: File
+      initContainers:
+      - name: fix-permissions
+        image: busybox
+        command: ["sh", "-c", "chown -R 1001:1850800003 /data"]
+        securityContext:
+          runAsUser: 0
+          runAsNonRoot: false
+        volumeMounts:
+          - name: config
+            mountPath: /data
+      containers:
+      - name: *app
+        image: "jellyfin/jellyfin:10.8.11"
+        env:
+        - name: TZ
+          value: EUROPE/BERLIN
+        securityContext:
+          runAsUser: 1001
+          runAsGroup: 110
+          fsGroup: 1850800003
+          fsGroupChangePolicy: "OnRootMismatch"
+          supplementalGroups:
+            - 44
+            - 110
+        resources:
+          requests:
+            gpu.intel.com/i915: 1
+            cpu: 100m
+            memory: 1Gi
+          limits:
+            gpu.intel.com/i915: 1
+            memory: 4Gi
+        ports:
+        - containerPort: 8096
+          name: http
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: cache
+          mountPath: /cache
+        - name: transcode
+          mountPath: /transcode
+        - name: media
+          mountPath: /mnt/medien
+          readOnly: true
+        - name: ca-certs
+          mountPath: /etc/ssl/certs/ca-certificates.crt
+          readOnly: true
