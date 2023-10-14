@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: &app jellyfin
+  name: jellyfin
   namespace: media
 spec:
   interval: 15m
@@ -28,7 +28,7 @@ spec:
       namespace: kube-system
   values:
     global:
-      nameOverride: *app
+      nameOverride: jellyfin
     defaultPodOptions:
       securityContext:
         runAsUser: 568
