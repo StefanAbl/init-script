@@ -4,3 +4,4 @@ resources:
   - config-pvc.yml
   - sts.yml
   - service.yml
+  - ingress.yml

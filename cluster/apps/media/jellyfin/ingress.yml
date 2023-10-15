@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jellyfin
+  namespace: media
+  annotations:
+    cert-manager.io/issuer: freeipa-issuer
+    cert-manager.io/issuer-group: certmanager.freeipa.org
+    cert-manager.io/issuer-kind: ClusterIssuer
+    cert-manager.io/common-name: jellyfin.k3s.i.${DOMAIN}
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - jellyfin.k3s.i.${DOMAIN}
+    secretName: jellyfin-cert
+  rules:
+  - host: jellyfin.k3s.i.${DOMAIN}
+    http:
+      paths:
+        - path: "/"
+          pathType: Prefix
+          backend:
+            service:
+              name: jellyfin
+              port:
+                number: 8096
