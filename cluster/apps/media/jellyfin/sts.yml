@@ -50,22 +50,22 @@ spec:
         volumeMounts:
           - name: config
             mountPath: /data
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1850800007
+        fsGroup: 1850800007
+        # fsGroupChangePolicy: "OnRootMismatch"
+        supplementalGroups:
+          - 44
+          - 110
+          - 1850800007
+          - 1850800003
       containers:
       - name: *app
         image: "jellyfin/jellyfin:10.8.11"
         env:
         - name: TZ
           value: EUROPE/BERLIN
-        securityContext:
-          runAsUser: 1001
-          runAsGroup: 110
-          # fsGroup: 1850800007
-          # fsGroupChangePolicy: "OnRootMismatch"
-          supplementalGroups:
-            - 44
-            - 110
-            - 1850800007
-            - 1850800003
         resources:
           requests:
             gpu.intel.com/i915: 1
