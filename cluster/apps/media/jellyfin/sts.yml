@@ -59,11 +59,13 @@ spec:
         securityContext:
           runAsUser: 1001
           runAsGroup: 110
-          fsGroup: 1850800003
-          fsGroupChangePolicy: "OnRootMismatch"
+          # fsGroup: 1850800007
+          # fsGroupChangePolicy: "OnRootMismatch"
           supplementalGroups:
             - 44
             - 110
+            - 1850800007
+            - 1850800003
         resources:
           requests:
             gpu.intel.com/i915: 1
