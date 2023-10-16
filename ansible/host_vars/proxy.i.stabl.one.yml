@@ -70,7 +70,7 @@ streams:
       proxy_pass 192.168.2.15:3478;
 servers:
   - name: stream.stabl.one #The name of the server
-    upstream: https://10.13.2.110:8920
+    upstream: https://jellyfin.k3s.i.stabl.one
       #How acme.sh should verify the server either http or dns
     verification: dns
       #If verification is dns, which dns APi should acme.sh use
@@ -96,11 +96,14 @@ servers:
       add_header Content-Security-Policy "default-src https: data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://www.gstatic.com/cv/js/sender/v1/cast_sender.js https://www.youtube.com/iframe_api https://s.ytimg.com blob:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; frame-ancestors 'self' http://localhost:* file:";
       location /socket {
             #Proxy Jellyfin Websockets traffic
-            proxy_pass https://10.13.2.110:8920;
+            # Use a variable so that upstream might be down while nginx starts:
+            set $upstream https://jellyfin.k3s.i.stabl.one;
+            # Put together the upstream request path using the captured component after the location path, and the query parameters:
+            proxy_pass $upstream/$1$is_args$args;
+            proxy_set_header Host jellyfin.k3s.i.stabl.one; #Remove protocaol prefix and port suffix;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
-            proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
