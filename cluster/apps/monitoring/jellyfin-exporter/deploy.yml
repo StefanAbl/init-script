@@ -3,7 +3,8 @@ kind: Deployment
 metadata:
   name: jellyfin-exporter
   namespace: monitoring
-  # annotations:
+  annotations:
+    reloader.stakater.com/auto: "true"
 spec:
   selector:
     matchLabels:
@@ -21,7 +22,7 @@ spec:
           image: ghcr.io/stefanabl/jellyfin-prometheus-exporter:20230710165950
           env:
             - name: JF_URL
-              value: "https://jellyfin0.i.${DOMAIN}:8920/"
+              value: "http://jellyfin.media.svc.cluster.local:8096/"
             - name: TOKEN
               valueFrom:
                 secretKeyRef:
