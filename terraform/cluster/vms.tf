@@ -5,7 +5,7 @@ variable "vms" {
       id     = 141
       ip     = "10.13.2.41"
       cores  = 2
-      memory = 2048
+      memory = 4096
       disk   = "32G"
       target_node = "proxmox0"
       template = "ubuntu-22.04"
@@ -14,7 +14,7 @@ variable "vms" {
       id     = 142
       ip     = "10.13.2.42"
       cores  = 2
-      memory = 2048
+      memory = 4096
       disk   = "32G"
       target_node = "proxmox1"
       template = "ubuntu-22.04-pm1"
@@ -23,7 +23,7 @@ variable "vms" {
       id     = 143
       ip     = "10.13.2.43"
       cores  = 2
-      memory = 2048
+      memory = 4096
       disk   = "32G"
       target_node = "proxmox2"
       template = "ubuntu-22.04-pm2"
@@ -33,16 +33,16 @@ variable "vms" {
       ip     = "10.13.2.51"
       cores  = 4
       memory = 4096
-      disk   = "32G"
+      disk   = "256G"
       target_node = "proxmox0"
       template = "ubuntu-22.04"
     },
     worker02 = {
       id     = 152
       ip     = "10.13.2.52"
-      cores  = 4
-      memory = 6144
-      disk   = "32G"
+      cores  = 6
+      memory = 8192
+      disk   = "256G"
       target_node = "proxmox1"
       template = "ubuntu-22.04-pm1"
     },
@@ -51,7 +51,7 @@ variable "vms" {
       ip     = "10.13.2.53"
       cores  = 6
       memory = 8192
-      disk   = "128G"
+      disk   = "256G"
       target_node = "proxmox2"
       template = "ubuntu-22.04-pm2"
     }
