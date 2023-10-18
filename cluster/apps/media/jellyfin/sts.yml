@@ -80,6 +80,8 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /config
+        - name: config
+          mountPath: /var/lib/jellyfin
         - name: cache
           mountPath: /cache
         - name: transcode
