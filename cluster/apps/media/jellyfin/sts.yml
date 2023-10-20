@@ -14,6 +14,15 @@ spec:
       labels:
         app: *app
     spec:
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: 2s
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: 2s
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
