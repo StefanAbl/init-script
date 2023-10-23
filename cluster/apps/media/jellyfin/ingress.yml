@@ -8,6 +8,10 @@ metadata:
     cert-manager.io/issuer-group: certmanager.freeipa.org
     cert-manager.io/issuer-kind: ClusterIssuer
     cert-manager.io/common-name: jellyfin.k3s.i.${DOMAIN}
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "7200"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "7200"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "7200"
+    nginx.org/websocket-services: "app-sockets-cluster-ip-service"
 spec:
   ingressClassName: nginx
   tls:
