@@ -93,6 +93,9 @@ scrape_configs:
         - https://auth.${DOMAIN}
         - https://cloud.${DOMAIN}
         - https://stream.${DOMAIN}
+        - https://proxmox0.i.${DOMAIN}:8006
+        - https://proxmox1.i.${DOMAIN}:8006
+        - https://proxmox2.i.${DOMAIN}:8006
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
