@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: solar-exporter
-        image: ghcr.io/stefanabl/solar-exporter:20230909134338
+        image: ghcr.io/stefanabl/solar-exporter:20231028093347
         resources:
           limits:
             memory: "128Mi"
