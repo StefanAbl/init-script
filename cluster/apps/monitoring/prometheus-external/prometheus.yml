@@ -94,7 +94,7 @@ scrape_configs:
         - https://cloud.${DOMAIN}
         - https://stream.${DOMAIN}
         - https://proxmox0.i.${DOMAIN}:8006
-        - https://ffsync.${OLD_DOMAIN}/token/1.0/sync/1.5
+        - https://ffsync.${OLD_DOMAIN}
 
     relabel_configs:
       - source_labels: [__address__]
