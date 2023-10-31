@@ -34,8 +34,6 @@ spec:
               value: "true"
             - name: SYNCSERVER_FORWARDED_ALLOW_IPS
               value: "*"
-            - name: SYNCSERVER_DEBUG_ENABLED
-              value: "true"
             - name: PORT
               value: "5001"
             - name: SYNCSERVER_SECRET
