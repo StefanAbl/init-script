@@ -9,8 +9,12 @@ metadata:
     cert-manager.io/issuer-kind: ClusterIssuer
     cert-manager.io/common-name: syncserver.k3s.i.${DOMAIN}
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      proxy_set_header X-Forwarded-Proto http;
-      proxy_set_header X-Forwarded-Protocol http;
+      proxy_set_header XX-FORWARDED-PROTO https;
+      proxy_set_header x-forwarded-port 443;
+      proxy_set_header X-FORWARDED-PROTOCOL ssl;
+      proxy_set_header X-FORWARDED-SSL on;
+      proxy_set_header x-forwarded-scheme https;
+      proxy_set_header x-scheme https;
 spec:
   ingressClassName: nginx
   tls:
