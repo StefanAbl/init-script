@@ -10,6 +10,7 @@ User={{promtail.run_as_user}}
 User=www-data
 {% endif %}
 ExecStart=/usr/local/bin/promtail-linux-amd64 -config.file /etc/promtail.yml
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

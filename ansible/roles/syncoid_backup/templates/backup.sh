@@ -1,9 +1,9 @@
 #!/bin/bash
+set -o pipefail
 
 # Retries a command on failure.
 # $1 - the max number of attempts
 # $2... - the command to run
-
 retry() {
     local -r -i max_attempts="$1"; shift
     local -i attempt_num=1
@@ -16,6 +16,38 @@ retry() {
         else
             echo "Attempt $attempt_num failed! Trying again in $attempt_num seconds..."
             sleep $((attempt_num++))
+        fi
+    done
+}
+
+shutdown_cmd() {
+  retry 5 ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 "org.freedesktop.login1.Manager.PowerOff" boolean:true
+  sleep 5m
+}
+
+check_online() {
+   if ssh -o ConnectTimeout=10 -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net /bin/true ; then
+      echo "Remote still online"
+      return 1
+    else
+      echo "Remote successfully shutdown"
+      return 0
+    fi
+}
+
+shutdown_remote() {
+    local -r -i max_attempts="5"
+    local -i attempt_num=1
+    until check_online
+    do
+        shutdown_cmd
+        if ((attempt_num==max_attempts))
+        then
+            echo "Attempt $attempt_num failed and there are no more attempts left!"
+            return 1
+        else
+            echo "Attempt $attempt_num failed! Trying again in"
+            sleep 10m
         fi
     done
 }
@@ -55,18 +87,10 @@ mail_file="$(mktemp)"
   ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net zpool list
   ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net zfs list
 
-   sleep 5m
+  sleep 5m
   if [[ $status == 0 ]]; then
     echo "Shuting down remote server"
-    retry 5 ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 "org.freedesktop.login1.Manager.PowerOff" boolean:true
-    sleep 5m
-    if ssh -o ConnectTimeout=10 -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net /bin/true ; then
-      echo "Shutdown failed trying again in 10m"
-      sleep 10m
-      ssh -p 27022 -i /root/.ssh/id_rsa proxmox@alarmanlage.dynv6.net dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 "org.freedesktop.login1.Manager.PowerOff" boolean:true
-    else
-      echo "Shutdown successful"
-    fi
+    shutdown_remote
   else
     echo "Backup was not successfull not shutting down remote server"
   fi
