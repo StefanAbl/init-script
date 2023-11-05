@@ -63,7 +63,7 @@ spec:
           - 1850800003
       containers:
       - name: *app
-        image: "jellyfin/jellyfin:10.8.11"
+        image: "jellyfin/jellyfin:10.8.12"
         env:
         - name: TZ
           value: EUROPE/BERLIN
