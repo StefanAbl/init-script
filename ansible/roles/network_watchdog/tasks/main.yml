@@ -1,0 +1,19 @@
+- name: Copy script into place
+  copy:
+    src: watchdog.sh
+    dest: /opt/watchdog.sh
+    mode: 0755
+- name: Create cron job
+  cron:
+    name: Watchdog reboot if network not available
+    job: "bash /opt/watchdog.sh"
+    user: root
+    minute: "*/10"
+
+- name: Create warning in .profile
+  blockinfile:
+    path:  "{{ lookup('env','HOME') }}/.profile"
+    block: |
+      echo ""
+      echo ""
+      echo "If network is down the system will reboot shortly. Edit the crontab to prevent"

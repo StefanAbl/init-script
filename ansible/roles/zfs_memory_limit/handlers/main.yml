@@ -1,0 +1,9 @@
+- name: Update initramfs
+  listen: handlers
+  become: true
+  command: update-initramfs -u -k all
+- name: Notify about need to reboot
+  listen: handlers
+  pause:
+    prompt: "MAKE SURE TO REBOOT TO APPLY CHANGES"
+    minutes: 2

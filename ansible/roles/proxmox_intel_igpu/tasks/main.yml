@@ -1,4 +1,5 @@
 - name: Ensure graphics drivers are blacklisted
+  when: false
   become: true
   lineinfile:
     path: /etc/default/grub
@@ -6,6 +7,15 @@
     line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on i915.enable_gvt=1 iommu=pt pcie_acs_override=downstream,multifunction video=efifb:off video=vesa:off vfio_iommu_type1.allow_unsafe_interrupts=1 kvm.ignore_msrs=1 modprobe.blacklist=radeon,nouveau,nvidia,nvidiafb,nvidia-gpu"'
     state: present
   notify: Update Grub
+
+- name: Ensure graphics drivers are blacklisted
+  become: true
+  lineinfile:
+    path: /etc/kernel/cmdline
+    regex: root=ZFS=rpool/ROOT/pve-1 boot=zfs .*
+    line: 'root=ZFS=rpool/ROOT/pve-1 boot=zfs quiet intel_iommu=on i915.enable_gvt=1 iommu=pt pcie_acs_override=downstream,multifunction video=efifb:off video=vesa:off vfio_iommu_type1.allow_unsafe_interrupts=1 kvm.ignore_msrs=1 modprobe.blacklist=radeon,nouveau,nvidia,nvidiafb,nvidia-gpu'
+    state: present
+  notify: Update systemd boot
 
 - name: Add vfio modules
   become: true

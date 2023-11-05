@@ -5,3 +5,7 @@
 - name: Update initramfs
   become: true
   command: update-initramfs -u -k all
+
+- name: Update systemd boot
+  become: true
+  command: proxmox-boot-tool refresh
