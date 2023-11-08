@@ -8,7 +8,7 @@
     name: Watchdog reboot if network not available
     job: "bash /opt/watchdog.sh"
     user: root
-    minute: "*/10"
+    minute: "*/1"
 
 - name: Create warning in .profile
   blockinfile:
