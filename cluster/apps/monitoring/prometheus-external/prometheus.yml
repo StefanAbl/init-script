@@ -82,6 +82,7 @@ scrape_configs:
       module: [http_2xx]  # Look for a HTTP 200 response.
     static_configs:
       - targets:
+        - https://ffsync.${OLD_DOMAIN}
         - https://s3.i.${DOMAIN}:9091
         - https://ipa.i.${DOMAIN}
         - https://ipa0.i.${DOMAIN}
@@ -94,7 +95,6 @@ scrape_configs:
         - https://cloud.${DOMAIN}
         - https://stream.${DOMAIN}
         - https://proxmox0.i.${DOMAIN}:8006
-        - https://ffsync.${OLD_DOMAIN}
 
     relabel_configs:
       - source_labels: [__address__]
