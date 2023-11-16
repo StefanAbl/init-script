@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: jellyfin-exporter
-          image: ghcr.io/stefanabl/jellyfin-prometheus-exporter:20230710165950
+          image: ghcr.io/stefanabl/jellyfin-prometheus-exporter:20231115160115
           env:
             - name: JF_URL
               value: "http://jellyfin.media.svc.cluster.local:8096/"
