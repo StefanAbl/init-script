@@ -13,6 +13,15 @@
   tags:
   - addons
 
+- name: Configure multipath
+  blockinfile:
+    path: /etc/multipath.conf
+    block: |
+      blacklist {
+        devnode "^sd[a-z0-9]+"
+      }
+  notify: Restart multipathd
+
 - name: k3s | cluster configuration
   include_role:
     name: xanmanning.k3s
