@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.6.0
-FROM nextcloud:26.0.8-fpm
+FROM nextcloud:26.0.9-fpm
 RUN apt-get update && apt-get install -y ffmpeg
 RUN echo '#!/bin/bash \ntaskset -c 0,2 ffmpeg "$@" ' > /custom-ffmpeg.sh
 RUN chmod a+rx /custom-ffmpeg.sh
