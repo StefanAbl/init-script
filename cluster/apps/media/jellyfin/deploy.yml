@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://kubernetesjsonschema.dev/v1.14.0/deployment-apps-v1.json
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,6 +16,12 @@ spec:
       labels:
         app: *app
     spec:
+      subdomain: jellyfin
+      hostAliases:
+        - ip: "127.0.0.1"
+          hostnames:
+            - localhost
+            - jellyfin.k3s.i.${DOMAIN}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
