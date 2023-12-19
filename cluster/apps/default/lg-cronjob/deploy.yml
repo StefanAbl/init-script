@@ -15,7 +15,7 @@ spec:
               imagePullPolicy: IfNotPresent
               command:
                 - curl
-              args: ["https://developer.lge.com/secure/ResetDevModeSession.dev?sessionToken=$(TOKEN)"]
+              args: ["https://developer.lge.com/secure/ResetDevModeSession.dev?sessionToken=$(TOKEN)", -i]
               resources: {}
               securityContext:
                 allowPrivilegeEscalation: false
