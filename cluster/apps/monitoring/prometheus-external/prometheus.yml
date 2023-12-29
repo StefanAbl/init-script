@@ -97,6 +97,7 @@ scrape_configs:
         - https://proxmox0.i.${DOMAIN}:8006
         - https://syncserver.k3s.i.${DOMAIN}
         - http://syncserver.ffsync.svc.cluster.local:5001
+        - http://kube-prometheus-stack-prometheus:9090
 
     relabel_configs:
       - source_labels: [__address__]
