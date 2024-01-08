@@ -4,7 +4,10 @@ After=network.target
 
 [Service]
 Type=simple
-{% if promtail.run_as_user |default(False) %}
+{% if promtail.run_as_user | default(False) %}
+User=loki
+{% endif %}
+{% if promtail.run_as_user | default(False) %}
 User={{promtail.run_as_user}}
 {%else%}
 User=www-data

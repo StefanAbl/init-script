@@ -12,4 +12,6 @@
     - ansible-acme-sh
     - syncoid_backup
     - minio_server
+    - promtail
+    - hdparm_reports
   tasks:

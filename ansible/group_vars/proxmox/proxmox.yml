@@ -30,3 +30,26 @@ minio_server_svcaccts:
   - name: "{{ mailserver_s3_access_key }}"
     pass: "{{ mailserver_s3_secreet_key }}"
     bucket: mail-backup
+
+promtail:
+  user: "{{ansible_facts['hostname']}}" #Name of the user from above
+  create_user: true
+  scrape_configs: # scrape configs for loki
+  - job_name: system
+    pipeline_stages:
+    - json:
+        expressions:
+          timestamp: timestamp
+    - timestamp:
+        source: timestamp
+        format: unix
+    static_configs:
+    - targets:
+      - localhost
+      labels:
+        host: "{{ansible_facts['fqdn']}}"
+        app: promtail
+        agent: promtail
+        __path__: /tmp/hdparm_reports.json
+
+hdparm_reports_output_file: /tmp/hdparm_reports.json

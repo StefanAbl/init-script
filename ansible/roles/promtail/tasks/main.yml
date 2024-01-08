@@ -1,3 +1,7 @@
+- name: Check if mutually exclusive variables are not set
+  fail:
+    msg: create_user and run_as_user should not both be set
+  when: promtail.run_as_user is defined and promtail.create_user
 - name: Install unzip
   become: true
   package:
@@ -20,6 +24,24 @@
   template:
     src: promtail.yml
     dest: /etc/
+
+- name: Create group
+  become: true
+  when: promtail.create_user
+  group:
+    name: "loki"
+    state: present
+- name: Add user "loki"
+  user:
+    name: loki
+    group: loki
+    shell: /sbin/nologin
+    create_home: no
+    # append: yes
+    comment: "Loki nologin User"
+    state: present
+  become: true
+  when: promtail.create_user
 
 - name: copy systemd service file
   become: true

@@ -14,6 +14,7 @@ The following variables are needed.
 ```yaml
 promtail:
     user: # Name of the user from above
+    create_user: false # Create a new unprivileged user named loki as which loki will run. Does not work with run as user
     run_as_user: # The user for the promtail process on the local machine. Defaults to www-data
     scrape_configs: # scrape configs for loki
     - job_name: system

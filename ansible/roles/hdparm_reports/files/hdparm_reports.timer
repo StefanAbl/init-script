@@ -1,0 +1,10 @@
+[Unit]
+Description=HD Parm Reports timer
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=30s
+Unit=hdparm_reports.service
+
+[Install]
+WantedBy=multi-user.target

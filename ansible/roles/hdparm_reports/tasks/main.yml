@@ -1,0 +1,20 @@
+- name: Template script
+  become: true
+  template:
+    src: "hdparm_reports.sh"
+    dest: "/etc/hdparm_reports.sh"
+    owner: root
+    mode: '0750'
+- name: Copy systemd files
+  become: true
+  copy:
+    src: "{{item}}"
+    dest: /etc/systemd/system/
+  with_items:
+    - hdparm_reports.service
+    - hdparm_reports.timer
+- name: Start timer
+  become: true
+  systemd:
+    name: hdparm_reports.timer
+    state: started
