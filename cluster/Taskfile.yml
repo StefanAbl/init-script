@@ -6,25 +6,35 @@ tasks:
       - flux --kubeconfig=kubeconfig.yml suspend helmrelease -n {{.CLI_ARGS}}
       - flux --kubeconfig=kubeconfig.yml resume helmrelease -n {{.CLI_ARGS}}
   rotate-flux-token:
+    vars:
+      ENC_SETTINGS: |
+        # decryption settings
+          decryption:
+            provider: sops
+            secretRef:
+              name: sops-gpg
+
+      OWNER:
+        sh: git config --get remote.origin.url | sed 's/.*://g' | sed 's/\/.*git//g'
+      REPO:
+        sh: git config --get remote.origin.url | sed 's/.*://g' | sed 's/.git//g' | sed 's/.*\///g'
     cmds:
       - kubectl --kubeconfig ./kubeconfig.yml -n flux-system delete secret flux-system
       - OWNER="$(git config --get remote.origin.url | sed 's/.*://g' | sed 's/\/.*git//g' )"
       - REPO="$(git config --get remote.origin.url | sed 's/.*://g' | sed 's/.git//g' | sed 's/.*\///g' )"
-      - echo "GitHub Repository is $OWNER/$REPO"
-      - flux bootstrap github \
-        --owner=$OWNER \
-        --repository=$REPO \
-        --path=cluster/base \
-        --branch=master \
-        --kubeconfig=kubeconfig.yml \
-        --personal \
-        --network-policy=false \
-        --read-write-key \
+      - echo "GitHub Repository is {{.OWNER}}/{{.REPO}}"
+      - flux bootstrap github --verbose
+        --owner={{.OWNER}}
+        --repository={{.REPO}}
+        --path=cluster/base
+        --branch=master
+        --kubeconfig=kubeconfig.yml
+        --personal
+        --network-policy=false
+        --read-write-key
         --components-extra=image-reflector-controller,image-automation-controller
       - git pull
-      - task: >
-          echo "  decryption:\n    provider: sops\n    secretRef:\n      name: sops-gpg" >> base/flux-system/gotk-sync.yaml
-      - task: git add base/flux-system/gotk-sync.yaml
-      - task: >
-          git commit -m "cluster: readd encryption settings after update"
-      - task: git push
+      - echo "{{.ENC_SETTINGS}}" >> base/flux-system/gotk-sync.yaml
+      - git add base/flux-system/gotk-sync.yaml
+      - git commit -m "cluster readd encryption settings after update" || git add base/flux-system/gotk-sync.yaml && git commit -m "cluster readd encryption settings after update"
+      - git push
