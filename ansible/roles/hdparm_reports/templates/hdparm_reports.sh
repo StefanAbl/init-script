@@ -25,6 +25,12 @@ done <<< "$hdparm_output"
 json_output="${json_output%,}}"
 json_output+="}"
 
+line_count=$(wc -l < "$output_file")
+if (( line_count > 50000 )); then
+    mv "$output_file" "$output_file.old"
+    touch "$output_file"
+fi
+
 # Write the JSON to the specified output file
 echo "$json_output" > "$output_file"
 chmod a+r "$output_file"
