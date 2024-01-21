@@ -10,7 +10,7 @@
 - name: Download promtail
   become: true
   get_url:
-    url: https://github.com/grafana/loki/releases/download/v2.1.0/promtail-linux-amd64.zip
+    url: https://github.com/grafana/loki/releases/download/v2.8.0/promtail-linux-amd64.zip
     dest: /tmp/promtail.zip
 - name: unzip promtail
   become: true

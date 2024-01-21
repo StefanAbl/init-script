@@ -31,3 +31,6 @@ tasks:
   k3s:
     cmds:
       - ansible-playbook -i hosts --ask-vault-pass -K k3s.yml
+  ipa:
+    cmds:
+      - ansible-playbook -i hosts --ask-vault-pass ipa.yml
