@@ -31,12 +31,4 @@ spec:
       config:
         core:
           sources:
-            - custom
             - pci
-        sources:
-          custom:
-            - name: intel-gpu
-              matchOn:
-                - pciId: #8086:3E92
-                    class: ["0300"]
-                    vendor: ["8086"]

@@ -22,15 +22,15 @@ spec:
           hostnames:
             - localhost
             - jellyfin.k3s.i.${DOMAIN}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: feature.node.kubernetes.io/custom-intel-gpu
-                    operator: In
-                    values:
-                      - "true"
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #         - matchExpressions:
+      #             - key: feature.node.kubernetes.io/custom-intel-gpu
+      #               operator: In
+      #               values:
+      #                 - "true"
       volumes:
         - name: cache
           emptyDir: {}
