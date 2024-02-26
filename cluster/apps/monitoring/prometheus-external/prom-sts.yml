@@ -34,6 +34,7 @@ spec:
             - "--config.file=/config/prometheus.yml"
             - "--storage.tsdb.path=/data"
             - "--storage.tsdb.retention.time=180d"
+            - "--storage.tsdb.retention.size=35GB"
             - "--log.level=debug"
           ports:
             - containerPort: 9090

@@ -1,11 +1,11 @@
 global:
 scrape_configs:
   - job_name: unifi-poller
-    scrape_interval: 30s
+    scrape_interval: 60s
     static_configs:
     - targets: ['unifi-poller:9130']
   - job_name: 'prometheus'
-    scrape_interval: 15s
+    scrape_interval: 60s
     metric_relabel_configs:
     - source_labels: [ __name__ ]
       regex: 'prometheus_http_request_duration_seconds_bucket|prometheus_http_response_size_bytes_bucket'
@@ -20,6 +20,7 @@ scrape_configs:
   #   tls_config:
   #     insecure_skip_verify: true
   - job_name: minio-job
+    scrape_interval: 60s
     bearer_token: ${MINIO_PROM_TOKEN}
     metrics_path: /minio/v2/metrics/cluster
     scheme: https
