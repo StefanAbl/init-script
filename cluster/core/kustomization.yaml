@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - metallb-system
   - ingress-nginx
-  - nfs-subdir
   - cert-manager
   - reloader
   - node-feature-discovery
