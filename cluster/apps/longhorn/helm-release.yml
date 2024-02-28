@@ -27,6 +27,7 @@ spec:
     defaultSettings:
         backupTarget: s3://longhorn@region/
         backupTargetCredentialSecret: backup-secret
+        storageMinimalAvailablePercentage: 20
     ingress:
       enabled: true
       ingressClassName: nginx
