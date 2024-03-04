@@ -6,11 +6,13 @@ export {{i.name}}='{{i.value}}'
 {% endfor %}
 {% endif %}
 /root/acme.sh/acme.sh  --register-account  -m {{ipa_admin_user}}@{{domain_name}} --server zerossl
+/root/acme.sh/acme.sh  --register-account  -m {{ipa_admin_user}}@{{domain_name}} --server letsencrypt
 
 {% for server in servers %}
 
 /root/acme.sh/acme.sh --issue -d {{server.name}} --server zerossl \
 {% if server.verification == "dns" %} --dns {{server.api}} {% else %}  -w /var/www/le_root --debug{% endif %} \
+  --server {{ server.server | default("letsencrypt") }} \
   --key-file /etc/letsencrypt/live/{{server.name}}/key.pem \
   --ca-file /etc/letsencrypt/live/{{server.name}}/ca.pem \
   --cert-file /etc/letsencrypt/live/{{server.name}}/cert.pem \

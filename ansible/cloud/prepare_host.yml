@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: linode0.i.stabl.one
   become: yes
   become_method: sudo
   roles:

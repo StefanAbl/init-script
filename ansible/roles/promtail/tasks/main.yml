@@ -27,7 +27,7 @@
 
 - name: Create group
   become: true
-  when: promtail.create_user
+  when: promtail.create_user | default(False)
   group:
     name: "loki"
     state: present
@@ -41,7 +41,7 @@
     comment: "Loki nologin User"
     state: present
   become: true
-  when: promtail.create_user
+  when: promtail.create_user | default(False)
 
 - name: copy systemd service file
   become: true

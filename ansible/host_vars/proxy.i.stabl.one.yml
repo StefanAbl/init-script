@@ -75,6 +75,7 @@ servers:
     verification: dns
       #If verification is dns, which dns APi should acme.sh use
     api: dns_cf
+    server: zerossl
     extras_location: |
       # kill cache
       add_header Last-Modified $date_gmt;

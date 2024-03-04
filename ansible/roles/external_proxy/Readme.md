@@ -26,6 +26,7 @@ servers:
     verification: dns
       #If verification is dns, which dns APi should acme.sh use
     api: dns_dynv6
+    server: letsencrypt # Which ACME server should issue certificates. See: https://github.com/acmesh-official/acme.sh/wiki/Server
     allow_embedding: True do not add X-Frame-Options SAMEORIGIN
     extras_location: # extras to include in the location block
     #extras to include in the server block
