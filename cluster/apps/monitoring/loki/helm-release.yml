@@ -166,13 +166,13 @@ spec:
           wal:
             dir: /var/loki/wal
         querier:
-          query_timeout: 15m
           engine:
             timeout: 15m
         memberlist:
           join_members:
             - {{ include "loki.fullname" . }}-memberlist
         limits_config:
+          query_timeout: 15m
           split_queries_by_interval: 15m
           ingestion_rate_mb: 10
           ingestion_burst_size_mb: 20
