@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: unifi-poller
-          image: golift/unifi-poller:v2.9.5
+          image: golift/unifi-poller:v2.10.0
           args:
             - -c
             - /config/poller.conf
