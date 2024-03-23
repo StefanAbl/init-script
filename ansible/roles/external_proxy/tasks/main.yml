@@ -72,7 +72,7 @@
 - name: add cronjob for cert.sh
   cron:
     name: renew certificates
-    job: 'bash /root/cert.sh && systemctl restart nginx'
+    job: 'bash /root/cert.sh && nginx -s reload'
     weekday: "1"
     hour: "7"
     minute: "30"
