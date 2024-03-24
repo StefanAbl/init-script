@@ -32,8 +32,9 @@ spec:
       enabled: true
     env:
       GF_FEATURE_TOGGLES_ENABLE: publicDashboards
+    envFromSecret: grafana-secret
     smtp:
-      existingSecret: "grafana-smtp-secret"
+      existingSecret: "grafana-secret"
       userKey: "user"
       passwordKey: "password"
     grafana.ini:
@@ -51,7 +52,6 @@ spec:
       auth.generic_oauth:
         enabled: true
         client_id: grafana
-        client_secret: "${GRAFANA_OIDC_CLIENT_SECRET}"
         auth_url: https://auth.${DOMAIN}/api/oidc/authorization
         api_url: https://auth.${DOMAIN}/api/oidc/userinfo
         token_url: https://auth.${DOMAIN}/api/oidc/token
