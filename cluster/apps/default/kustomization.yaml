@@ -4,3 +4,4 @@ resources:
   - lg-cronjob
   - docsrv
   - unifi
+  - backup-mx
