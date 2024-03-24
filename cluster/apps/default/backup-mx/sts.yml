@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: backup-mx
+  namespace: default
+spec:
+  serviceName: backup-mx
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backup-mx
+  template:
+    metadata:
+      labels:
+        app: backup-mx
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/postfix: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    spec:
+      hostname: mail2.${DOMAIN}
+      # See https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+      initContainers:
+      - name: fix-permissions
+        image: busybox
+        command: ["sh", "-c", "mkdir -p /data/postfix/public && chown -R 101:101 /data && chmod -R 0777 /data  && chmod g+s /data/postfix/public && ls -lahn /data/*"]
+        securityContext:
+         runAsUser: 0
+         runAsNonRoot: false
+        volumeMounts:
+         - name: spool
+           mountPath: /data
+      containers:
+        - name: postfix
+          image: ghcr.io/stefanabl/postfix
+          ports:
+            - containerPort: 25
+              name: mail
+            - containerPort: 587
+              name: mail-secure
+          volumeMounts:
+            - name: spool
+              mountPath: /data
+            - name: spool
+              mountPath: /var/spool
+            - name: config
+              mountPath: /config/main.cf
+              subPath: main.cf
+            - name: config
+              mountPath: /config/master.cf
+              subPath: master.cf
+          command:
+            - sleep
+            - "3600"
+          resources:
+            limits:
+              cpu: 250m
+              memory: 300Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - DAC_OVERRIDE
+                - FOWNER
+                - SETUID
+                - SETGID
+                - NET_BIND_SERVICE
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: postfix-config
+      automountServiceAccountToken: false
+  volumeClaimTemplates:
+    - metadata:
+        name: spool
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 1Gi
+  updateStrategy: {}
