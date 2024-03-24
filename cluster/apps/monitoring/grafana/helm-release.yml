@@ -32,6 +32,10 @@ spec:
       enabled: true
     env:
       GF_FEATURE_TOGGLES_ENABLE: publicDashboards
+    smtp:
+      existingSecret: "grafana-smtp-secret"
+      userKey: "user"
+      passwordKey: "password"
     grafana.ini:
       server:
         domain: grafana.${DOMAIN}
@@ -69,8 +73,6 @@ spec:
       smtp:
         enabled: true
         host: mail.${DOMAIN}:587
-        user: ${GRAFANA_USER}@${DOMAIN}
-        password: ${GRAFANA_USER_PASS}
         from_address: svc_grafana@${DOMAIN}
         ehlo_identity: "grafana.k3s.i.${DOMAIN}"
     dashboardProviders:
