@@ -155,5 +155,5 @@ spec:
             spec:
               resources:
                 requests:
-                  storage: 42Gi
+                  storage: 45Gi
         additionalScrapeConfigs:
