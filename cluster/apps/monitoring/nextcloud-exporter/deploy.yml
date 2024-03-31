@@ -18,10 +18,11 @@ spec:
     spec:
       containers:
         - name: nc-exporter
-          image: xperimental/nextcloud-exporter:0.6.2
+          image: xperimental/nextcloud-exporter:0.7.0
           args:
             - "--server"
             - "https://cloud.${DOMAIN}"
+            - "--enable-info-apps"
           env:
             - name: NEXTCLOUD_AUTH_TOKEN
               valueFrom:
