@@ -39,6 +39,14 @@
 
     - name: deploy postfix
       include:  postfix/postfix.yml
+    - name: Get Postfix uid
+      shell: "docker run --rm postfix id -u postfix"
+      register: postfixUID
+      changed_when: False
+    - name: Get Postfix gid
+      shell: "docker run --rm postfix id -g postfix"
+      register: postfixGID
+      changed_when: False
 # CERTIFICATES
     - name: start acme.sh container
       docker_container:

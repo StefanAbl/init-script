@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+  cloud:
+    cmds:
+      - ansible-playbook -i hosts --ask-vault-pass -K cloud/cloud.yml
+  replica:
+    cmds:
+      - ansible-playbook -i hosts --ask-vault-pass -K cloud/setup_replica.yml
+  backup:
+    cmds:
+      - ansible-playbook -i hosts --ask-vault-pass -K cloud/cloud.yml --start-at-task="start backup tasks"
