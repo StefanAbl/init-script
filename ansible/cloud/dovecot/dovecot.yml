@@ -16,6 +16,7 @@
     mode: 0700
   with_items:
     - "{{docker_dir}}/dovecot/config/conf.d"
+    - "{{docker_dir}}/dovecot/config/sieve-before.d"
     - "{{docker_dir}}/mail/vhosts"
     - "{{docker_dir}}/mail/attachments"
 
@@ -28,6 +29,31 @@
     mode: 0600
   with_fileglob:
     - conf.d/*
+- name: template sieve-before.d directory
+  template:
+    src: "{{ item }}"
+    dest: "{{docker_dir}}/dovecot/config/sieve-before.d/"
+    owner: "{{mailserver_bindUser}}"
+    group: "{{mailserver_bindUser}}"
+    mode: 0600
+  with_fileglob:
+    - sieve-before.d/*
+- name: Precompile sieve scripts
+  docker_container:
+    image: dovecot
+    name: sieve-compiler
+    auto_remove: true
+    sysctls: "net.ipv6.conf.all.disable_ipv6=0"
+    etc_hosts:
+      "{{mailserver_replica_name}}={{replica_container_primary_ip.stdout}}"
+    volumes:
+      - "{{docker_dir}}/dovecot/config:/config"
+      - "/etc/ipa/ca.crt:/etc/ipa/ca.crt:ro"
+    entrypoint: "/bin/sh"
+    command:
+     - sh
+     - -c
+     - sievec /config/sieve-before.d/*
 - name: template ldap.conf.ext and dovecot.conf
   template:
     src: "{{item}}"
