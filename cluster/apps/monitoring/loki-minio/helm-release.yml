@@ -25,6 +25,19 @@ spec:
       limits:
         memory: 2Gi
 
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+              - worker02.i.${DOMAIN}
+              - worker03.i.${DOMAIN}
+
+
     persistence:
       enabled: true
       storageClass: longhorn
