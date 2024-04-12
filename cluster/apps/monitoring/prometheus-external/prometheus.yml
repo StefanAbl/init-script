@@ -26,6 +26,13 @@ scrape_configs:
     scheme: https
     static_configs:
     - targets: ['s3.i.${DOMAIN}:9000']
+  - job_name: minio-loki-job
+    bearer_token: ${MINO_LOKI_TOKEN}
+    metrics_path: /minio/v2/metrics/cluster
+    scheme: http
+    static_configs:
+    - targets: ['minio-loki:9000']
+
   - job_name: nextcloud-exporter
     scrape_interval: 30s
     static_configs:
