@@ -16,3 +16,4 @@ resources:
   - speedtest-exporter
   - solar-exporter
   - prometheus-blackbox-exporter
+  - s3gw
