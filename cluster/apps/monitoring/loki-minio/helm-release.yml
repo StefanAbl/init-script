@@ -25,6 +25,9 @@ spec:
       limits:
         memory: 2Gi
 
+    environment:
+      _MINIO_DISK_ACTIVE_MONITORING: off
+      _MINIO_DRIVE_ACTIVE_MONITORING: off
     affinity:
       nodeAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
