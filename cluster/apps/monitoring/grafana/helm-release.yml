@@ -116,7 +116,7 @@ spec:
         # Ref: https://grafana.com/grafana/dashboards/13502
         minio:
           gnetId: 13502
-          revision: 10
+          revision: 26
           datasource: Prometheus-External
         # Ref: https://grafana.com/grafana/dashboards/11315
         unifi-client-insights:
