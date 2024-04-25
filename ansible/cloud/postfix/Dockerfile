@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:noble-20240423
 RUN apt-get update && \
     apt-get install -y postfix postfix-ldap openssl sudo bash dnsutils nano telnet less inotify-tools
 RUN mkdir -p /config /data &&\
