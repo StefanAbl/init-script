@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: s3gw
-        image: quay.io/s3gw/s3gw:v0.23.0
+        image: quay.io/s3gw/s3gw:v0.23.1
         env:
         - name: RGW_DEFAULT_USER_ACCESS_KEY
           value: ${LOKI_MINIO_USER}
