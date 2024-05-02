@@ -29,13 +29,17 @@ k3s_server_manifests_templates:
 - "kube-vip/kube-vip-rbac.yaml.j2"
 - "kube-vip/kube-vip-daemonset.yaml.j2"
 
+
+k3s_primary_control_node: false
 # Custom manifest URLs
 k3s_server_manifests_urls:
-- url: https://docs.projectcalico.org/archive/v3.26.1/manifests/tigera-operator.yaml
+- url: https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/tigera-operator.yaml
   filename: tigera-operator.yaml
+- url: https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/custom-resources.yaml
+  filename: calico-crds.yaml
 
 # Values for Kube-VIP
-kube_vip_tag_version: v0.5.12
+kube_vip_tag_version: v0.7.2
 kubevip_interface: eth0
 
 kubeconfig_local_path: ../cluster/kubeconfig.yml
