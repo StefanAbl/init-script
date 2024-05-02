@@ -4,3 +4,4 @@ resources:
   - helm-release.yml
   - backup-secret.yml
   - fs-trim-job.yml
+  - allow-scraping.yml
