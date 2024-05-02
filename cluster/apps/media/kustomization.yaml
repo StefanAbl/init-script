@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: media
 resources:
   - jellyfin
+  - allow-scraping.yml
   - ../../policies/allow-from-ingress.yml
   - ../../policies/allow-to-dns.yml
   - ../../policies/allow-to-internet.yml
