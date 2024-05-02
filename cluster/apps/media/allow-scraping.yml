@@ -10,6 +10,9 @@ spec:
   egress:
   ingress:
   - from:
-    - podSelector:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: monitoring
+      podSelector:
         matchLabels:
           app: jellyfin-exporter
