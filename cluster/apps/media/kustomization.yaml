@@ -1,5 +1,9 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: media
 resources:
   - jellyfin
-  - network-policy.yml
+  - ../../policies/allow-from-ingress.yml
+  - ../../policies/allow-to-dns.yml
+  - ../../policies/allow-to-internet.yml
+  - ../../policies/allow-to-ldap.yml
