@@ -4,7 +4,7 @@ resources:
   - prometheus-stack
   - grafana
   - loki
-  - loki-minio
+  - s3gw
   - event-exporter
   - promtail
   - prometheus-external
@@ -16,4 +16,3 @@ resources:
   - speedtest-exporter
   - solar-exporter
   - prometheus-blackbox-exporter
-  - s3gw
