@@ -5,3 +5,4 @@ resources:
   - service.yml
   - ingress.yml
   - secret.yml
+  - allow-lb-ingress.yml

@@ -5,3 +5,4 @@ resources:
   - pvc.yml
   - service.yml
   - ingress.yml
+  - allow-scraping.yml
