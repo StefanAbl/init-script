@@ -37,6 +37,18 @@ scrape_configs:
     scrape_interval: 30s
     static_configs:
     - targets: ['nc-exporter:9205']
+  - job_name: intel-gpu-exporter
+    scrape_interval: 30s
+    kubernetes_sd_configs:
+    - role: pod
+      namespaces:
+        names:
+        - monitoring
+      selectors:
+      - role: "pod"
+        label: "app=intel-gpu-exporter"
+    metrics_path: /metrics
+
   - job_name: jellyfin-exporter
     scrape_interval: 30s
     static_configs:
