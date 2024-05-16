@@ -28,7 +28,7 @@ spec:
                       - "true"
       containers:
       - name: *name
-        image: ghcr.io/onedr0p/intel-gpu-exporter:rolling@sha256:f81cc5220c97c75738955453a83aba40e66bfd16b1f3ef33981fd8d4b0435082
+        image: ghcr.io/onedr0p/intel-gpu-exporter:rolling@sha256:1c99f43aa6058f1ed2b0260ef8e0bdac3ab62e5232f221450aceb1fff2b60187
         resources:
           limits:
             gpu.intel.com/i915: 1
