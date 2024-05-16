@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://kubernetesjsonschema.dev/v1.14.0/daemonset-apps-v1.json
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: &name intel-gpu-exporter
+  namespace: monitoring
+  labels:
+    app: *name
+spec:
+  selector:
+    matchLabels:
+      name: *name
+      app: *name
+  template:
+    metadata:
+      labels:
+        name: *name
+        app: *name
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: feature.node.kubernetes.io/pci-0300_8086.present
+                    operator: In
+                    values:
+                      - "true"
+      containers:
+      - name: *name
+        image: ghcr.io/stefanabl/intel-gpu-exporter:20240516180204
+        env:
+          - name: DEBUG
+            value: "True"
+        resources:
+          limits:
+            gpu.intel.com/i915: 1
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+            gpu.intel.com/i915: 1
+        ports:
+          - containerPort: 8080
+            name: metrics
+        securityContext:
+          privileged: true
+      terminationGracePeriodSeconds: 30
