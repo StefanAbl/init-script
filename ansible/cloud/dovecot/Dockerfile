@@ -1,4 +1,4 @@
-FROM alpine:3.19
+FROM alpine:3.20
 RUN apk add --no-cache shadow
 RUN mkdir -p /config /etc/ipa /data &&\
     /usr/sbin/groupadd --system --gid {{postfixGID.stdout}} postfix &&\

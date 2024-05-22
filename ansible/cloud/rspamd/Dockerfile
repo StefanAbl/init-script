@@ -1,4 +1,4 @@
-FROM alpine:3.19
+FROM alpine:3.20
 COPY start.sh /
 RUN apk add --no-cache bash dcc dcc-dccifd rspamd rspamd-controller rspamd-proxy rspamd-fuzzy ca-certificates curl &&\
 mkdir -p /dkim &&\
