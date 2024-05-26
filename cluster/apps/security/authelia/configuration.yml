@@ -85,3 +85,14 @@ identity_providers:
         scopes: ["openid", "profile", "groups", "email"]
         redirect_uris: ["https://grafana.${DOMAIN}/login/generic_oauth", "https://grafana.k3s.i.${DOMAIN}/login/generic_oauth"]
         userinfo_signing_algorithm: none
+      - id: jellyseerr
+        description: Jellyseerr
+        secret: "${JELLYSEERR_OIDC_CLIENT_SECRET}"
+        public: false
+        audience: []
+        authorization_policy: one_factor
+        pre_configured_consent_duration: 1y
+        scopes: ["openid", "profile", "groups", "email"]
+        redirect_uris: ["https://jellyseerr.docker1.i.${DOMAIN}/login/oidc/callback", "https://requests.${DOMAIN}/login/oidc/callback"]
+        userinfo_signing_algorithm: none
+        token_endpoint_auth_method: 'client_secret_post'
