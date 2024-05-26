@@ -31,3 +31,6 @@ rules:
 - apiGroups: ["k3s.cattle.io"]
   resources: ["addons"]
   verbs: ["get", "watch", "list"]
+- apiGroups: ["longhorn.io"]
+  resources: ["replicas", "volumes", "engines", "snapshots"]
+  verbs: ["get", "watch", "list"]
