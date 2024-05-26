@@ -31,6 +31,9 @@ spec:
         backupTarget: s3://longhorn@region/
         backupTargetCredentialSecret: backup-secret
         storageMinimalAvailablePercentage: 20
+        concurrentReplicaRebuildPerNodeLimit: 1
+        fastReplicaRebuildEnabled: true
+        snapshotDataIntegrity: fast-check
     ingress:
       enabled: true
       ingressClassName: nginx
