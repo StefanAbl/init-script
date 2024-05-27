@@ -26,3 +26,20 @@ spec:
       - name: ca-certs
         mountPath: /etc/ssl/certs/ca-certificates.crt
         readOnly: true
+    config:
+      modules:
+        http_2xx:
+          prober: http
+          timeout: 5s
+          http:
+            valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+            follow_redirects: true
+            preferred_ip_protocol: "ip4"
+        unifi:
+          prober: http
+          timeout: 5s
+          fail_if_body_not_matches_regexp:
+            - "Download the latest version here"
+          http:
+            follow_redirects: true
+            preferred_ip_protocol: "ip4"
