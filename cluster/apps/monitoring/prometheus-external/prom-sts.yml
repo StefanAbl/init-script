@@ -36,6 +36,7 @@ spec:
             - "--storage.tsdb.retention.time=180d"
             - "--storage.tsdb.retention.size=35GB"
             - "--log.level=debug"
+            - "--enable-feature=memory-snapshot-on-shutdown"
           ports:
             - containerPort: 9090
               name: metrics

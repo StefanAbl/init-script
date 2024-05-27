@@ -38,8 +38,8 @@ spec:
         unifi:
           prober: http
           timeout: 5s
-          fail_if_body_not_matches_regexp:
-            - "Download the latest version here"
           http:
             follow_redirects: true
             preferred_ip_protocol: "ip4"
+            fail_if_body_not_matches_regexp:
+            - "UniFi Network"
