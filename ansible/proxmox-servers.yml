@@ -9,6 +9,7 @@
     - ansible_become_pass: "{{ ipa_admin_user_password }}"
   become: true
   roles:
+    - name: zfs_swap
     - name: network_watchdog
     - name: zfs_memory_limit
   tasks:

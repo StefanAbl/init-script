@@ -53,3 +53,5 @@ promtail:
         __path__: /tmp/hdparm_reports.json
 
 hdparm_reports_output_file: /tmp/hdparm_reports.json
+
+swap_size: 4G

@@ -1,0 +1,44 @@
+- name: Get PAGESIZE
+  command: getconf PAGESIZE
+  register: PAGESIZE
+  changed_when: false
+
+- name: Check if swap exists
+  command: zfs list rpool/swap
+  failed_when: false
+  register: zfs_swap
+
+- name: Create swap
+  command:
+    cmd: zfs create -b {{ PAGESIZE.stdout}} -o compression=zle -o logbias=throughput -o sync=standard -o primarycache=metadata -o secondarycache=none -o com.sun:auto-snapshot=false -V {{ swap_size }} rpool/swap
+    creates: /dev/zvol/rpool/swap
+  tags:
+    - swap.file.create
+  register: swapfile
+  when: zfs_swap.rc != 0
+
+
+- name: Make swap file
+  command: "mkswap -f /dev/zvol/rpool/swap"
+  when: zfs_swap.rc != 0 and swapfile.changed
+  tags:
+    - swap.file.mkswap
+
+
+- name: Write swap entry in fstab
+  mount: name=none
+         src=/dev/zvol/rpool/swap
+         fstype=swap
+         opts=sw
+         passno=0
+         dump=0
+         state=present
+  tags:
+    - swap.fstab
+
+
+- name: Mount swap
+  command: "swapon -av"
+  when: ansible_swaptotal_mb < 1
+  tags:
+    - swap.file.swapon
