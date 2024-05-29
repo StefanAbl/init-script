@@ -31,6 +31,7 @@
     upstream: "{{item.upstream}}"
     record: "{{item.record}}"
     protected: "{{item.protected}}"
+    external_url: "{{item.external_url}}"
   loop: "{{ internal_docker_proxy.sites }}"
 
 
