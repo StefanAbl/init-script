@@ -48,6 +48,9 @@ spec:
           hostPath:
             path: /etc/ssl/certs/ca-certificates.crt
             type: File
+        - name: web-config
+          configMap:
+            name: jellyfin-web-config
       initContainers:
       - name: fix-permissions
         image: busybox
@@ -100,3 +103,6 @@ spec:
         - name: ca-certs
           mountPath: /etc/ssl/certs/ca-certificates.crt
           readOnly: true
+        - name: web-config
+          mountPath: /jellyfin/jellyfin-web/config.json
+          subPath: web-config.json
