@@ -70,6 +70,11 @@ access_control:
       - "requests.${DOMAIN}"
       policy: one_factor
       subject: [["group:jellyfin_users"]]
+    - domain: 
+        - "auth.${DOMAIN}"
+        - "authelia.k3s.i.${DOMAIN}"
+      policy: one_factor
+      subject: [["group:jellyfin_users"]]
     - domain:
       - "*.i.${DOMAIN}"
       policy: one_factor
