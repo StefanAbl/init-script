@@ -11,3 +11,10 @@ promtail:
         app: promtail
         agent: promtail
         __path__: /var/log/dirsrv/slapd-I-STABL-ONE/access
+    - targets:
+      - localhost
+      labels:
+        host: "{{ansible_facts['fqdn']}}"
+        app: promtail
+        agent: promtail
+        __path__: /var/log/dirsrv/slapd-I-STABL-ONE/errors

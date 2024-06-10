@@ -1,7 +1,7 @@
 - name: Check if mutually exclusive variables are not set
   fail:
     msg: create_user and run_as_user should not both be set
-  when: promtail.run_as_user is defined and promtail.create_user
+  when: promtail.create_user is defined and promtail.run_as_user is defined and promtail.create_user
 - name: Install unzip
   become: true
   package:
