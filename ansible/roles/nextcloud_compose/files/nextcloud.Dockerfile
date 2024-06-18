@@ -1,4 +1,4 @@
-# syntax = docker/dockerfile:1.8.0
+# syntax = docker/dockerfile:1.8.1
 FROM nextcloud:28.0.5-fpm
 RUN apt-get update && apt-get install -y ffmpeg
 RUN echo '#!/bin/bash \ntaskset -c 0,2 ffmpeg "$@" ' > /custom-ffmpeg.sh
