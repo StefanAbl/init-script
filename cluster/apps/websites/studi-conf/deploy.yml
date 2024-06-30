@@ -1,0 +1,78 @@
+# yaml-language-server: $schema=https://kubernetesjsonschema.dev/v1.14.0/deployment-apps-v1.json
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: &name studi-conf
+  namespace: websites
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: *name
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: *name
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/webserver: runtime/default
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    spec:
+      volumes:
+        - name: run
+          emptyDir:
+            medium: ""
+        - name: log
+          emptyDir:
+            medium: ""
+        - name: cache
+          emptyDir:
+            medium: ""
+      containers:
+        - name: webserver
+          # The comment on the next line is needed for flux image automation
+          # https://fluxcd.io/flux/guides/image-update/#configure-image-updates
+          image: "docker.io/stefanabl/studi-conf:20240630114429" # {"$imagepolicy": "websites:studi-conf"}
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: "500m"
+              memory: 300Mi
+          ports:
+            - containerPort: 8080
+              name: website
+          volumeMounts:
+            - name: run
+              mountPath: /var/run
+            - name: log
+              mountPath: /var/log/nginx
+            - name: cache
+              mountPath: /var/cache/nginx
+          readinessProbe:
+            httpGet:
+              path: /index.html
+              port: 8080
+              # httpHeaders:
+              # - name: Custom-Header
+              #   value: Awesome
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+      securityContext:
+        fsGroup: 1000
+      automountServiceAccountToken: false
+status: {}

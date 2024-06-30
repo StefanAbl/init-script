@@ -5,4 +5,5 @@ resources:
   - image-automation.yml
   - blog
   - tphc
+  - studi-conf
   - ../../policies/allow-from-ingress.yml

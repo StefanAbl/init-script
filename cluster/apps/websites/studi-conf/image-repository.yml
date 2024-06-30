@@ -1,0 +1,8 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: studi-conf
+  namespace: websites
+spec:
+  image: docker.io/stefanabl/studi-conf
+  interval: 5m0s

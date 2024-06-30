@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: studi-conf
+  namespace: websites
+  annotations:
+    cert-manager.io/issuer: freeipa-issuer
+    cert-manager.io/issuer-group: certmanager.freeipa.org
+    cert-manager.io/issuer-kind: ClusterIssuer
+    cert-manager.io/common-name: studi-conf.k3s.i.${DOMAIN}
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - studi-conf.k3s.i.${DOMAIN}
+    secretName: studi-conf-cert
+  rules:
+  - host: studi-conf.k3s.i.${DOMAIN}
+    http:
+      paths:
+        - path: "/"
+          pathType: Prefix
+          backend:
+            service:
+              name: studi-conf
+              port:
+                number: 8080

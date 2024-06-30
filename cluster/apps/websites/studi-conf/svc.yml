@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: studi-conf
+  namespace: websites
+spec:
+  selector:
+    app: studi-conf
+  ports:
+  - port: 8080
+    targetPort: website

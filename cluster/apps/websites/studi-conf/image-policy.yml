@@ -1,0 +1,15 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: studi-conf
+  namespace: websites
+spec:
+  imageRepositoryRef:
+    name: studi-conf
+    namespace: websites
+  filterTags:
+    pattern: '^(?P<ts>\d{14})'
+    extract: '$ts'
+  policy:
+    numerical:
+      order: asc
