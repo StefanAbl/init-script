@@ -154,3 +154,12 @@ scrape_configs:
   - job_name: 'blackbox_exporter'  # collect blackbox exporter's operational metrics.
     static_configs:
       - targets: ['prometheus-blackbox-exporter:9115']
+  - job_name: 'tasmota_plugs'  # Arbitrary
+    basic_auth:
+      username: admin
+      password: ${TASMOTA_WEB_ADMIN_PW}
+    static_configs:
+      - targets:
+        - '10.13.30.101:80'
+        labels:
+          location: 'TBD'
