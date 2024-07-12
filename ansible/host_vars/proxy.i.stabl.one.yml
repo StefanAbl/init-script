@@ -185,3 +185,11 @@ servers:
     upstream: https://grafana.k3s.i.stabl.one
     verification: dns
     api: dns_cf
+  - name: requests.stabl.one
+    upstream: https://jellyseerr.docker1.i.stabl.one
+    verification: dns
+    api: dns_cf
+  - name: studi-conf.stabl.one
+    upstream: https://studi-conf.k3s.i.stabl.one
+    verification: dns
+    api: dns_cf

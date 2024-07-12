@@ -162,4 +162,12 @@ scrape_configs:
       - targets:
         - '10.13.30.101:80'
         labels:
+          location: 'Lenovo'
+      - targets:
+        - '10.13.30.102:80'
+        labels:
+          location: 'Dell'
+      - targets:
+        - '10.13.30.103:80'
+        labels:
           location: 'TBD'
