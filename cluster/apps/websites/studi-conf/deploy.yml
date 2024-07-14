@@ -36,7 +36,7 @@ spec:
         - name: webserver
           # The comment on the next line is needed for flux image automation
           # https://fluxcd.io/flux/guides/image-update/#configure-image-updates
-          image: "docker.io/stefanabl/studi-conf:20240630114429" # {"$imagepolicy": "websites:studi-conf"}
+          image: "docker.io/stefanabl/studi-conf:20240714203727" # {"$imagepolicy": "websites:studi-conf"}
           resources:
             requests:
               cpu: 100m
