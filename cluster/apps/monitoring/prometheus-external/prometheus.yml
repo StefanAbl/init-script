@@ -170,4 +170,8 @@ scrape_configs:
       - targets:
         - '10.13.30.103:80'
         labels:
-          location: 'TBD'
+          location: 'Switch'
+      - targets:
+        - '10.13.30.104:80'
+        labels:
+          location: 'Server'
