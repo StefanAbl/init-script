@@ -158,6 +158,7 @@ scrape_configs:
     basic_auth:
       username: admin
       password: ${TASMOTA_WEB_ADMIN_PW}
+    scrape_interval: 10s
     static_configs:
       - targets:
         - '10.13.30.101:80'
