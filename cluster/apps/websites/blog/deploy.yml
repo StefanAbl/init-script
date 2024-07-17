@@ -35,7 +35,7 @@ spec:
         - name: webserver
           # The comment on the next line is needed for flux image automation
           # https://fluxcd.io/flux/guides/image-update/#configure-image-updates
-          image: "ghcr.io/stefanabl/blog:20231019073003" # {"$imagepolicy": "websites:blog"}
+          image: "ghcr.io/stefanabl/blog:20240717203638" # {"$imagepolicy": "websites:blog"}
           resources:
             requests:
               cpu: 100m
