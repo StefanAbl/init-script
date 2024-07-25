@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hello
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          volumes:
+            - name: config
+              configMap:
+                name: ip-updater-conf
+          containers:
+            - name: ip-updater
+              image: ghcr.io/stefanabl/ip-updater:20240725180843
+              imagePullPolicy: IfNotPresent
+              securityContext:
+                runAsNonRoot: true
+                runAsGroup: 1000
+                runAsUser: 1000
+              env:
+                - name: CONFIG_FILE
+                  value: /config/config.yml
+              envFrom:
+                - secretRef:
+                    name: ip-updater-secret
+          restartPolicy: OnFailure

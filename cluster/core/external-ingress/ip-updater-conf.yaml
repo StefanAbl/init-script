@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ip-updater-conf
+data:
+  config.yml: |
+    dynv6:
+      records: # List of records of zones in dynv6
+        - "web.${OLD_DOMAIN}"
+      zones: #List of dynv6 zones
+        - "${OLD_DOMAIN}"
+    cf:
+      zones:
+        - name: "${DOMAIN}"
+          records:
+            - "${DOMAIN}"
+            - "${DOMAIN}"
