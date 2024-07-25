@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: hello
+  name: ip-updater
 spec:
   schedule: "*/5 * * * *"
   jobTemplate:
@@ -20,6 +20,9 @@ spec:
                 runAsNonRoot: true
                 runAsGroup: 1000
                 runAsUser: 1000
+              volumeMounts:
+                - mountPath: /config
+                  name: config
               env:
                 - name: CONFIG_FILE
                   value: /config/config.yml

@@ -5,6 +5,7 @@ metadata:
   namespace: external-ingress
 spec:
   interval: 5m
+  releaseName: external-ingress
   chart:
     spec:
       # renovate: registryUrl=https://kubernetes.github.io/ingress-nginx
@@ -16,11 +17,14 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
-    ingressClass: external
-    service:
-      annotations:
-        metallb.universe.tf/address-pool: external-ingress-address
     controller:
+      service:
+        annotations:
+          metallb.universe.tf/ip-allocated-from-pool: external-ingress-address
+          metallb.universe.tf/address-pool: external-ingress-address
+      ingressClassResource:
+        name: external-ingress
+        controllerValue: "k8s.io/external-ingress"
       replicaCount: 3
       allowSnippetAnnotations: true
       config:

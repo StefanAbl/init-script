@@ -5,3 +5,4 @@ resources:
   - helm-release.yml
   - ip-updater-secret.yaml
   - ip-updater-conf.yaml
+  - ip-updater-cron-job.yml
