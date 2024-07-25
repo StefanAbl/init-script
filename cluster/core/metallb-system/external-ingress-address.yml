@@ -1,8 +1,8 @@
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
-  name: first-pool
+  name: external-ingress-address
   namespace: metallb-system
 spec:
   addresses:
-  - 10.13.2.30-10.13.2.34
+  - 10.13.2.35
