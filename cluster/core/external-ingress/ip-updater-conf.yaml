@@ -14,4 +14,4 @@ data:
         - name: "${DOMAIN}"
           records:
             - "${DOMAIN}"
-            - "${DOMAIN}"
+            - "web.${DOMAIN}"
