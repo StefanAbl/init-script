@@ -10,3 +10,4 @@ resources:
   - security.yml
   - longhorn.yml
   - media.yml
+  - external-ingress.yml
