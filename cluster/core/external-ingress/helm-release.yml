@@ -19,6 +19,7 @@ spec:
   values:
     controller:
       service:
+        externalTrafficPolicy: "Local"
         annotations:
           metallb.universe.tf/ip-allocated-from-pool: external-ingress-address
           metallb.universe.tf/address-pool: external-ingress-address
@@ -28,6 +29,7 @@ spec:
       replicaCount: 3
       allowSnippetAnnotations: true
       config:
+        #enable-real-ip: true
         log-format-escaping: json
         log-format: |
           '{'
