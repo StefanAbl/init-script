@@ -6,6 +6,7 @@ resources:
   - deploy.yml
   - service.yml
   - ingress.yml
+  - ingress-external.yml
 configMapGenerator:
   - name: jellyfin-web-config
     namespace: media

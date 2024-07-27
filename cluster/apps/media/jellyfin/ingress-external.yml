@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jellyfin-external
+  namespace: media
+  annotations:
+    cert-manager.io/issuer: letsencrypt-dns01-issuer
+    #cert-manager.io/issuer-group: certmanager.freeipa.org
+    cert-manager.io/issuer-kind: ClusterIssuer
+    cert-manager.io/common-name: &host stream.${DOMAIN}
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "7200"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "7200"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "7200"
+    nginx.org/websocket-services: "app-sockets-cluster-ip-service"
+spec:
+  ingressClassName: external-ingress
+  tls:
+    - hosts:
+        - *host
+      secretName: jellyfin-cert-external
+  rules:
+    - host: *host
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: jellyfin
+                port:
+                  number: 8096
