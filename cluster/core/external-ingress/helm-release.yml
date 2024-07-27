@@ -29,10 +29,9 @@ spec:
       replicaCount: 3
       allowSnippetAnnotations: true
       config:
-        #enable-real-ip: true
-        log-format-escaping: json
-        log-format: |
-          '{'
+        log-format-escape-json: true
+        log-format-upstream: |
+          {'
             '"msec": "$msec", ' # request unixtime in seconds with a milliseconds resolution
             '"connection": "$connection", ' # connection serial number
             '"connection_requests": "$connection_requests", ' # number of requests made in connection
@@ -70,7 +69,7 @@ spec:
             '"pipe": "$pipe", ' # "p" if request was pipelined, "." otherwise
             '"gzip_ratio": "$gzip_ratio", '
             '"http_cf_ray": "$http_cf_ray"'
-            '}'
+            '}
       admissionWebhooks:
         enabled: false
     udp:
