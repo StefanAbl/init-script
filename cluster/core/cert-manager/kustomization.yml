@@ -5,3 +5,5 @@ resources:
   - https://github.com/StefanAbl/freeipa-issuer/config/default
   - freeipa-user-secret.yml
   - cluster-issuer.yml
+  - cloudflare-token.yaml
+  - letsencrypt-dns01-issuer.yaml
