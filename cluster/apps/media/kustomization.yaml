@@ -8,3 +8,4 @@ resources:
   - ../../policies/allow-to-dns.yml
   - ../../policies/allow-to-internet.yml
   - ../../policies/allow-to-ldap.yml
+  - ../../policies/allow-from-external-ingress.yml
