@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+  annotations:
+    cert-manager.io/issuer: letsencrypt-dns01-issuer
+    cert-manager.io/issuer-kind: ClusterIssuer
+    cert-manager.io/common-name: &host cloud.${DOMAIN}
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  ingressClassName: external-ingress
+  tls:
+    - hosts:
+        - *host
+      secretName: nextcloud-cert-external
+  rules:
+    - host: *host
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: nextcloud-external
+                port:
+                  number: 443

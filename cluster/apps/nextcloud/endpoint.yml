@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: nextcloud-external
+  namespace: nextcloud
+subsets:
+  - addresses:
+      - ip: 10.13.2.101
+    ports:
+      - name: app
+        port: 443
+        protocol: TCP

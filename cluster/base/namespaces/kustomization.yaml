@@ -11,3 +11,4 @@ resources:
   - longhorn.yml
   - media.yml
   - external-ingress.yml
+  - nextcloud.yml
