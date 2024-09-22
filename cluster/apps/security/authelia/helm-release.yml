@@ -42,7 +42,7 @@ spec:
         reloader.stakater.com/auto: "true"
     image:
       repository: ghcr.io/authelia/authelia
-      tag: 4.38.10
+      tag: 4.38.12
     args: ["--config", "/config/configuration.yml"]
     envFrom:
       - secretRef:
