@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: tunnel-token
+    namespace: nextcloud
+stringData:
+    TUNNEL_TOKEN: ENC[AES256_GCM,data:41iVNDmYY7okuG6XQXlTiA57Zc2Nl3Doy1hOqcRT/2DF6V5ZW9l6KzkAoAQ5FotMmfV+Ie/pwV095tD8qYQ3fyyna86NIPkvHL8/awjjwaHyURlXoFQnyHv3fHbMFRAe+OxIPBEGLsQkiw0G+kybT5lhm9aj9xh/DKRKMxNMiNMd77/oSSLsLgm835y5I3cuNWRvGd89GFNzM5Xy/n+lizvlhfMNHS2nSL91q/N77u5oPybrE9qbOg==,iv:fSLaXnRQjauAiHy0SeUmlxyhf8VYravubrPZctPBnK4=,tag:cVrkNhEG4SvzeyTJa1mg3Q==,type:str]
+#WARNING: You should not place the username and password in the version control repository or anywhere else in plain text.
+#Instead, use the Services Tool Window -> Kubernetes -> <Desired Cluster> -> Configuration -> <right-click on Secrets> -> Create New Secret...
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2024-09-24T16:47:46Z"
+    mac: ENC[AES256_GCM,data:DtQ4nfQjB87t59x+UCnX6Zr0s13cPiISAvMYjMUN09BX1WuRmXuUNdjoEEZUFrE1O6IDK+X5uvORIUcCunEoa4NfGhu02/kRz+aRDwPFs6Yotc/liPlApfQXTMcP06RM44sx/sm0To7nHVTvPOddTFskmOHtv9l9hnETLEDpLH0=,iv:MMJP0j6tQIZdg7fqdfYGTtXNEjwE58LXShDKD2WXbJ8=,tag:0vIJO++5VEtznlsbdmafCg==,type:str]
+    pgp:
+        - created_at: "2024-09-24T16:47:45Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA70fE7dz6LU0AQ/9GZ6KS7/CKNhYTNS4njWUPsfBf4lmNwOAqYvWvBe233GZ
+            NbxaI4kqCM3/2V9N3AtylH/iQTPNOZd3ECsIwkdanG3oNAPA7cfz5yi8QX9JKWWO
+            DlnaJhaM/O+3D/HTWbhJaPDWNICp8clVv/wpsf6WOT+2AxYWvoge3aXzDyUVTucI
+            WQkG9Mht4is3qiox3dV3GoMDfmuuI1vT5xmTQuoS6+dA99UgwoOifNMXbDOkbVaF
+            BX2kV4jxf9FAhij9aCHBhmONqCKa/M5J00A8t3WwbKjFNaqCCAO+Uj5kObqkKJn4
+            PnMQnc/xuTDzHW3zUtnvZROwBeemWa6cxhGl2ll72eATpUJKUQUOEF4nQBgB577p
+            f0hJE2NM5uejKPXdNrePmj6CXvgpRgx7jWNvFVGj7/7kMOBkqViSlDPu6nf91zIb
+            5YfT9sz+tSIU2vUzDmckH/xSKADOaB4b1HUGRet/DSDhiaWEh4r2BNWKgvzycE/2
+            JiG72oWfORfsh0yUfsRUXeTwWWpuep68mEU4XgIz/cgsKhSmVTTIAuzMIBAp8Wzm
+            YCmOZjWjsJrLUz2qDSRbxf6alVpgiRtCYfJDn4fNuHpWZyyz0k2tqQJYnyWUImfW
+            HQCFZqgWuDFvtRFsH3BH28mEdNLugza7Amq/q0i0PUUITSI/2BN3V+jjr36GvRrS
+            XAEDnO8PvbczDwLAppHL2ZnrmfmTM2CJNYFHq+CSSdl/DS5FK0RfrL6bXk5+QVc7
+            0IfUUWY3FFuaC+pTD29Z9D7h4LuoriJvMRcBqKYxYeSviQujC79Ili4SsELL
+            =AzQ9
+            -----END PGP MESSAGE-----
+          fp: 1DF23F1E7AFCAB40F26B210123CFBB30193553AA
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.3

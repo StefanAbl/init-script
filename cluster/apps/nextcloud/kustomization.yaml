@@ -4,3 +4,5 @@ resources:
   - service.yml
   - ingress.yml
   - endpoint.yml
+  - cludflared.yaml
+  - tunnel-token.yaml
