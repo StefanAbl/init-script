@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coredns
+  labels:
+    app: coredns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: coredns
+  template:
+    metadata:
+      name: coredns
+      labels:
+        app: coredns
+    spec:
+      automountServiceAccountToken: false
+      volumes:
+        - name: config-volume
+          configMap:
+            name: coredns-config
+      containers:
+        - name: coredns
+          image: coredns/coredns:1.11.3
+          args: [ "-conf", "/etc/coredns/Corefile" ]
+          volumeMounts:
+            - mountPath: /etc/coredns
+              name: config-volume
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 53
+              protocol: UDP
+      restartPolicy: Always

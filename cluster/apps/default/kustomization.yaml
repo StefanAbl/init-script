@@ -5,6 +5,7 @@ resources:
   - lg-cronjob
   - docsrv
   - unifi
+  - coredns
   - ../../policies/allow-from-ingress.yml
   - ../../policies/allow-to-dns.yml
   - ../../policies/allow-to-internet.yml

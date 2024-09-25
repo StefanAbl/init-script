@@ -1,0 +1,10 @@
+. {
+  reload
+  health
+
+  hosts hosts
+  forward . 1.1.1.1
+  log
+  errors
+  cache
+}

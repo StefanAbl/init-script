@@ -1,0 +1,3 @@
+10.13.2.20     cloud.${DOMAIN}
+10.13.2.20     grafana.${DOMAIN}
+10.13.2.20     auth.${DOMAIN}
