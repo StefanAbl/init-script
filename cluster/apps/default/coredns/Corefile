@@ -2,9 +2,22 @@
   reload
   health
 
-  hosts hosts
+  header {
+   response set ra # set RecursionAvailable flag
+  }
+
+  hosts {
+    10.13.2.20     cloud.${DOMAIN}
+    10.13.2.20     grafana.${DOMAIN}
+    10.13.2.20     auth.${DOMAIN}
+    10.13.2.20     stream.${DOMAIN}
+    reload 1s
+    fallthrough
+  }
+  forward i.${DOMAIN} 10.13.2.100
   forward . 1.1.1.1
   log
+  loop
   errors
   cache
 }
