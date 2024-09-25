@@ -4,7 +4,7 @@ metadata:
   labels:
     app: cloudflared
   name: cloudflared-deployment
-  namespace: nextcloud
+  namespace: cloudflare-tunnel
 spec:
   replicas: 2
   selector:

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Secret
 metadata:
     name: tunnel-token
-    namespace: nextcloud
+    namespace: cloudflare-tunnel
 stringData:
     TUNNEL_TOKEN: ENC[AES256_GCM,data:41iVNDmYY7okuG6XQXlTiA57Zc2Nl3Doy1hOqcRT/2DF6V5ZW9l6KzkAoAQ5FotMmfV+Ie/pwV095tD8qYQ3fyyna86NIPkvHL8/awjjwaHyURlXoFQnyHv3fHbMFRAe+OxIPBEGLsQkiw0G+kybT5lhm9aj9xh/DKRKMxNMiNMd77/oSSLsLgm835y5I3cuNWRvGd89GFNzM5Xy/n+lizvlhfMNHS2nSL91q/N77u5oPybrE9qbOg==,iv:fSLaXnRQjauAiHy0SeUmlxyhf8VYravubrPZctPBnK4=,tag:cVrkNhEG4SvzeyTJa1mg3Q==,type:str]
 #WARNING: You should not place the username and password in the version control repository or anywhere else in plain text.
@@ -13,8 +13,8 @@ sops:
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2024-09-24T16:47:46Z"
-    mac: ENC[AES256_GCM,data:DtQ4nfQjB87t59x+UCnX6Zr0s13cPiISAvMYjMUN09BX1WuRmXuUNdjoEEZUFrE1O6IDK+X5uvORIUcCunEoa4NfGhu02/kRz+aRDwPFs6Yotc/liPlApfQXTMcP06RM44sx/sm0To7nHVTvPOddTFskmOHtv9l9hnETLEDpLH0=,iv:MMJP0j6tQIZdg7fqdfYGTtXNEjwE58LXShDKD2WXbJ8=,tag:0vIJO++5VEtznlsbdmafCg==,type:str]
+    lastmodified: "2024-09-25T06:12:00Z"
+    mac: ENC[AES256_GCM,data:u7lC1O6aHPKtwPwy4ObXYhhp/9TiLYvxB413pt5cncpS/KPBWMY48ue5KTrnPf9t9M9FS9BEoTIbYLglLKcU0+nWxBpoYTZDVPhIWvRVR0kXoGMYmkPRi82FZoPwi3veMnQLIPVHODT+ugvW1s0YyUojp64UGTGBJLfKXgzzj4g=,iv:/GJZvHtT7KNdXQbwaiReRqY2qpF/KPL8GDxDF2DGxWM=,tag:unWyqnD3HY1GAH6I8QgVIQ==,type:str]
     pgp:
         - created_at: "2024-09-24T16:47:45Z"
           enc: |

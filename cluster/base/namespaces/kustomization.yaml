@@ -12,3 +12,4 @@ resources:
   - media.yml
   - external-ingress.yml
   - nextcloud.yml
+  - cloudflare-tunnel.yml
