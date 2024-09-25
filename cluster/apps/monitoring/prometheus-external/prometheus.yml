@@ -180,3 +180,7 @@ scrape_configs:
         - '10.13.30.105:80'
         labels:
           location: 'Desk'
+      - targets:
+          - '10.13.30.106:80'
+        labels:
+          location: 'FritzBox'
