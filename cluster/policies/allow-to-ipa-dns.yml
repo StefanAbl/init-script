@@ -1,0 +1,15 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-to-ipa-dns
+spec:
+  policyTypes:
+  - Egress
+  podSelector: {}
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 10.13.2.100/32
+    ports:
+    - protocol: UDP
+      port: 53

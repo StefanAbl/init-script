@@ -9,3 +9,4 @@ resources:
   - ../../policies/allow-from-ingress.yml
   - ../../policies/allow-to-dns.yml
   - ../../policies/allow-to-internet.yml
+  - ../../policies/allow-to-ipa-dns.yml
