@@ -17,3 +17,4 @@ resources:
   - solar-exporter
   - prometheus-blackbox-exporter
   - intel-gpu-exporter
+  - seaweed

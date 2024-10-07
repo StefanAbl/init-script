@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: seaweed
+  namespace: monitoring
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  selector:
+    matchLabels:
+      app: seaweed
+  serviceName: seaweed
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: seaweed
+    spec:
+      automountServiceAccountToken: false
+      volumes:
+        - name: config
+          configMap:
+            name: s3-config
+      containers:
+      - name: seaweed
+        image: chrislusf/seaweedfs:3.76_full
+        args:
+          - server
+          - -s3
+          - -dir=/data
+          - -s3.config=/config/s3.json
+        ports:
+        - containerPort: 8333
+          name: s3
+        volumeMounts:
+        - name: s3
+          mountPath: /data
+        - name: config
+          mountPath: /config
+
+  volumeClaimTemplates:
+  - metadata:
+      name: s3
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 30Gi
+      storageClassName: longhorn

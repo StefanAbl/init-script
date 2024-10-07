@@ -1,0 +1,20 @@
+{
+  "identities": [
+    {
+      "name": "loki",
+      "credentials": [
+        {
+          "accessKey": "${LOKI_MINIO_USER}",
+          "secretKey": "${LOKI_MINIO_PASS}"
+        }
+      ],
+      "actions": [
+        "Read:loki",
+        "Write:loki",
+        "List:loki",
+        "Tagging:loki",
+        "Admin:loki"
+      ]
+    }
+  ]
+}
