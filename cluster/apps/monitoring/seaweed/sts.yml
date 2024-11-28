@@ -23,7 +23,7 @@ spec:
             name: s3-config
       containers:
       - name: seaweed
-        image: chrislusf/seaweedfs:3.80_full
+        image: chrislusf/seaweedfs:3.80
         args:
           - server
           - -s3
