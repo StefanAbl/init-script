@@ -106,6 +106,7 @@ spec:
           url: http://loki-loki-distributed-gateway
     plugins:
       - marcusolsson-json-datasource
+      - speakyourcode-button-panel
     dashboards:
       default:
         # Ref: https://grafana.com/grafana/dashboards/12175
