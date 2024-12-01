@@ -107,6 +107,7 @@ spec:
     plugins:
       - marcusolsson-json-datasource
       - speakyourcode-button-panel
+      - yesoreyeram-infinity-datasource
     dashboards:
       default:
         # Ref: https://grafana.com/grafana/dashboards/12175
