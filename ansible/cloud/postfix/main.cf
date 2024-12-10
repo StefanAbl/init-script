@@ -177,7 +177,8 @@ smtpd_recipient_restrictions =
  reject_non_fqdn_recipient,
  reject_unknown_recipient_domain,
  reject_unauth_pipelining,
- reject_unverified_recipient
+ reject_unverified_recipient,
+ check_recipient_access ldap:/config/ldap-check-recipient-access.cf
 smtpd_data_restrictions =
  permit_mynetworks,
  permit_sasl_authenticated,
@@ -194,6 +195,8 @@ virtual_mailbox_domains = $myhostname {{ mailDomains }}
 virtual_mailbox_maps = ldap:/config/ldap-virtual-mailbox-maps.cf
 # LDAP query to find a user's email aliases
 virtual_alias_maps = ldap:/config/ldap-virtual-alias-maps.cf
+
+
 
 # We'll uncomment these when we set up rspamd later:
 # milter_protocol = 6

@@ -1,0 +1,17 @@
+server_host = {% for ldap_host in ldap_hosts_for_cloud_containers %} ldaps://{{ ldap_host }}:636 {% endfor %}
+
+search_base = {{base_dn}}
+version = 3
+bind = yes
+bind_dn = uid={{ mailserver_bindUser}},cn=users,cn=accounts,{{base_dn}}
+bind_pw = {{ mailserver_bindUser_pw }}
+query_filter = (cn=%u)
+special_result_attribute = member #expand groups
+result_attribute = mail #should be mail
+result_filter = permit_sasl_authenticated, reject
+
+
+tls_require_cert = yes
+tls_ca_cert_file = /etc/ipa/ca.crt
+#add cache
+#tls cert file
