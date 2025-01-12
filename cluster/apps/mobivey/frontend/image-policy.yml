@@ -1,0 +1,15 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: mobivey-fe
+  namespace: mobivey
+spec:
+  imageRepositoryRef:
+    name: mobivey-fe
+    namespace: mobivey
+  filterTags:
+    pattern: '^(?P<ts>\d{14})'
+    extract: '$ts'
+  policy:
+    numerical:
+      order: asc

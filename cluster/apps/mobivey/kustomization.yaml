@@ -5,6 +5,10 @@ resources:
   - frontend/fe-deployment.yaml
   - frontend/fe-service.yaml
   - frontend/fe-ingress.yaml
+  - frontend/image-policy.yml
+  - frontend/image-repository.yml
+  - frontend/image-automation.yml
+
   - be-deployment.yaml
   - be-service.yaml
   - be-ingress.yaml

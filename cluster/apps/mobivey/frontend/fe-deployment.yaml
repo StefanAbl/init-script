@@ -21,7 +21,9 @@ spec:
         - name: image-pull-creds
       containers:
         - name: frontend
-          image: ghcr.io/svken/wegetagebuch:20250112192708
+          # The comment on the next line is needed for flux image automation
+          # https://fluxcd.io/flux/guides/image-update/#configure-image-updates
+          image: "ghcr.io/svken/wegetagebuch:20250112200552" # {"$imagepolicy": "mobivey:mobivey-fe"}
           imagePullPolicy: IfNotPresent
           resources:
             limits:

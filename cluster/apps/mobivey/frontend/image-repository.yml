@@ -1,0 +1,10 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: mobivey-fe
+  namespace: mobivey
+spec:
+  image: ghcr.io/svken/wegetagebuch
+  interval: 5m0s
+  secretRef:
+    name: image-pull-creds
