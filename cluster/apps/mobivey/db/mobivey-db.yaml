@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: mobivey-db
-          image: mysql:8
+          image: mysql:9
           imagePullPolicy: IfNotPresent
           env:
             - name: MYSQL_ROOT_PASSWORD
