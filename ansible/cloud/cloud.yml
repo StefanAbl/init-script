@@ -11,6 +11,8 @@
     replica_container_name: replica
     docker_dir: /var/docker
     freeipa_dir: "{{docker_dir}}/replica"
+    replica_container_primary_ip:
+      stdout: 172.18.0.17
     promtail:
       user: linode0
 
@@ -31,10 +33,10 @@
         ipam_config:
           - subnet: "172.18.0.0/16"
 #REPLICA
-    - name: get ip address for replica in primary network
-      shell: "docker inspect -f {{ '{{' }}.NetworkSettings.Networks.primary.IPAddress{{ '}}' }} {{replica_container_name}}"
-      register: replica_container_primary_ip
-      become: yes
+#    - name: get ip address for replica in primary network
+#      shell: "docker inspect -f {{ '{{' }}.NetworkSettings.Networks.primary.IPAddress{{ '}}' }} {{replica_container_name}}"
+#      register: replica_container_primary_ip
+#      become: yes
 #POSTFIX
 
     - name: deploy postfix

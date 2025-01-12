@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mobivey-be
+  namespace: mobivey
+  labels:
+    app: mobivey-be
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mobivey-be
+  template:
+    metadata:
+      name: mobivey-be
+      labels:
+        app: mobivey-be
+    spec:
+      imagePullSecrets:
+        - name: image-pull-creds
+      containers:
+        - name: mobivey-be
+          image: ghcr.io/stefanabl/motionmapper-backend:20250112142104
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PORT
+              value: "8200"
+            - name: DB_HOST
+              value: "db-service"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_USER
+              value: "mobivey"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mobivey
+                  key: MYSQL_ROOT_PASSWORD
+          ports:
+            - containerPort: 8200
+              protocol: TCP
+      restartPolicy: Always

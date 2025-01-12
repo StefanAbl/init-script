@@ -3,7 +3,7 @@
   become: yes
   become_method: sudo
   roles:
-    - ../roles/docker
+    # - ../roles/docker
   vars:
     need_ovpn_setup: true
     replica: true

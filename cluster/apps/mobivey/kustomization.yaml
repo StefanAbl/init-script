@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: mobivey
+resources:
+  - frontend/fe-deployment.yaml
+  - frontend/fe-service.yaml
+  - backend/mobivey-be.yaml
+  - backend/be-service.yaml
+  - db/mobivey-db.yaml
+  - image-pull-creds.yaml
+  - secret.yaml
+  - ../../policies/allow-from-ingress.yml
+  - ../../policies/allow-to-dns.yml
+  - ../../policies/allow-to-internet.yml
+  - ../../policies/allow-from-external-ingress.yml
