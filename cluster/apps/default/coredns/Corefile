@@ -19,5 +19,5 @@
   log
   loop
   errors
-  cache
+  cache 300
 }
