@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mobivey-db
+  namespace: mobivey
+  labels:
+    app: mobivey-db
+spec:
+  serviceName: mobivey-db
+  selector:
+    matchLabels:
+      app: mobivey-db
+  template:
+    metadata:
+      name: mobivey-db
+      labels:
+        app: mobivey-db
+    spec:
+      containers:
+        - name: mobivey-db
+          image: mysql:8
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mobivey
+                  key: MYSQL_ROOT_PASSWORD
+          ports:
+            - containerPort: 3306
+              protocol: TCP
+      restartPolicy: Always

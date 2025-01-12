@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: mobivey
+  labels:
+    app: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      name: frontend
+      labels:
+        app: frontend
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+        - name: image-pull-creds
+      containers:
+        - name: frontend
+          image: ghcr.io/svken/wegetagebuch:20250112192708
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              memory: 300Mi
+              ephemeral-storage: 1Gi
+            requests:
+              cpu: 50m
+              memory: 100Mi
+          ports:
+            - containerPort: 80
+              protocol: TCP
+      restartPolicy: Always

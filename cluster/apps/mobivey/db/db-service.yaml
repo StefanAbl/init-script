@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-service
+  namespace: mobivey
+spec:
+  selector:
+    app: mobivey-db
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306

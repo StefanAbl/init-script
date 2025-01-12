@@ -13,3 +13,4 @@ resources:
   - external-ingress.yml
   - nextcloud.yml
   - cloudflare-tunnel.yml
+  - mobivey.yml

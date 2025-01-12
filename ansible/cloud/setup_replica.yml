@@ -15,7 +15,7 @@
   tasks:
     - name: create macvlan network
       docker_network:
-        name: "macvlan"
+        name: "macvlan2"
         driver: macvlan
         driver_options:
           parent: tap0
@@ -42,30 +42,35 @@
     - name: start freeipa replica docker
       docker_container:
         name: replica
-        image: "freeipa/freeipa-server:fedora-35-4.9.8"
+        image: "freeipa/freeipa-server:fedora-40-4.12.1"
         state: started
         detach: true
         recreate: no
         restart_policy: always
         hostname: "{{mailserver_replica_name}}"
-        sysctls: "net.ipv6.conf.all.disable_ipv6=0"
+        sysctls:
+          net.ipv6.conf.all.disable_ipv6: "0"
+          net.ipv6.conf.lo.disable_ipv6: "0"
+
         dns_servers: "{{ipa_server_ip}}"
         env:
           DEBUG_NO_EXIT: "1"
+          DEBUG_TRACE: "1"
         networks:
           - name: primary
             ipv4_address: "172.18.0.17"
-          - name: macvlan
+          - name: macvlan2
             ipv4_address: "{{mailserver_replica_container_macvlan_ip}}"
         published_ports:
           - "127.0.0.1:443:443"
           - "127.0.0.1:53:53"
         volumes:
-          - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+          - "/sys/fs/cgroup:/sys/fs/cgroup:rw"
           - "{{freeipa_dir}}:/data:Z"
         log_driver: json-file
         log_options:
           tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
+        cgroupns_mode: host
         #command: "ipa-replica-install -U --no-ntp -P {{ipa_admin_user}} -w $(cat /password)"
 
     - name: Delete options file

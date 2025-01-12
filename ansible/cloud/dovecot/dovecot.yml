@@ -86,7 +86,10 @@
       - "/etc/ipa/ca.crt:/etc/ipa/ca.crt:ro"
       - "{{docker_dir}}/mail:/data"
     hostname: "mail.{{domain_name}}"
-    dns_servers: "{{ipa_server_ip}}"
+    dns_servers:
+      - "{{ipa_server_ip}}"
+      - "1.1.1.1"
+      - "8.8.8.8"
     log_driver: json-file
     log_options:
       tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
