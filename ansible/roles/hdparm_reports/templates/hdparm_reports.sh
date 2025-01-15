@@ -5,7 +5,7 @@ set -eo pipefail
 output_file="{{hdparm_reports_output_file}}"
 touch "$output_file"
 # Run hdparm command and capture the output
-hdparm_output=$(hdparm -C /dev/sda /dev/sdb /dev/sdc /dev/sdd)
+hdparm_output=$(hdparm -C /dev/sda /dev/sdd /dev/sde /dev/sdf)
 
 timestamp=$(date +%s)
 
