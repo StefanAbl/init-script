@@ -21,6 +21,8 @@ spec:
           image: mysql:8
           imagePullPolicy: IfNotPresent
           env:
+            - name: MYSQL_DATABASE
+              value: db
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
