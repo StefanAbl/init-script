@@ -127,7 +127,7 @@ spec:
           limits:
             memory: 3Gi
             cpu: 2000m
-        replicas: 0
+        replicas: 1
         affinity:
           nodeAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
