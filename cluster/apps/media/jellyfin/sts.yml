@@ -62,7 +62,7 @@ spec:
           - 1850800003
       containers:
       - name: *app
-        image: "ghcr.io/stefanabl/jf-custom:10.10.3"
+        image: "ghcr.io/stefanabl/jf-custom:10.10.4"
         env:
         - name: TZ
           value: EUROPE/BERLIN
