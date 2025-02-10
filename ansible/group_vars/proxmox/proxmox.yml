@@ -13,6 +13,8 @@ acme_sh_domains:
     force_issue: True
     issue_post_hook: "chown svc_minio /etc/ssl/ansible/s3.{{internal_domain}}/private.key"
 
+s3_data_dir: /Volume2/s3
+
 minio_server_opts: "--certs-dir /etc/ssl/ansible/s3.{{internal_domain}}/"
 minio_server_env_extra: |
   MINIO_SERVER_URL=https://s3.i.stabl.one:9000

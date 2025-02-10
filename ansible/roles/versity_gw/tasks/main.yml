@@ -1,0 +1,53 @@
+- name: Download Debian package from GitHub
+  get_url:
+    url: "https://github.com/versity/versitygw/releases/download/v1.0.10/versitygw_1.0.10_linux_amd64.deb"
+    dest: "/tmp/package.deb"
+
+- name: Install the Debian package
+  become: true
+  apt:
+    deb: "/tmp/package.deb"
+    state: present
+
+- name: Remove the downloaded Debian package
+  file:
+    path: "/tmp/package.deb"
+    state: absent
+
+- name: Create IAM directory
+  become: true
+  file:
+    path: "{{vgw_iam_dir}}"
+    state: directory
+
+- name: Template the configuration file
+  become: true
+  template:
+    src: templates/versity.conf
+    dest: "/etc/versitygw.d/versity.conf"
+    mode: '0600'
+
+- name: Start versitygw
+  become: true
+  systemd_service:
+    daemon_reload: true
+    name: versitygw@versity
+    state: started
+
+- name: Create longhorn and mail-backup directories
+  become: true
+  file:
+    path: "{{item}}"
+    state: directory
+    recurse: yes
+  loop:
+    - "{{s3_data_dir}}/longhorn"
+    - "{{s3_data_dir}}/mail-backup"
+
+
+- name: create service user and assign bucket
+  become: true
+  with_items:
+    - "{{minio_server_svcaccts}}"
+  include:
+    create_svc_account.yml

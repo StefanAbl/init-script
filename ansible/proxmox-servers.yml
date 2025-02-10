@@ -30,6 +30,8 @@
     - name: proxmox_intel_igpu
   tasks:
 - hosts: proxmox
+  tags:
+    - cert
   vars_prompt:
     - name: ipa_admin_user_password
       prompt: Enter password for FreeIPA user
