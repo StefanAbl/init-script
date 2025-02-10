@@ -3,7 +3,7 @@ version: '3'
 tasks:
   cloud:
     cmds:
-      - ansible-playbook -i hosts --ask-vault-pass -K cloud/cloud.yml
+      - ansible-playbook -i hosts --ask-vault-pass -K cloud/cloud.yml {{.CLI_ARGS}}
   replica:
     cmds:
       - ansible-playbook -i hosts --ask-vault-pass -K cloud/setup_replica.yml

@@ -24,8 +24,8 @@
     state: started
     detach: true
     recreate: true
-    restart_policy: always
-    command: mirror --watch /data local/mail-backup/
+    restart_policy: on-failure
+    command: mirror --overwrite /data local/mail-backup/
     networks:
       - name: primary
     volumes:
@@ -36,3 +36,11 @@
     log_driver: json-file
     log_options:
       tag: "{% raw %}{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}{% endraw %}"
+
+- name: create cronjob to trigger backup
+  cron:
+    name: Run mail backup to S3
+    job: "docker start backup"
+    user: root
+    minute: "0"
+    hour: "8,14,20"
