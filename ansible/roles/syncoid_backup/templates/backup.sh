@@ -69,6 +69,17 @@ for d in $vols; do
   echo "Status $status"
 done
 
+vols="nc_appdata"
+export LC_ALL="en_US.UTF-8"
+for d in $vols; do
+  syncoid --no-privilege-elevation --sshport 27022 --sshkey /root/.ssh/id_rsa --sendoptions="w" "NVMe/$d" "proxmox@alarmanlage.dynv6.net:backup0/$d" 2>&1 | tee -a "$logtemp"
+  s=$?
+  status=$((status + s))
+  echo "Status $status"
+done
+
+
+
 {
   date
   cat "$logtemp"
