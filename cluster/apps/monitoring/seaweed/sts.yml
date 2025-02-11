@@ -35,6 +35,7 @@ spec:
           - -s3
           - -dir=/data
           - -s3.config=/config/s3.json
+          - metrics.address=localhost:9091
         ports:
         - containerPort: 8333
           name: s3
