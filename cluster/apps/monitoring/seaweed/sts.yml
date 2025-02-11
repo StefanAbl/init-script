@@ -39,6 +39,8 @@ spec:
         ports:
         - containerPort: 8333
           name: s3
+        - containerPort: 9091
+          name: metrics
         volumeMounts:
         - name: s3
           mountPath: /data

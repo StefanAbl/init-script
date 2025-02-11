@@ -9,3 +9,7 @@ spec:
   ports:
   - port: 8333
     targetPort: s3
+    name: s3
+  - port: 9091
+    targetPort: metrics
+    name: metrics
