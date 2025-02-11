@@ -24,6 +24,12 @@ spec:
       containers:
       - name: seaweed
         image: chrislusf/seaweedfs:3.82_full
+        resources:
+          requests:
+            cpu: 250m
+            memory: 256Mi
+          limits:
+            memory: 1024Mi
         args:
           - server
           - -s3
