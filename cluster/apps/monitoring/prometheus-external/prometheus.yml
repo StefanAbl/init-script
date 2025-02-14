@@ -119,7 +119,7 @@ scrape_configs:
     static_configs:
       - targets:
         - https://ffsync.${OLD_DOMAIN}
-        - https://s3.i.${DOMAIN}:9091
+        - https://s3.i.${DOMAIN}:7070/health
         - https://ipa.i.${DOMAIN}
         - https://ipa0.i.${DOMAIN}
         - https://ipa1.i.${DOMAIN}
