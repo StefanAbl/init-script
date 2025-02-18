@@ -40,7 +40,7 @@ spec:
       host: longhorn.k3s.i.${DOMAIN}
       tls: true
       annotations:
-        cert-manager.io/issuer: freeipa-issuer
+        cert-manager.io/issuer: freeipa-issuer-false
         cert-manager.io/issuer-group: certmanager.freeipa.org
         cert-manager.io/issuer-kind: ClusterIssuer
         cert-manager.io/common-name: longhorn.k3s.i.${DOMAIN}
