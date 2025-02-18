@@ -49,11 +49,27 @@
       "automerge": true
     },
     {
+      "matchUpdateTypes": ["minor"],
+      "matchCurrentVersion": "!/^0/",
+      "matchDatasources": ["helm"],
+      "ignoreTests": true,
+      "matchPackageNames": ["node-feature-discovery", "reloader"],
+      "automerge": true
+    },
+    {
       "matchUpdateTypes": ["patch", "minor"],
       "matchCurrentVersion": "!/^0/",
       "matchDatasources": ["docker"],
       "ignoreTests": true,
-      "matchPackageNames": ["prom/prometheus", "prometheus-blackbox-exporter"],
+      "matchPackageNames": ["prom/prometheus", "prometheus-blackbox-exporter", "golift/unifi-poller"],
+      "automerge": true
+    },
+    {
+      "matchUpdateTypes": ["patch"],
+      "matchCurrentVersion": "!/^0/",
+      "matchDatasources": ["docker"],
+      "ignoreTests": true,
+      "matchPackageNames": ["ghcr.io/stefanabl/jf-custom", "ghcr.io/authelia/authelia"],
       "automerge": true
     }
   ]
