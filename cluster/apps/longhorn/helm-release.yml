@@ -28,7 +28,7 @@ spec:
         enable: true
         selector: "worker"
     defaultSettings:
-        backupTarget: s3://longhorn@region/
+        backupTarget: s3://longhorn@us-east-1/
         backupTargetCredentialSecret: backup-secret
         storageMinimalAvailablePercentage: 20
         concurrentReplicaRebuildPerNodeLimit: 1
