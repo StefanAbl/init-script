@@ -20,7 +20,9 @@ spec:
       replicaCount: 3
       allowSnippetAnnotations: true
       config:
+        allow-snippet-annotations: true
         use-forwarded-headers: true # TODO remove when exposing directly to the internet
+        annotations-risk-level: Critical
       admissionWebhooks:
         enabled: false
     udp:
