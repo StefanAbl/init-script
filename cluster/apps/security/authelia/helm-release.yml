@@ -92,18 +92,18 @@ spec:
         enabled: true
         ingressClassName: nginx
         annotations:
-          nginx.ingress.kubernetes.io/configuration-snippet: |
-            add_header Cache-Control "no-store";
-            add_header Pragma "no-cache";
-            add_header X-Frame-Options "SAMEORIGIN";
-            add_header X-XSS-Protection "1; mode=block";
-            proxy_set_header Host $host;
-            proxy_set_header X-Original-URL $scheme://$http_host$request_uri;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_set_header X-Forwarded-Host $http_host;
-            proxy_set_header X-Forwarded-Uri $request_uri;
-            proxy_set_header X-Forwarded-Ssl on;
-            proxy_set_header X-Forwarded-For $remote_addr;
+#          nginx.ingress.kubernetes.io/configuration-snippet: |
+#            add_header Cache-Control "no-store";
+#            add_header Pragma "no-cache";
+#            add_header X-Frame-Options "SAMEORIGIN";
+#            add_header X-XSS-Protection "1; mode=block";
+#            proxy_set_header Host $host;
+#            proxy_set_header X-Original-URL $scheme://$http_host$request_uri;
+#            proxy_set_header X-Forwarded-Proto $scheme;
+#            proxy_set_header X-Forwarded-Host $http_host;
+#            proxy_set_header X-Forwarded-Uri $request_uri;
+#            proxy_set_header X-Forwarded-Ssl on;
+#            proxy_set_header X-Forwarded-For $remote_addr;
 
           hajimari.io/icon: mdi:shield-account
           cert-manager.io/issuer: freeipa-issuer
