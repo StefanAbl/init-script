@@ -10,3 +10,4 @@ resources:
   - media
   - nextcloud
   - mobivey
+  - db
