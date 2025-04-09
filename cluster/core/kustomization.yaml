@@ -9,3 +9,4 @@ resources:
   - intel-gpu-plugin
   - external-ingress
   - cloudflare-tunnel
+  - mariadb-operator

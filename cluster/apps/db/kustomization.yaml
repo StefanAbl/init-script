@@ -4,6 +4,5 @@ namespace: db
 resources:
   - galera
   - name.yaml
-  - mariadb-operator
   - ../../policies/allow-to-dns.yml
   - ../../policies/allow-to-ipa-dns.yml
