@@ -1,7 +1,7 @@
 apiVersion: k8s.mariadb.com/v1alpha1
 kind: MariaDB
 metadata:
-  name: mariadb-galera
+  name: cluster
   namespace: db
 spec:
   rootPasswordSecretKeyRef:
@@ -15,3 +15,13 @@ spec:
 
   galera:
     enabled: true
+    config:
+      volumeClaimTemplate:
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 100Mi
+        accessModes:
+          - ReadWriteOnce
+  podSecurityContext:
+    runAsUser: 0
