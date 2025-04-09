@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: galera-cluster-root
+    namespace: db
+stringData:
+    root-password: ENC[AES256_GCM,data:PCy/0+rdok3Fs6FoZxokwgotn0xX6CnBeXnBXL9mnWyG4r6E02bCLapuMv9IPNYZ/3Y=,iv:/Nl4yKKhaV0qMwXIRMthkWLhqZzw/bw4YbsDvyRODu8=,tag:urgH7N7Z13u4G0Iq4Ap+pQ==,type:str]
+#WARNING: You should not place the username and password in the version control repository or anywhere else in plain text.
+#Instead, use the Services Tool Window -> Kubernetes -> <Desired Cluster> -> Configuration -> <right-click on Secrets> -> Create New Secret...
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2025-04-09T13:48:24Z"
+    mac: ENC[AES256_GCM,data:g95SLhJQo82Bj8Ha0m1ID2Sy1a1Tfw1KsRPWyHUDnVkmrmKp+NzpeLmMe6ibZk6DUP+xRxsL/ajTUTvv0TU1aJ7D+k4Jmax66WlAwESuOFmjzq1oHiMlWHDjGxQh8m40o93kQ2gbhtLtNID0kQdinkUmRivBajD32URzA3aM2ls=,iv:rz4ROfypoXiIAawptMY0GzZRDHLN4YyuIr2Q140GD68=,tag:PUx+gVyxvsh9TW5tX7Laow==,type:str]
+    pgp:
+        - created_at: "2025-04-09T13:47:50Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA70fE7dz6LU0AQ//QObtNi2gy7HAmPAeP5PfczHbMXoFKw8LmMOu2LFxg3lk
+            5kbTkkfcSADS/kGxFZ44mQdOygjP/GsJ8LOVKGeiwEVANpr4hS5ssK2AMUhRlu8U
+            QTr0sNCfULE3ORCBK7cwZw0ROdvANw5VNR0VcpLgtfYB0eRYOmSOcfOrjIhUmRfR
+            rtiApsxKUyYqr+RK2tXNALVIX7C5ykvBhDh/iaMGmCvTr6iXB1hked/4HF0OSVqo
+            CK0ef9q6V+pTTG5nbJ8DBRYWif2ozM6F2I032M8KP9z2yD5FoMdriIQUmmoYzIL7
+            r8ZAMJabpLiXx2csRmrkfMXecpbxqDZfllTUISEH1gQMWO5i1W8ELbQwtsuLnHof
+            Kd6bmokT+aJdbBXLpyiKpCR8f5hkb5aVmBdp1zn3fQdux72IASEC65X9ZMgbkq7K
+            JHLLGbuBjerXDeoyAyZrZg7dpAbg4eSdNFSMlfqZNtCNmHDQxLVU0CEekrGc+Dkl
+            kftLRcsmBc49zuPYBJEkXjUX3ouu2Bsuj8ZB31LhG81W99N+ChpJPoyT+INQH4rW
+            NYgKBgWbDE4oxVeN2FMEqmNyd0NEJ5SOU6agoKof1hhYnCJJB3Gc5mutEGN580mN
+            DGzJyGI9bghu0t7W8uHxuxQlPleKpxa4x8qNvPpcRXpUgmQVBAyPRFA44s8yJcLS
+            XgEYCbsHrcDTZSo3gkfhFQzKLqGyshD2qJ4qHHy0mqKcOfjqCmphzbmGuuXrlcZO
+            Qsm2GdpOqeWYa1PEvfeKW8iCKWXKxFrDTTX4GAOFwd3g7/RWIfXFJduuURb/8h0=
+            =PplT
+            -----END PGP MESSAGE-----
+          fp: 1DF23F1E7AFCAB40F26B210123CFBB30193553AA
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.3
