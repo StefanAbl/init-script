@@ -22,3 +22,4 @@ resources:
   - ../../policies/allow-to-dns.yml
   - ../../policies/allow-to-internet.yml
   - ../../policies/allow-from-external-ingress.yml
+  - ../../policies/allow-to-db.yml

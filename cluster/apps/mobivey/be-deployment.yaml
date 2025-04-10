@@ -20,7 +20,7 @@ spec:
         - name: image-pull-creds
       containers:
         - name: mobivey-be
-          image: ghcr.io/stefanabl/motionmapper-backend:20250225213449
+          image: ghcr.io/stefanabl/motionmapper-backend:20250410082250
           imagePullPolicy: IfNotPresent
           env:
             - name: CORS_ORIGIN
@@ -28,11 +28,13 @@ spec:
             - name: PORT
               value: "8200"
             - name: DB_HOST
-              value: "db-service.mobivey.svc.cluster.local"
+              value: "cluster.db.svc.cluster.local"
             - name: DB_PORT
               value: "3306"
             - name: DB_USER
-              value: "root"
+              value: "mobivey"
+            - name: DB_NAME
+              value: "mobivey"
             - name: DB_PASS
               valueFrom:
                 secretKeyRef:
