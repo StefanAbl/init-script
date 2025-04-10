@@ -15,6 +15,7 @@ spec:
       name: mobivey-be
       labels:
         app: mobivey-be
+        allow: db
     spec:
       imagePullSecrets:
         - name: image-pull-creds

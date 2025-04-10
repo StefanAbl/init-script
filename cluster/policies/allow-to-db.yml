@@ -5,7 +5,9 @@ metadata:
 spec:
   policyTypes:
   - Egress
-  podSelector: {}
+  podSelector:
+    matchLabels:
+      allow: db
   egress:
   - to:
     - namespaceSelector:
