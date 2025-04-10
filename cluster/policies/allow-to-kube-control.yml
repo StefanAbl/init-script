@@ -10,6 +10,10 @@ spec:
   - to:
       - ipBlock:
           cidr: 172.24.0.1/32
+      - ipBlock:
+          cidr: 10.13.2.41/29
     ports:
     - protocol: TCP
       port: 443
+    - protocol: TCP
+      port: 6443

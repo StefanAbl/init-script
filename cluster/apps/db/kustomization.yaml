@@ -4,6 +4,9 @@ namespace: db
 resources:
   - galera
   - name.yaml
+  - debug.yaml
   - ../../policies/allow-to-dns.yml
   - ../../policies/allow-to-ipa-dns.yml
   - ../../policies/allow-to-kube-control.yml
+  - ../../policies/allow-to-internet.yml
+  - allow-to-db-ns.yml
