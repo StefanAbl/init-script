@@ -23,5 +23,3 @@ spec:
             storage: 100Mi
         accessModes:
           - ReadWriteOnce
-  podSecurityContext:
-    runAsUser: 0
