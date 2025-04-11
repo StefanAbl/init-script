@@ -4,6 +4,7 @@ namespace: security
 resources:
   - helm-release.yml
   - secret.yml
+  - authelia-db-secret.yml
   - ../../../policies/allow-to-db.yml
 configMapGenerator:
   - name: authelia
