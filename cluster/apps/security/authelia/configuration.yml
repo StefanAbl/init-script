@@ -30,9 +30,9 @@ authentication_backend:
     groups_filter: (&(member={dn})(objectclass=groupOfNames))
 
 storage:
-  postgres:
-    host: postgresql.security.svc.cluster.local
-    port: 5432
+  mysql:
+    host: cluster.db.svc.cluster.local
+    port: 3306
     database: authelia
     username: authelia
 notifier:
@@ -70,7 +70,7 @@ access_control:
       - "requests.${DOMAIN}"
       policy: one_factor
       subject: [["group:jellyfin_users"]]
-    - domain: 
+    - domain:
         - "auth.${DOMAIN}"
         - "authelia.k3s.i.${DOMAIN}"
       policy: one_factor

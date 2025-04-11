@@ -28,18 +28,13 @@ spec:
   uninstall:
     keepHistory: false
   values:
-    initContainers:
-      # 01-init-db:
-      #   image: ghcr.io/onedr0p/postgres-initdb:14.7
-      #   imagePullPolicy: IfNotPresent
-      #   envFrom:
-      #     - secretRef:
-      #         name: authelia-secret
     controller:
       replicas: 2
       strategy: RollingUpdate
       annotations:
         reloader.stakater.com/auto: "true"
+      labels:
+        allow: db
     image:
       repository: ghcr.io/authelia/authelia
       tag: 4.38.19
@@ -48,7 +43,7 @@ spec:
       - secretRef:
           name: authelia-secret
     env:
-      - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD
+      - name: AUTHELIA_STORAGE_MYSQL_PASSWORD
         valueFrom:
           secretKeyRef:
             name:  authelia-db-secret
