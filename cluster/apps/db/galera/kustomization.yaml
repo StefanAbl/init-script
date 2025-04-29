@@ -4,3 +4,5 @@ namespace: db
 resources:
   - cluster.yml
   - cluster-root.yaml
+  - s3-secret.yaml
+  - backup.yaml

@@ -8,4 +8,5 @@ resources:
   - ../../policies/allow-to-ipa-dns.yml
   - ../../policies/allow-to-kube-control.yml
   - ../../policies/allow-to-internet.yml
+  - ../../policies/allow-to-s3.yml
   - allow-to-db-ns.yml

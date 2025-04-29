@@ -25,6 +25,7 @@ minio_server_datadirs:
 minio_server_buckets:
  - longhorn
  - mail-backup
+ - db-cluster
 minio_server_svcaccts:
   - name: "{{longhorn.s3_user}}"
     pass: "{{longhorn.s3_pass}}"
@@ -32,6 +33,9 @@ minio_server_svcaccts:
   - name: "{{ mailserver_s3_access_key }}"
     pass: "{{ mailserver_s3_secreet_key }}"
     bucket: mail-backup
+  - name: "{{ db_backup_user }}"
+    pass: "{{ db_backup_secret }}"
+    bucket: db-cluster
 
 promtail:
   user: "{{ansible_facts['hostname']}}" #Name of the user from above

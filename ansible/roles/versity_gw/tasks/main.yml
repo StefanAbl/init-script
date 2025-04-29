@@ -34,15 +34,13 @@
     name: versitygw@versity
     state: started
 
-- name: Create longhorn and mail-backup directories
+- name: Create bucket directory
   become: true
   file:
-    path: "{{item}}"
+    path: "{{s3_data_dir}}/{{item}}"
     state: directory
     recurse: yes
-  loop:
-    - "{{s3_data_dir}}/longhorn"
-    - "{{s3_data_dir}}/mail-backup"
+  loop: "{{minio_server_buckets | flatten(levels=1)}}"
 
 
 - name: create service user and assign bucket

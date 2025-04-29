@@ -1,5 +1,8 @@
 - name: Create a user
   command: versitygw admin --access {{minio.root_user.name}} --secret {{minio.root_user.pass}} --endpoint-url https://s3.{{internal_domain}}:7070 create-user --access {{item.name}} --secret {{item.pass}} --role user
+  register: issue_result
+  changed_when: issue_result.rc == 0
+  failed_when: issue_result.rc == 1 and "A user with the provided access key ID already exists" not in issue_result.stderr
 
 - name: assign bucket
   command: versitygw admin --access {{minio.root_user.name}} --secret {{minio.root_user.pass}} --endpoint-url https://s3.{{internal_domain}}:7070 change-bucket-owner --bucket {{item.bucket}} --owner {{item.name}}

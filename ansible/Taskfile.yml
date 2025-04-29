@@ -17,10 +17,10 @@ tasks:
       - ansible-playbook -i hosts --ask-vault-pass -K cloud/cloud.yml
   nextcloud:
     cmds:
-      - ansible-playbook -i hosts --ask-vault-pass -K nextcloud.yml
+      - ansible-playbook -i hosts --ask-vault-pass -K nextcloud.yml {{.CLI_ARGS}}
   proxmox0:
     cmds:
-      - ansible-playbook -i hosts --ask-vault-pass proxmox0.yml
+      - ansible-playbook -i hosts --ask-vault-pass proxmox0.yml {{.CLI_ARGS}}
   proxmox-servers:
     cmds:
       - ansible-playbook -i hosts --ask-vault-pass proxmox-servers.yml {{.CLI_ARGS}}

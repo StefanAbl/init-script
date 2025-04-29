@@ -1,0 +1,15 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-to-s3
+spec:
+  policyTypes:
+  - Egress
+  podSelector: {}
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 10.13.2.10/32
+    ports:
+    - protocol: TCP
+      port: 7070
