@@ -1,0 +1,25 @@
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: Backup
+metadata:
+  name: instant-backup
+  namespace: db
+spec:
+  mariaDbRef:
+    name: cluster
+    namespace: db
+  maxRetention: 720h # 30 days
+  # ignoreGlobalPriv: true
+  storage:
+    s3:
+      bucket: db-cluster
+      prefix: galera
+      endpoint: https://s3.i.${DOMAIN}:7070
+      region:  us-east-1
+      accessKeyIdSecretKeyRef:
+        name: s3-user
+        key: username
+      secretAccessKeySecretKeyRef:
+        name: s3-user
+        key: secret
+      tls:
+        enabled: true

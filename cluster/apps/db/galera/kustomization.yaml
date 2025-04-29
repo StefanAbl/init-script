@@ -6,3 +6,4 @@ resources:
   - cluster-root.yaml
   - s3-secret.yaml
   - backup.yaml
+  - backup-now.yaml
