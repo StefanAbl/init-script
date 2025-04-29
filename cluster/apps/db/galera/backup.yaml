@@ -5,7 +5,8 @@ metadata:
   namespace: db
 spec:
   mariaDbRef:
-    name: mariadb
+    name: cluster
+    namespace: db
   schedule:
     cron: "0 */3 * * *"
     suspend: false
