@@ -1,7 +1,7 @@
 apiVersion: k8s.mariadb.com/v1alpha1
 kind: Backup
 metadata:
-  name: backup
+  name: scheduled-backup
   namespace: db
 spec:
   mariaDbRef:
@@ -16,7 +16,7 @@ spec:
     s3:
       bucket: db-cluster
       prefix: galera
-      endpoint: https://s3.i.${DOMAIN}:7070
+      endpoint: s3.i.${DOMAIN}:7070
       region:  us-east-1
       accessKeyIdSecretKeyRef:
         name: s3-user
