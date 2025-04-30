@@ -7,4 +7,4 @@ spec:
   interval: 10m
   url: oci://registry-1.docker.io/bitnamicharts/redis
   ref:
-    tag: 20.11.3
+    tag: 20.13.4
