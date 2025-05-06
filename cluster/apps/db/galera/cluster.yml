@@ -16,7 +16,7 @@ spec:
   galera:
     enabled: true
     recovery:
-      forceClusterBootstrapInPod: "cluster-1"
+      # forceClusterBootstrapInPod: "cluster-1"
     config:
       volumeClaimTemplate:
         storageClassName: local-path
