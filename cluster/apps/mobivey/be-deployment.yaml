@@ -21,7 +21,7 @@ spec:
         - name: image-pull-creds
       containers:
         - name: mobivey-be
-          image: ghcr.io/stefanabl/motionmapper-backend:20250429091329
+          image: ghcr.io/stefanabl/motionmapper-backend:20250507161610
           imagePullPolicy: IfNotPresent
           env:
             - name: CORS_ORIGIN
