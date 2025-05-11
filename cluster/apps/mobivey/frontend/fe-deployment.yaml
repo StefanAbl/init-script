@@ -23,7 +23,7 @@ spec:
         - name: frontend
           # The comment on the next line is needed for flux image automation
           # https://fluxcd.io/flux/guides/image-update/#configure-image-updates
-          image: "ghcr.io/svken/wegetagebuch:20250511193053" # {"$imagepolicy": "mobivey:mobivey-fe"}
+          image: "ghcr.io/svken/wegetagebuch:20250511194311" # {"$imagepolicy": "mobivey:mobivey-fe"}
           imagePullPolicy: IfNotPresent
           resources:
             limits:
