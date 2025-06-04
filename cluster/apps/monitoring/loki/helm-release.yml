@@ -178,12 +178,13 @@ spec:
           ingestion_burst_size_mb: 20
           max_concurrent_tail_requests: 20
           max_cache_freshness_per_query: 10m
-          retention_period: 1488h # 60 days
+          retention_period: 720h # 30 days
         compactor:
           shared_store: s3
           retention_enabled: true
           retention_delete_delay: 2h
           retention_delete_worker_count: 150
+          delete_request_store: s3
 
         schema_config:
           configs:
