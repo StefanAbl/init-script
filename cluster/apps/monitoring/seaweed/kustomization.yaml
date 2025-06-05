@@ -4,6 +4,8 @@ namespace: monitoring
 resources:
   - sts.yml
   - svc.yml
+  - policy-cm.yaml
+  - apply-policy-job.yaml
 configMapGenerator:
   - name: s3-config
     namespace: monitoring

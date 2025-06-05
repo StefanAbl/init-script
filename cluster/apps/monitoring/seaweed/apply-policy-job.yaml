@@ -1,0 +1,64 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: s3-lifecycle-policy-job
+  namespace: monitoring
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      automountServiceAccountToken: false
+      containers:
+        - name: aws-cli
+          image: amazon/aws-cli:latest
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              value: "${LOKI_MINIO_USER}"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "${LOKI_MINIO_PASS}"
+            - name: AWS_DEFAULT_REGION
+              value: "us-east-1"
+            - name: AWS_ENDPOINT_URL
+              value: "http://seaweed.monitoring.svc.cluster.local:8333"
+          volumeMounts:
+            - name: lifecycle-policy
+              mountPath: /tmp/lifecycle-policy.json
+              subPath: lifecycle-policy.json
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              echo "Configuring AWS CLI for custom S3 endpoint..."
+
+              # Test connection first
+              echo "Testing S3 connection..."
+              aws --endpoint-url=$AWS_ENDPOINT_URL s3 ls
+
+              # Check if bucket exists
+              echo "Checking if bucket 'loki' exists..."
+              if aws --endpoint-url=$AWS_ENDPOINT_URL s3 ls s3://loki/ > /dev/null 2>&1; then
+                echo "Bucket 'loki' found."
+              else
+                echo "Error: Bucket 'loki' does not exist!"
+                exit 1
+              fi
+
+              # Apply lifecycle policy
+              echo "Applying lifecycle policy to bucket 'loki'..."
+              aws --endpoint-url=$AWS_ENDPOINT_URL s3api put-bucket-lifecycle-configuration \
+                --bucket loki \
+                --lifecycle-configuration file:///tmp/lifecycle-policy.json
+
+              echo "Lifecycle policy applied successfully!"
+
+              # Verify the policy was applied
+              echo "Verifying lifecycle policy..."
+              aws --endpoint-url=$AWS_ENDPOINT_URL s3api get-bucket-lifecycle-configuration \
+                --bucket loki
+
+              echo "Job completed successfully!"
+      volumes:
+        - name: lifecycle-policy
+          configMap:
+            name: s3-lifecycle-policy
