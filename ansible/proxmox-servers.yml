@@ -40,3 +40,14 @@
     - ansible_become_pass: "{{ ipa_admin_user_password }}"
   roles:
     - proxmox_ipa_cert
+- hosts: proxmox
+  tags:
+    - powersave
+  vars_prompt:
+    - name: ipa_admin_user_password
+      prompt: Enter password for FreeIPA user
+      private: yes
+  vars:
+    - ansible_become_pass: "{{ ipa_admin_user_password }}"
+  roles:
+    - powersave_governor

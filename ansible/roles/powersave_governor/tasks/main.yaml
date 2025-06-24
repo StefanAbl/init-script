@@ -1,0 +1,7 @@
+- name: Add cron job to set CPU governor to powersave at reboot
+  become: true
+  cron:
+    name: "Set CPU scaling governor to powersave"
+    special_time: reboot
+    job: "/bin/bash -c 'echo powersave | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor'"
+    user: root
