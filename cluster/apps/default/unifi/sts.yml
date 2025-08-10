@@ -32,7 +32,7 @@ spec:
             mountPath: /unifi
       containers:
         - name: unifi
-          image: jacobalberty/unifi:v9.3.43
+          image: jacobalberty/unifi:v9.3.45
           env:
             - name: TZ
               value: EUROPE/BERLIN
