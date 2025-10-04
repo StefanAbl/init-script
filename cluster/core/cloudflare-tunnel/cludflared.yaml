@@ -1,18 +1,16 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   labels:
     app: cloudflared
-  name: cloudflared-deployment
+  name: cloudflared-daemonset
   namespace: cloudflare-tunnel
 spec:
-  replicas: 2
   selector:
     matchLabels:
       pod: cloudflared
   template:
     metadata:
-      creationTimestamp: null
       labels:
         pod: cloudflared
     spec:
