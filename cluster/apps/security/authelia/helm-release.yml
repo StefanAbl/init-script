@@ -37,7 +37,7 @@ spec:
         allow: db
     image:
       repository: ghcr.io/authelia/authelia
-      tag: 4.39.11
+      tag: 4.39.12
     args: ["--config", "/config/configuration.yml"]
     envFrom:
       - secretRef:
