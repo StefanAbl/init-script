@@ -8,7 +8,6 @@ resources:
   - monitoring.yml
   - ffsync.yml
   - security.yml
-  - longhorn.yml
   - media.yml
   - external-ingress.yml
   - nextcloud.yml
