@@ -15,7 +15,7 @@ spec:
 
   galera:
     enabled: true
-    recovery:
+    # recovery:
       # forceClusterBootstrapInPod: "cluster-1"
     config:
       volumeClaimTemplate:
