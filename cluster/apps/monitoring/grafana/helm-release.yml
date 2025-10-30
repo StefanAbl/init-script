@@ -25,8 +25,7 @@ spec:
   values:
     persistence:
       enabled: true
-      storageClassName: longhorn
-      size: 1Gi
+      volumeName: pvc-0123387c-308b-462f-82a5-9b8291bbc946
     useStatefulSet: true
     imageRenderer:
       enabled: true
