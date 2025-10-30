@@ -5,4 +5,4 @@ resources:
   - backup-secret.yml
   - fs-trim-job.yml
   - allow-scraping.yml
-  -namespace
+  - namespace.yml
