@@ -10,3 +10,4 @@ spec:
     requests:
       storage: 20Gi
   storageClassName: longhorn
+  volumeName: influxdb-2
