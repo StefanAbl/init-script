@@ -30,9 +30,9 @@ spec:
     defaultSettings:
         backupTarget: s3://longhorn@us-east-1/
         backupTargetCredentialSecret: backup-secret
-        storageMinimalAvailablePercentage: 20
-        concurrentReplicaRebuildPerNodeLimit: 1
-        fastReplicaRebuildEnabled: true
+        storageMinimalAvailablePercentage: "20"
+        concurrentReplicaRebuildPerNodeLimit: "1"
+        fastReplicaRebuildEnabled: "true"
         snapshotDataIntegrity: fast-check
     ingress:
       enabled: true
