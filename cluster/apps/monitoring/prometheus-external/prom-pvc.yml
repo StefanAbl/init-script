@@ -10,3 +10,4 @@ spec:
     requests:
       storage: 46Gi
   storageClassName: longhorn
+  volumeName: prometheus-external
