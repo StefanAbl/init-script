@@ -1,0 +1,259 @@
+
+---
+# ConfigMap for Redis configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: security
+data:
+  redis.conf: |
+    bind 0.0.0.0
+    protected-mode no
+    port 6379
+    tcp-backlog 511
+    timeout 0
+    tcp-keepalive 300
+    daemonize no
+    supervised no
+    loglevel notice
+    databases 16
+    save ""
+    stop-writes-on-bgsave-error no
+    rdbcompression no
+    rdbchecksum no
+    dbfilename dump.rdb
+    dir /data
+    replica-read-only yes
+    repl-diskless-sync no
+
+---
+# ConfigMap for Sentinel configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sentinel-config
+  namespace: security
+data:
+  sentinel.conf: |
+    bind 0.0.0.0
+    port 26379
+    sentinel monitor mymaster redis-0.redis-headless.security.svc.cluster.local 6379 2
+    sentinel down-after-milliseconds mymaster 5000
+    sentinel parallel-syncs mymaster 1
+    sentinel failover-timeout mymaster 10000
+
+---
+# Headless Service for Redis StatefulSet
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-headless
+  namespace: security
+spec:
+  clusterIP: None
+  ports:
+    - port: 6379
+      targetPort: 6379
+      name: redis
+  selector:
+    app: redis
+
+---
+# Service for Redis access
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: security
+spec:
+  type: ClusterIP
+  ports:
+    - port: 6379
+      targetPort: 6379
+      name: redis
+  selector:
+    app: redis
+
+---
+# Headless Service for Sentinel
+apiVersion: v1
+kind: Service
+metadata:
+  name: sentinel-headless
+  namespace: security
+spec:
+  clusterIP: None
+  ports:
+    - port: 26379
+      targetPort: 26379
+      name: sentinel
+  selector:
+    app: sentinel
+
+---
+# Service for Sentinel access
+apiVersion: v1
+kind: Service
+metadata:
+  name: sentinel
+  namespace: security
+spec:
+  type: ClusterIP
+  ports:
+    - port: 26379
+      targetPort: 26379
+      name: sentinel
+  selector:
+    app: sentinel
+
+---
+# StatefulSet for Redis instances
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: security
+spec:
+  serviceName: redis-headless
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - redis
+              topologyKey: kubernetes.io/hostname
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - worker01.i.stabl.one
+                      - worker02.i.stabl.one
+                      - worker03.i.stabl.one
+      initContainers:
+        - name: init-redis
+          image: redis:7-alpine
+          command:
+            - sh
+            - -c
+            - |
+              set -ex
+              # Copy config file
+              cp /mnt/config/redis.conf /etc/redis/redis.conf
+              # Set replicaof for non-master pods
+              if [ "$(hostname)" != "redis-0" ]; then
+                echo "replicaof redis-0.redis-headless.security.svc.cluster.local 6379" >> /etc/redis/redis.conf
+              fi
+          volumeMounts:
+            - name: redis-config
+              mountPath: /mnt/config
+            - name: config
+              mountPath: /etc/redis
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          command:
+            - redis-server
+            - /etc/redis/redis.conf
+          ports:
+            - containerPort: 6379
+              name: redis
+          volumeMounts:
+            - name: config
+              mountPath: /etc/redis
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: redis-config
+          configMap:
+            name: redis-config
+        - name: config
+          emptyDir: {}
+        - name: data
+          emptyDir: {}
+
+---
+# StatefulSet for Sentinel instances
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sentinel
+  namespace: security
+spec:
+  serviceName: sentinel-headless
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sentinel
+  template:
+    metadata:
+      labels:
+        app: sentinel
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - sentinel
+              topologyKey: kubernetes.io/hostname
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - worker01.i.stabl.one
+                      - worker02.i.stabl.one
+                      - worker03.i.stabl.one
+      initContainers:
+        - name: init-sentinel
+          image: redis:7-alpine
+          command:
+            - sh
+            - -c
+            - |
+              set -ex
+              cp /mnt/config/sentinel.conf /etc/redis/sentinel.conf
+          volumeMounts:
+            - name: sentinel-config
+              mountPath: /mnt/config
+            - name: config
+              mountPath: /etc/redis
+      containers:
+        - name: sentinel
+          image: redis:7-alpine
+          command:
+            - redis-sentinel
+            - /etc/redis/sentinel.conf
+          ports:
+            - containerPort: 26379
+              name: sentinel
+          volumeMounts:
+            - name: config
+              mountPath: /etc/redis
+      volumes:
+        - name: sentinel-config
+          configMap:
+            name: sentinel-config
+        - name: config
+          emptyDir: {}
