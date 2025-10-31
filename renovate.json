@@ -61,7 +61,7 @@
       "matchCurrentVersion": "!/^0/",
       "matchDatasources": ["docker"],
       "ignoreTests": true,
-      "matchPackageNames": ["prom/prometheus", "prometheus-blackbox-exporter", "golift/unifi-poller"],
+      "matchPackageNames": ["prom/prometheus", "prometheus-blackbox-exporter", "golift/unifi-poller", "cloudflare/cloudflared"],
       "automerge": true
     },
     {
