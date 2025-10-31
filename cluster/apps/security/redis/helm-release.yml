@@ -21,6 +21,9 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    image:
+      repository: redis
+      tag: 7-alpine
     auth:
       enabled: false
       sentinel: false
