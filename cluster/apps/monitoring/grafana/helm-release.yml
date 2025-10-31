@@ -23,9 +23,11 @@ spec:
     remediation:
       retries: 7
   values:
+    replicas: 1
     persistence:
       enabled: true
-      volumeName: pvc-0123387c-308b-462f-82a5-9b8291bbc946
+      size: 2Gi
+      volumeName: "pvc-0123387c-308b-462f-82a5-9b8291bbc946"
     useStatefulSet: true
     imageRenderer:
       enabled: true
