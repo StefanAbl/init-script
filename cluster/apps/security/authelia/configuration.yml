@@ -7,13 +7,13 @@ session:
   redis:
     host: redis.security.svc.cluster.local
     high_availability:
-      sentinel_name: redis-master
+      sentinel_name: mymaster
       nodes:
-        - host: redis-node-0.redis-headless.security.svc.cluster.local
+        - host: redis-0.redis-headless.security.svc.cluster.local
           port: 26379
-        - host: redis-node-1.redis-headless.security.svc.cluster.local
+        - host: redis-1.redis-headless.security.svc.cluster.local
           port: 26379
-        - host: redis-node-2.redis-headless.security.svc.cluster.local
+        - host: redis-2.redis-headless.security.svc.cluster.local
           port: 26379
 
 authentication_backend:

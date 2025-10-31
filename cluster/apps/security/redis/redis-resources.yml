@@ -58,19 +58,6 @@ spec:
     - port: 6379
       targetPort: 6379
       name: redis
-  selector:
-    app: redis
-
----
-# Service for Sentinel access
-apiVersion: v1
-kind: Service
-metadata:
-  name: sentinel
-  namespace: security
-spec:
-  type: ClusterIP
-  ports:
     - port: 26379
       targetPort: 26379
       name: sentinel
@@ -126,17 +113,27 @@ spec:
               # Copy redis config file
               cp /mnt/redis-config/redis.conf /etc/redis/redis.conf
 
-              # Set replicaof for non-master pods
-              if [ "$(hostname)" != "redis-0" ]; then
-                echo "replicaof redis-0.redis-headless.security.svc.cluster.local 6379" >> /etc/redis/redis.conf
+              # Get the IP of redis-0
+              # For redis-0 itself, use its own pod IP. For others, resolve redis-0's hostname
+              if [ "$(hostname)" = "redis-0" ]; then
+                MASTER_IP=$(hostname -i)
+              else
+                # Wait for redis-0 DNS to be available
+                until MASTER_IP=$(getent hosts redis-0.redis-headless.security.svc.cluster.local | awk '{print $1}' | head -n1); do
+                  echo "Waiting for redis-0 DNS..."
+                  sleep 2
+                done
+                echo "replicaof $MASTER_IP 6379" >> /etc/redis/redis.conf
               fi
 
-              # Create initial sentinel config
+              echo "Master IP: $MASTER_IP"
+
+              # Create initial sentinel config with IP address
               cat > /etc/redis/sentinel.conf <<EOF
               bind 0.0.0.0
               port 26379
               dir /tmp
-              sentinel monitor mymaster redis-0.redis-headless.security.svc.cluster.local 6379 2
+              sentinel monitor mymaster $MASTER_IP 6379 2
               sentinel down-after-milliseconds mymaster 5000
               sentinel parallel-syncs mymaster 1
               sentinel failover-timeout mymaster 10000
