@@ -14,6 +14,13 @@
     reload 1s
     fallthrough
   }
+
+  # Filter out AAAA responses for these hosts
+  # Intercept AAAA queries for specific hosts and return no result
+  template IN AAAA cloud.${DOMAIN}. grafana.${DOMAIN}. auth.${DOMAIN}. stream.${DOMAIN}. {
+    rcode NXDOMAIN
+  }
+
   forward i.${DOMAIN} 10.13.2.100
   forward . 1.1.1.1
   log
