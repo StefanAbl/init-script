@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   - metallb-system
   - ingress-nginx
-  #- cert-manager
+  - cert-manager
   - reloader
   - node-feature-discovery
   - intel-gpu-plugin
