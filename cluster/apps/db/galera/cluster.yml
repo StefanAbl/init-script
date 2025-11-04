@@ -12,7 +12,9 @@ spec:
   storage:
     size: 16Gi
     storageClassName: local-path
-
+  updateStrategy:
+    type: ReplicasFirstPrimaryLast
+    autoUpdateDataPlane: true
   galera:
     enabled: true
     # recovery:
