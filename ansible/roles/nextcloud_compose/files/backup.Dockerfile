@@ -1,4 +1,4 @@
-FROM mariadb:10.5
+FROM mariadb:12.1
 
 RUN apt-get update; \
     apt-get install -y --no-install-recommends busybox-static; \
