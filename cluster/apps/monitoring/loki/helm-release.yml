@@ -30,11 +30,11 @@ spec:
         container.apparmor.security.beta.kubernetes.io/ingester: runtime/default
       resources:
         limits:
-          cpu: 250m
-          memory: 300Mi
+          cpu: 500m
+          memory: 500Mi
         requests:
-          cpu: 50m
-          memory: 100Mi
+          cpu: 100m
+          memory: 200Mi
     querier:
       podAnnotations:
         container.apparmor.security.beta.kubernetes.io/querier: runtime/default
@@ -56,11 +56,11 @@ spec:
         worker: "true"
       resources:
         limits:
-          cpu: 250m
-          memory: 300Mi
+          cpu: 500m
+          memory: 400Mi
         requests:
-          cpu: 50m
-          memory: 100Mi
+          cpu: 100m
+          memory: 200Mi
     compactor:
       enabled: true
       podAnnotations:
@@ -69,11 +69,11 @@ spec:
         worker: "true"
       resources:
         limits:
-          cpu: 250m
-          memory: 300Mi
+          cpu: 500m
+          memory: 400Mi
         requests:
-          cpu: 50m
-          memory: 100Mi
+          cpu: 100m
+          memory: 200Mi
     queryFrontend:
       podAnnotations:
         container.apparmor.security.beta.kubernetes.io/query-frontend: runtime/default
@@ -81,11 +81,11 @@ spec:
         worker: "true"
       resources:
         limits:
-          cpu: 250m
-          memory: 300Mi
+          cpu: 500m
+          memory: 400Mi
         requests:
-          cpu: 50m
-          memory: 100Mi
+          cpu: 100m
+          memory: 200Mi
     gateway:
       podAnnotations:
         container.apparmor.security.beta.kubernetes.io/nginx: runtime/default
@@ -93,11 +93,11 @@ spec:
         worker: "true"
       resources:
         limits:
-          cpu: 250m
-          memory: 300Mi
+          cpu: 500m
+          memory: 400Mi
         requests:
-          cpu: 50m
-          memory: 50Mi
+          cpu: 100m
+          memory: 200Mi
       nginxConfig:
         httpSnippet: |
           proxy_read_timeout 600s;
