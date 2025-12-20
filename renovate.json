@@ -71,11 +71,11 @@
       "automerge": true
     },
     {
-      "matchUpdateTypes": ["minor"],
+      "matchUpdateTypes": ["minor", "patch"],
       "matchCurrentVersion": "!/^0/",
       "matchDatasources": ["helm"],
       "ignoreTests": true,
-      "matchPackageNames": ["node-feature-discovery", "reloader"],
+      "matchPackageNames": ["node-feature-discovery", "reloader", "prometheus-blackbox-exporter"],
       "automerge": true
     },
     {
