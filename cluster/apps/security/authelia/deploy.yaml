@@ -69,10 +69,10 @@ spec:
           timeoutSeconds: 1
         resources:
           limits:
-            memory: 100Mi
+            memory: 250Mi
           requests:
-            cpu: 5m
-            memory: 10Mi
+            cpu: 100m
+            memory: 100Mi
         volumeMounts:
         - mountPath: /config/configuration.yml
           name: config
