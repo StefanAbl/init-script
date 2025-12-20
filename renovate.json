@@ -13,10 +13,14 @@
     "ghcr.io/fluxcd/source-controller"
   ],
   "flux": {
-    "fileMatch": ["cluster/.+\\.ya?ml$"]
+    "fileMatch": [
+      "cluster/.+\\.ya?ml$"
+    ]
   },
   "helm-values": {
-    "fileMatch": ["cluster/.+\\.ya?ml$"]
+    "fileMatch": [
+      "cluster/.+\\.ya?ml$"
+    ]
   },
   "kubernetes": {
     "fileMatch": [
@@ -41,11 +45,29 @@
   ],
   "packageRules": [
     {
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchDepTypes": ["syntax"],
+      "ignoreTests": true,
+      "matchPackageNames": [
+      "docker/dockerfile"
+      ],
+      "automerge": true
+    },
+    {
       "matchUpdateTypes": ["patch"],
       "matchCurrentVersion": "!/^0/",
       "matchDatasources": ["helm"],
       "ignoreTests": true,
-      "matchPackageNames": ["node-feature-discovery", "promtail", "grafana", "loki-distributed", "redis", "postgresql", "node-problem-detector", "reloader"],
+      "matchPackageNames": [
+        "node-feature-discovery",
+        "promtail",
+        "grafana",
+        "loki-distributed",
+        "redis",
+        "postgresql",
+        "node-problem-detector",
+        "reloader"
+      ],
       "automerge": true
     },
     {
@@ -61,7 +83,14 @@
       "matchCurrentVersion": "!/^0/",
       "matchDatasources": ["docker"],
       "ignoreTests": true,
-      "matchPackageNames": ["prom/prometheus", "prometheus-blackbox-exporter", "golift/unifi-poller", "cloudflare/cloudflared"],
+      "matchPackageNames": [
+        "prom/prometheus",
+        "prometheus-blackbox-exporter",
+        "golift/unifi-poller",
+        "cloudflare/cloudflared",
+        "coredns/coredns",
+        "docker.io/intel/intel-gpu-plugin"
+      ],
       "automerge": true
     },
     {
@@ -69,9 +98,11 @@
       "matchCurrentVersion": "!/^0/",
       "matchDatasources": ["docker"],
       "ignoreTests": true,
-      "matchPackageNames": ["ghcr.io/stefanabl/jf-custom", "ghcr.io/authelia/authelia"],
+      "matchPackageNames": [
+        "ghcr.io/stefanabl/jf-custom",
+        "ghcr.io/authelia/authelia"
+      ],
       "automerge": true
     }
   ]
-
 }
