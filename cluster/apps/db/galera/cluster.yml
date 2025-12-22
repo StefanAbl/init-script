@@ -38,8 +38,8 @@ spec:
     timeoutSeconds: 5
 
   # Tune your startup probe accordingly to ensure that the SST completes with a large amount of data.
-  # failureThreshold × periodSeconds = 30 × 10 = 300s = 5m until the container gets restarted if unhealthy
+  # failureThreshold × periodSeconds = 30 × 30 = 900s = 15m until the container gets restarted if unhealthy
   startupProbe:
     failureThreshold: 30
-    periodSeconds: 10
+    periodSeconds: 30
     timeoutSeconds: 5
