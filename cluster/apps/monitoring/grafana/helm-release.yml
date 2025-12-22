@@ -39,6 +39,15 @@ spec:
       userKey: "user"
       passwordKey: "password"
     grafana.ini:
+      #  https://github.com/grafana/database-migrator
+      database:
+        type: mysql
+        host: cluster.db.svc.cluster.local
+        #GF_DATABASE_USER=username
+        #GF_DATABASE_PASSWORD=password
+        user: grafana
+        #password: "${GRAFNA_DB_PW}"
+
       server:
         domain: grafana.${DOMAIN}
         root_url: https://%(domain)s/
