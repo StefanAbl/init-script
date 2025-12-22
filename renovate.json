@@ -61,7 +61,6 @@
       "matchPackageNames": [
         "node-feature-discovery",
         "promtail",
-        "grafana",
         "loki-distributed",
         "redis",
         "postgresql",
@@ -75,7 +74,7 @@
       "matchCurrentVersion": "!/^0/",
       "matchDatasources": ["helm"],
       "ignoreTests": true,
-      "matchPackageNames": ["node-feature-discovery", "reloader", "prometheus-blackbox-exporter"],
+      "matchPackageNames": ["node-feature-discovery", "reloader", "prometheus-blackbox-exporter", "grafana"],
       "automerge": true
     },
     {
