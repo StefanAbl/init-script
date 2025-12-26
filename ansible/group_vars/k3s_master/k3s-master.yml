@@ -27,9 +27,18 @@ k3s_server:
   service-cidr: "172.24.0.0/16"
   kubelet-arg:
   - "feature-gates=GracefulNodeShutdown=true"
+  - "kube-api-qps=50"
+  - "kube-api-burst=100"
+  - "kube-reserved=cpu=500m,memory=512Mi,ephemeral-storage=1Gi"
+  - "system-reserved=cpu=500m,memory=512Mi,ephemeral-storage=1Gi"
+  - "eviction-hard=memory.available<256Mi,nodefs.available<10%"
+  - "eviction-soft=memory.available<512Mi,nodefs.available<15%"
+  - "eviction-soft-grace-period=memory.available=1m30s,nodefs.available=2m"
+  - "max-pods=110"
   # Required to use kube-prometheus-stack
   kube-controller-manager-arg:
   - "bind-address=0.0.0.0"
+  - "node-monitor-grace-period=30s"
   kube-proxy-arg:
   - "metrics-bind-address=0.0.0.0"
   kube-scheduler-arg:
