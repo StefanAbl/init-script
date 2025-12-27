@@ -6,7 +6,6 @@ resources:
   - cert-manager.yml
   - websites.yml
   - monitoring.yml
-  - ffsync.yml
   - security.yml
   - media.yml
   - external-ingress.yml

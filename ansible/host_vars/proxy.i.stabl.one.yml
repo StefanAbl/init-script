@@ -136,10 +136,6 @@ servers:
     extras_location: |
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection "upgrade";
-  - name: ffsync.thorn.dynv6.net
-    upstream: https://syncserver.k3s.i.stabl.one
-    verification: dns
-    api: dns_dynv6
   - name: unifi.thorn.dynv6.net
     upstream: https://unifi.k3s.i.stabl.one
     verification: dns

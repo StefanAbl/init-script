@@ -4,7 +4,6 @@ resources:
   - default
   - websites
   - monitoring
-  - ffsync
   - security
   - longhorn
   - media
