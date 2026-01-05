@@ -10,3 +10,4 @@ resources:
   - external-ingress
   - cloudflare-tunnel
   - mariadb-operator
+  - priority-class-high.yaml

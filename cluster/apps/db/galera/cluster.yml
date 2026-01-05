@@ -4,6 +4,7 @@ metadata:
   name: cluster
   namespace: db
 spec:
+  priorityClassName: high
   rootPasswordSecretKeyRef:
     name: galera-cluster-root
     key: root-password
