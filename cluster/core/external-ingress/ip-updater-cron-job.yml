@@ -14,7 +14,7 @@ spec:
                 name: ip-updater-conf
           containers:
             - name: ip-updater
-              image: ghcr.io/stefanabl/ip-updater:20240725222059
+              image: ghcr.io/stefanabl/ip-updater:20260120113219
               imagePullPolicy: IfNotPresent
               securityContext:
                 runAsNonRoot: true
