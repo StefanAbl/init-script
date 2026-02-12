@@ -9,7 +9,7 @@
   become: true
   docker_container:
     name: promtail
-    image: "grafana/promtail:2.6.1"
+    image: "grafana/promtail:2.9.17"
     restart_policy: always
     restart: yes
     volumes:
