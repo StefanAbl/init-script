@@ -165,19 +165,19 @@ scrape_configs:
       - targets:
         - '10.13.30.101:80'
         labels:
-          location: 'Lenovo'
+          location: 'Kitchen'
       - targets:
         - '10.13.30.102:80'
         labels:
-          location: 'Dell'
+          location: 'TV'
       - targets:
         - '10.13.30.103:80'
         labels:
-          location: 'Switch'
+          location: 'Dishwasher'
       - targets:
         - '10.13.30.104:80'
         labels:
-          location: 'Server'
+          location: 'Bathroom'
       - targets:
         - '10.13.30.105:80'
         labels:
@@ -185,7 +185,7 @@ scrape_configs:
       - targets:
           - '10.13.30.106:80'
         labels:
-          location: 'FritzBox'
+          location: 'Homelab'
       - targets:
           - '10.13.30.108:80'
         labels:
