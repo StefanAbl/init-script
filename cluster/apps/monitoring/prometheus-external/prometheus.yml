@@ -190,3 +190,7 @@ scrape_configs:
           - '10.13.30.108:80'
         labels:
           location: 'Desk Maria'
+      - targets:
+          - '10.13.30.109:80'
+        labels:
+          location: 'AC'
