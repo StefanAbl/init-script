@@ -104,7 +104,7 @@ spec:
                       - worker03.i.stabl.one
       initContainers:
         - name: init-redis
-          image: redis:7-alpine
+          image: redis:8-alpine
           command:
             - sh
             - -c
@@ -145,7 +145,7 @@ spec:
               mountPath: /etc/redis
       containers:
         - name: redis
-          image: redis:7-alpine
+          image: redis:8-alpine
           command:
             - redis-server
             - /etc/redis/redis.conf
@@ -170,7 +170,7 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
         - name: sentinel
-          image: redis:7-alpine
+          image: redis:8-alpine
           command:
             - sh
             - -c
