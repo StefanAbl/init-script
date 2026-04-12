@@ -41,7 +41,7 @@ spec:
         envFrom:
         - secretRef:
             name: authelia-secret
-        image: ghcr.io/authelia/authelia:4.39.18
+        image: ghcr.io/authelia/authelia:4.39.19
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3
