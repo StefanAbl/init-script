@@ -23,7 +23,7 @@ spec:
             name: s3-config
       containers:
       - name: seaweed
-        image: chrislusf/seaweedfs:4.17
+        image: chrislusf/seaweedfs:4.20
         resources:
           requests:
             cpu: 250m
