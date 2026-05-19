@@ -35,7 +35,7 @@ spec:
             - -shared-dev-num
             - "4"
           image: docker.io/intel/intel-gpu-plugin:0.35.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           name: intel-gpu-plugin
           volumeMounts:
             - mountPath: /dev/dri
