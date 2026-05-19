@@ -34,6 +34,11 @@ spec:
         - args:
             - -shared-dev-num
             - "4"
+          env:
+            - name: CDI_ROOT
+              value: /etc/cdi
+            - name: CDI_ENABLED
+              value: "true"
           image: docker.io/intel/intel-gpu-plugin:0.35.0
           imagePullPolicy: Always
           name: intel-gpu-plugin
@@ -46,6 +51,8 @@ spec:
             - mountPath: /sys/class/drm
               name: sysfs
               readOnly: true
+            - mountPath: /etc/cdi
+              name: cdi
       dnsPolicy: ClusterFirst
       enableServiceLinks: true
       serviceAccountName: default
@@ -62,3 +69,7 @@ spec:
             path: /sys/class/drm
             type: Directory
           name: sysfs
+        - hostPath:
+            path: /etc/cdi
+            type: DirectoryOrCreate
+          name: cdi
