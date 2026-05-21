@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: s3-lifecycle-policy-job
+  name: s3-lifecycle-policy-job-2
   namespace: monitoring
 spec:
   template:

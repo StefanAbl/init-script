@@ -12,7 +12,7 @@ data:
           "Status": "Enabled",
           "Filter": {},
           "Expiration": {
-            "Days": 60
+            "Days": 45
           }
         }
       ]
