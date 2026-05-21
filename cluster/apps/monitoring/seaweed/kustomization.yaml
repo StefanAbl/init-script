@@ -2,7 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: monitoring
 resources:
-  #- sts.yml
+  - sts.yml
   - svc.yml
   - policy-cm.yaml
   - apply-policy-job.yaml
