@@ -1,8 +1,21 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: default
 resources:
-  - sts.yml
-  - pvc.yml
-  - service.yml
-  - ingress.yml
   - allow-scraping.yml
+  - combined-sts.yaml
+  - ingress.yml
+  - mongo-secret.yaml
+  - pvc.yaml
+  - pvc-old.yml
+  - service.yml
+configMapGenerator:
+  - name: unifi-mongodb-init
+    namespace: default
+    files:
+      - init-mongo.sh
+    options:
+      disableNameSuffixHash: true  # Keeps the name stable so the StatefulSet reference doesn't break
+      # No vars: block — Kustomize variable substitution is never triggered without one
+      annotations:
+        kustomize.toolkit.fluxcd.io/substitute: disabled  # Tells Flux to skip envsubst on this ConfigMap

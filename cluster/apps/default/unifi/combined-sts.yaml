@@ -1,0 +1,147 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: unifi
+  namespace: default
+  labels:
+    app: unifi
+spec:
+  serviceName: unifi   # References the existing Service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: unifi
+  template:
+    metadata:
+      labels:
+        app: unifi
+    annotations:
+      container.apparmor.security.beta.kubernetes.io/unifi: runtime/default
+      seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    spec:
+      automountServiceAccountToken: false
+      # -----------------------------------------------------------------------
+      # Volumes
+      # -----------------------------------------------------------------------
+      volumes:
+        - name: unifi-data
+          persistentVolumeClaim:
+            claimName: unifi-data
+        - name: mongo-init
+          configMap:
+            name: unifi-mongodb-init
+            defaultMode: 0755   # Script must be executable
+
+      # -----------------------------------------------------------------------
+      # Container 1: MongoDB
+      #   - Runs first; UniFi will reconnect once it is ready.
+      #   - Init script is only executed on a fresh (empty) data directory.
+      # -----------------------------------------------------------------------
+      containers:
+        - name: mongodb
+          image: docker.io/mongo:7.0   # ← Pin to a specific major version
+          env:
+            # Root / admin user (used only during init)
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: "root"
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: unifi-mongodb-secret
+                  key: MONGO_ROOT_PASSWORD
+            # Application user — passed to init-mongo.sh at first start
+            - name: MONGO_USER
+              value: "unifi"
+            - name: MONGO_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: unifi-mongodb-secret
+                  key: MONGO_PASS
+            - name: MONGO_DBNAME
+              value: "unifi"
+            - name: MONGO_AUTHSOURCE
+              value: "admin"
+          ports:
+            - containerPort: 27017
+              name: mongodb
+          volumeMounts:
+            # MongoDB data files
+            - name: unifi-data
+              subPath: mongodb-data
+              mountPath: /data/db
+            # RBAC init script — executed once on first container start
+            - name: mongo-init
+              subPath: init-mongo.sh
+              mountPath: /docker-entrypoint-initdb.d/init-mongo.sh
+          readinessProbe:
+            tcpSocket:
+              port: 27017
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+
+        # ---------------------------------------------------------------------
+        # Container 2: UniFi Network Application
+        # ---------------------------------------------------------------------
+        - name: unifi-network-application
+          image: lscr.io/linuxserver/unifi-network-application:10.3.58
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Europe/Berlin"
+            - name: MONGO_USER
+              value: "unifi"
+            - name: MONGO_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: unifi-mongodb-secret
+                  key: MONGO_PASS
+            # MongoDB connection (localhost because both run in the same pod)
+            - name: MONGO_HOST
+              value: "localhost"
+            - name: MONGO_PORT
+              value: "27017"
+            - name: MONGO_DBNAME
+              value: "unifi"
+            - name: MONGO_AUTHSOURCE
+              value: "admin"
+          ports:
+            - containerPort: 8443
+              name: ui
+              protocol: TCP
+            - containerPort: 8080
+              name: inform
+              protocol: TCP
+            - containerPort: 3478
+              name: stun
+              protocol: UDP
+          volumeMounts:
+            # UniFi application config and data
+            - name: unifi-data
+              subPath: unifi-config
+              mountPath: /config
+          readinessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /status
+              port: 8443
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 10
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1536Mi"
+              cpu: "1000m"

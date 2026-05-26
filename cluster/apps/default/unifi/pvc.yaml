@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: unifi-data
+  namespace: default
+  labels:
+    app: unifi
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  #volumeName: unifi-data-pv     # Bind explicitly to the named PV
+  resources:
+    requests:
+      storage: 12Gi
