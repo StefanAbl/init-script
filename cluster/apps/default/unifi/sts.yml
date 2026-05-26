@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: unifi
   serviceName: unifi
-  replicas: 0
+  replicas: 1
   template:
     metadata:
       labels:
