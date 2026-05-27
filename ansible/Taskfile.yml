@@ -33,3 +33,6 @@ tasks:
   ipa:
     cmds:
       - ansible-playbook -i hosts --ask-vault-pass ipa.yml
+  update:
+    cmds:
+      - ansible-playbook -i hosts --ask-vault-pass -K update.yml
