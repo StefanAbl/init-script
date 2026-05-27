@@ -7,7 +7,7 @@ metadata:
     app: unifi
 spec:
   serviceName: unifi   # References the existing Service
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: unifi
