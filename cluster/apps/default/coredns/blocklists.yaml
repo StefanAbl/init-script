@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: blocklist-urls
+    namespace: kube-system
+type: Opaque
+stringData:
+    #ENC[AES256_GCM,data:WLFeOXbZ71E8Uk+xJCaSfvm+p9Oa6XOSOIF5bJCLzd4WhYZQsM4DHhHW1C8w9oqJBr7/idPXH/fn1j6SlT5SrHXbe2cz,iv:SyzxOMuC13tvEvtRtgT5V1K8GDVlTXEvLj+zbl7zSM8=,tag:gX+7pFEBCQ7Vj4zJrCNZRw==,type:comment]
+    urls: ENC[AES256_GCM,data:VggLkC2AvWD2lzkixdIws5/a3zHt9Ilv7z0MtCQ6pU4XuBjFPl4gcSrIQd4gOvm10VpK6aobgYsFQZMcS1tdkTSRCjEbUgPJ+Hq6K8FbhPzWxwYI2wc=,iv:Ro7TMcmj0GCihTDptZZZYbSYPwWbaUSnPMb/PHClmgo=,tag:yrcRTRmdJ/2kPSz6OBKHrw==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2026-06-07T17:05:01Z"
+    mac: ENC[AES256_GCM,data:igEpUFcipzZPIp9mkErQpF/+Oy6ia+HZT1/tr2COIO4aRO7BuXIBiYsQy9pxbXHcaVzjmLB48+EWnv/wu0Bru7XQWMBZmq1jiuwZsInvqgWjNYjcO03XOfKkG1r0z2e62nEWo5Q6cpH7jTVXrKB6zJErGYGKkGlK02yobTW/uDU=,iv:oF50w4c390PUtd08JrW7mjoIwSvvmyl0NSAEeFCJGBU=,tag:EJiqCFLZivW0NurGo9st2A==,type:str]
+    pgp:
+        - created_at: "2026-06-07T16:05:08Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA70fE7dz6LU0AQ/+Junjff/0d7v1/dF5ckOQ2kALZFHUsjjwLETrKosVSKDP
+            bQPzEcKVD6OagxHlKwCW9qzg6sccqYvZtxyi18feIGDByawO+/7pRfjJM+hDGeW0
+            kwywfvFOMQiqZ7fTZtOUMm+LTwAcHlWFTl1c/w4ms62aWpzTzIObNVgBAaa5zugl
+            Ifnop5hFWqx1uM8LDe1T/aVWJkWWzUTr7wGcgj6sH1N0cmkq2Gjtmd/JKcFSc+K8
+            VEEsHV4mK9JFWBQSgYMV2SKvhXdUUZ4xp1rXvv2PCMhiXO7yvwmk+sIGRQNGYZF+
+            MXdo3CQpnrNUkj3o8hJv3hJEAiIKnthKqV7JAr/UZACUEEUug35LEcR4+Av9GD+V
+            Woto9nwDp8j6OmWfOc4CVUC8ZelpJFpjO3I/KrmzRxvfDAuC8t+mZ7YQLnkfm3sk
+            XRnIpRaSuD24CYalnG+sTrZaQF7tZ4FicNOD3MEsfExax2AWM9MndkKJJHXNjD1Y
+            J/iVkmFXgH9/5bMYJHTihrJPXS2McGoyZEX6Q0K2nlj8XlVfMedERIyaxGuvtmFw
+            k2NhWDiwxy32EaLwyRU6RORBTy81P7VG1hvURFlOk+iKMGj1Q1tLiUItzCl3iA11
+            5S2omN+QxcSnsEFaidiTWqLyOuq0GEo8kn8QuSQIg0tAr6BRBcjnnsqHpfnd4BXS
+            XgHwPoc1qFjJiWiobh99AHdkvoRJMOle3AE40rfFWudx+v5bOBcHfsdRipHzjvFO
+            xPbrciXL+AaCh8jEFgQlqQWZOAaSWR/8vkj1/egKDhABFgt2Iap8ecqk+2AooAY=
+            =QSSO
+            -----END PGP MESSAGE-----
+          fp: 1DF23F1E7AFCAB40F26B210123CFBB30193553AA
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.3

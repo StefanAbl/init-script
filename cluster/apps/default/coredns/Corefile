@@ -1,27 +1,51 @@
-. {
-  reload
-  health
 
-  header {
-   response set ra # set RecursionAvailable flag
-  }
+i.${DOMAIN} {
+  forward . 10.13.2.100
+  errors
+  log
+}
 
+${DOMAIN} {
   hosts {
-    10.13.2.20     cloud.${DOMAIN}
-    10.13.2.20     grafana.${DOMAIN}
-    10.13.2.20     auth.${DOMAIN}
-    10.13.2.20     stream.${DOMAIN}
+    10.13.2.20  cloud.${DOMAIN}
+    10.13.2.20  grafana.${DOMAIN}
+    10.13.2.20  auth.${DOMAIN}
+    10.13.2.20  stream.${DOMAIN}
     reload 1s
-    fallthrough
+    fallthrough   # unknown ${DOMAIN} hosts fall through to forward below
   }
-
-  # Filter out AAAA responses for these hosts
-  # Intercept AAAA queries for specific hosts and return no result
+  # Return NXDOMAIN for AAAA queries on the four local hosts so dual-stack
+  # clients don't attempt to reach them over IPv6.
   template IN AAAA cloud.${DOMAIN}. grafana.${DOMAIN}. auth.${DOMAIN}. stream.${DOMAIN}. {
     rcode NXDOMAIN
   }
+  forward . 10.13.2.100
+  cache 300
+  errors
+  log
+}
 
-  forward i.${DOMAIN} 10.13.2.100
+# ── Block 3 (catch-all): everything else, including blocklist ─────────────
+. {
+  reload
+  health
+  header {
+    response set ra # set RecursionAvailable flag
+  }
+
+  # Blocklist sinkhole loaded from the file built by the init container.
+  # Behaviour per query type for a BLOCKED host:
+  #   A    → 0.0.0.0  (sinkhole)
+  #   AAAA → NODATA   (name known, no AAAA record; does not fall through
+  #                    to forward, so the real AAAA is never leaked)
+  # Behaviour for an UNBLOCKED host:
+  #   any  → fallthrough → forward
+  hosts /etc/blocklist {
+    no_reverse    # suppress PTR synthesis for 0.0.0.0
+    reload 5m
+    fallthrough
+  }
+
   forward . 1.1.1.1
   log
   loop

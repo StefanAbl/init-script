@@ -4,6 +4,7 @@ namespace: default
 resources:
   - deployment.yaml
   - service.yaml
+  - blocklists.yaml
 configMapGenerator:
   - name: coredns-config
     files:
