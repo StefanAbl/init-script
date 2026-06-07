@@ -16,19 +16,120 @@ spec:
         app: coredns
     spec:
       automountServiceAccountToken: false
+
+      # ── Init container ──────────────────────────────────────────────────────
+      initContainers: # ◀ NEW
+        - name: blocklist-downloader                                 # ◀ NEW
+          image: alpine:3.19                                         # ◀ NEW
+          # Run as non-root; only needs network + write access to the volume.
+          securityContext: # ◀ NEW
+            runAsNonRoot: true                                       # ◀ NEW
+            runAsUser: 1000                                          # ◀ NEW
+            allowPrivilegeEscalation: false                          # ◀ NEW
+            capabilities: # ◀ NEW
+              drop: [ "ALL" ]                                          # ◀ NEW
+            readOnlyRootFilesystem: true                             # ◀ NEW
+          command: # ◀ NEW
+            - /bin/sh                                                # ◀ NEW
+            - -c                                                     # ◀ NEW
+            - |                                                      # ◀ NEW
+              set -euo pipefail
+              OUTPUT=/blocklist-data/blocklist
+              URL_FILE=/etc/blocklist-urls/urls
+
+              # Start with an empty output file.
+              : > "$OUTPUT"
+
+              echo "[blocklist-downloader] Reading URLs from secret…"
+
+              while IFS= read -r url || [ -n "$url" ]; do
+                # Strip whitespace; skip blanks and comment lines.
+                url=$(printf '%s' "$url" | tr -d '[:space:]')
+                case "$url" in
+                  ''|\#*) continue ;;
+                esac
+
+                echo "[blocklist-downloader] Downloading: $url"
+
+                # Retry up to 3 times, 5 s timeout per attempt.
+                if wget --tries=3 --timeout=5 -qO- "$url" >> "$OUTPUT"; then
+                  # Ensure each source ends with a newline before the next.
+                  echo "" >> "$OUTPUT"
+                else
+                  echo "[blocklist-downloader] WARNING: failed to fetch $url – skipping" >&2
+                fi
+              done < "$URL_FILE"
+
+              LINES=$(wc -l < "$OUTPUT")
+              echo "[blocklist-downloader] Done – ${LINES} lines written to $OUTPUT"
+          volumeMounts: # ◀ NEW
+            - name: blocklist-data                                   # ◀ NEW
+              mountPath: /blocklist-data                             # ◀ NEW
+            - name: blocklist-urls-secret                            # ◀ NEW
+              mountPath: /etc/blocklist-urls                         # ◀ NEW
+              readOnly: true                                         # ◀ NEW
+
+      # ── Main container ──────────────────────────────────────────────────────
+      containers:
+        - name: coredns
+          image: coredns/coredns:1.11.3
+          args: [ "-conf", "/etc/coredns/Corefile" ]
+          ports:
+            - containerPort: 53
+              protocol: UDP
+            - containerPort: 53
+              name: dns-tcp
+              protocol: TCP
+            - containerPort: 9153
+              name: metrics
+              protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              add: [ "NET_BIND_SERVICE" ]
+              drop: [ "ALL" ]
+            readOnlyRootFilesystem: true
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8181
+          resources:
+            requests:
+              cpu: 100m
+              memory: 70Mi
+            limits:
+              cpu: 500m
+              memory: 170Mi
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/coredns
+              readOnly: true
+            - name: blocklist-data                                   # ◀ NEW
+              mountPath: /etc/blocklist                              # ◀ NEW
+              subPath: blocklist       # mount only the file, not the dir   # ◀ NEW
+              readOnly: true                                         # ◀ NEW
+
+      # ── Volumes ─────────────────────────────────────────────────────────────
       volumes:
         - name: config-volume
           configMap:
             name: coredns-config
-      containers:
-        - name: coredns
-          image: coredns/coredns:1.14.3
-          args: [ "-conf", "/etc/coredns/Corefile" ]
-          volumeMounts:
-            - mountPath: /etc/coredns
-              name: config-volume
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 53
-              protocol: UDP
-      restartPolicy: Always
+            items:
+              - key: Corefile
+                path: Corefile
+
+        - name: blocklist-data                                       # ◀ NEW
+          emptyDir: { }               # ephemeral; recreated on every pod start # ◀ NEW
+
+        - name: blocklist-urls-secret                                # ◀ NEW
+          secret: # ◀ NEW
+            secretName: blocklist-urls                               # ◀ NEW
+            items: # ◀ NEW
+              - key: urls                                            # ◀ NEW
+                path: urls                                           # ◀ NEW
