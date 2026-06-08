@@ -55,16 +55,16 @@ spec:
           emptyDir:
             medium: "Memory"
             sizeLimit: 1Gi
-      initContainers:
-      - name: fix-permissions
-        image: busybox
-        command: ["sh", "-c", "chown -R 1001:1850800003 /data"]
-        securityContext:
-          runAsUser: 0
-          runAsNonRoot: false
-        volumeMounts:
-          - name: config
-            mountPath: /data
+#      initContainers:
+#      - name: fix-permissions
+#        image: busybox
+#        command: ["sh", "-c", "chown -R 1001:1850800003 /data"]
+#        securityContext:
+#          runAsUser: 0
+#          runAsNonRoot: false
+#        volumeMounts:
+#          - name: config
+#            mountPath: /data
       securityContext:
         runAsUser: 1001
         runAsGroup: 1850800007
