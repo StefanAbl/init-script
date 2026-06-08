@@ -69,12 +69,13 @@ spec:
         runAsUser: 1001
         runAsGroup: 1850800007
         fsGroup: 1850800007
-        # fsGroupChangePolicy: "OnRootMismatch"
+        fsGroupChangePolicy: "OnRootMismatch"
         supplementalGroups:
           - 44
           - 110
           - 1850800007
           - 1850800003
+      automountServiceAccountToken: false
       containers:
       - name: *app
         image: "ghcr.io/stefanabl/jf-custom:10.11.11"
