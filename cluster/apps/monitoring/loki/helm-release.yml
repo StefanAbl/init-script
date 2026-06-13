@@ -197,7 +197,7 @@ spec:
 
         storage_config:
           aws:
-            s3: http://${LOKI_MINIO_USER}:${LOKI_MINIO_PASS}@seaweed.monitoring.svc.cluster.local.:8333/loki
+            s3: http://${LOKI_MINIO_USER}:${LOKI_MINIO_PASS}@versitygw.monitoring.svc.cluster.local.:7070/loki
             insecure: true
             s3forcepathstyle: true
           boltdb_shipper:
