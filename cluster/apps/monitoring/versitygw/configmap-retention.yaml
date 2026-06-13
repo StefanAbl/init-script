@@ -14,8 +14,6 @@ data:
   # Installed as /etc/crontabs/root by the cron image's entrypoint.
   # "VAR=value" lines at the top are exported into the job's environment.
   crontab: |
-    RETENTION_DAYS=45
-    BUCKET_PATH=/data/loki
     # min hour dom month dow  command
     0 3 * * *  /scripts/retention-cleanup.sh >> /proc/1/fd/1 2>&1
 
