@@ -49,9 +49,12 @@ spec:
             - name: s3
               containerPort: 7070
               protocol: TCP
-          envFrom:
-            - secretRef:
-                name: versitygw-loki-credentials
+          env:
+            - name: ROOT_ACCESS_KEY
+              value: "${LOKI_MINIO_USER}"
+            - name: ROOT_SECRET_KEY
+              value: "${LOKI_MINIO_PASS}"
+
           volumeMounts:
             - name: data
               mountPath: /data
