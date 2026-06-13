@@ -1,8 +1,8 @@
-# Configuration for the retention-cron sidecar.
+# Configuration for the generic cron sidecar (see cron-image/).
 #
-# Edit RETENTION_DAYS (and/or the schedule) and commit - no image rebuild
-# required. These are plain "VAR=value" lines at the top of a crontab file;
-# crond exports them into the environment of jobs it runs.
+# Both the crontab and the script it runs live here, so the schedule,
+# retention window, and cleanup logic can all be changed by editing this
+# ConfigMap and committing - no image rebuild required.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -11,8 +11,30 @@ metadata:
     app.kubernetes.io/name: versitygw
     app.kubernetes.io/component: retention-cron
 data:
+  # Installed as /etc/crontabs/root by the cron image's entrypoint.
+  # "VAR=value" lines at the top are exported into the job's environment.
   crontab: |
     RETENTION_DAYS=45
     BUCKET_PATH=/data/loki
     # min hour dom month dow  command
-    0 3 * * *  /usr/local/bin/retention-cleanup.sh >> /proc/1/fd/1 2>&1
+    0 3 * * *  /scripts/retention-cleanup.sh >> /proc/1/fd/1 2>&1
+
+  # Copied to /scripts/retention-cleanup.sh and made executable by the
+  # cron image's entrypoint.
+  retention-cleanup.sh: |
+    #!/bin/sh
+    set -eu
+
+    : "${BUCKET_PATH:=/data/loki}"
+    : "${RETENTION_DAYS:=45}"
+
+    echo "$(date -Iseconds) retention-cron: deleting objects older than ${RETENTION_DAYS}d under ${BUCKET_PATH}"
+
+    # Delete files (S3 objects) older than RETENTION_DAYS.
+    find "${BUCKET_PATH}" -type f -mtime "+${RETENTION_DAYS}" -print -delete
+
+    # The POSIX backend represents S3 key prefixes as real directories -
+    # clean up any that are now empty as a result of the deletions above.
+    find "${BUCKET_PATH}" -mindepth 1 -type d -empty -delete
+
+    echo "$(date -Iseconds) retention-cron: cleanup complete"

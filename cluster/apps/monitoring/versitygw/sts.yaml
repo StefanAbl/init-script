@@ -54,7 +54,6 @@ spec:
               value: "${LOKI_MINIO_USER}"
             - name: ROOT_SECRET_KEY
               value: "${LOKI_MINIO_PASS}"
-
           volumeMounts:
             - name: data
               mountPath: /data
@@ -75,24 +74,24 @@ spec:
             limits:
               memory: 512Mi
 
-        # Real cron daemon (dcron) that periodically deletes objects from
-        # the "loki" bucket once they exceed RETENTION_DAYS. Schedule and
-        # retention window come from the versitygw-retention-config
-        # ConfigMap, not the image - see retention-cron-image/.
-#        - name: retention-cron
-#          image: ghcr.io/REPLACE_ME/versitygw-retention-cron:1.0.0
-#          volumeMounts:
-#            - name: data
-#              mountPath: /data
-#            - name: retention-config
-#              mountPath: /etc/cron-config
-#              readOnly: true
-#          resources:
-#            requests:
-#              cpu: 10m
-#              memory: 32Mi
-#            limits:
-#              memory: 64Mi
+        # Generic dcron sidecar (see cron-image/). The crontab and the
+        # retention-cleanup.sh script it runs both come from the
+        # versitygw-retention-config ConfigMap - this image has no
+        # versitygw-specific logic baked in.
+        - name: retention-cron
+          image: ghcr.io/stefanabl/cron:20260613161249
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: retention-config
+              mountPath: /etc/cron-config
+              readOnly: true
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
 
       volumes:
         - name: retention-config
