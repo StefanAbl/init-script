@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: versitygw
+  labels:
+    app.kubernetes.io/name: versitygw
+    app.kubernetes.io/component: object-storage
+spec:
+  selector:
+    app.kubernetes.io/name: versitygw
+  ports:
+    - name: s3
+      port: 7070
+      targetPort: s3
+      protocol: TCP

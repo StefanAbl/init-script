@@ -1,0 +1,18 @@
+# Configuration for the retention-cron sidecar.
+#
+# Edit RETENTION_DAYS (and/or the schedule) and commit - no image rebuild
+# required. These are plain "VAR=value" lines at the top of a crontab file;
+# crond exports them into the environment of jobs it runs.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: versitygw-retention-config
+  labels:
+    app.kubernetes.io/name: versitygw
+    app.kubernetes.io/component: retention-cron
+data:
+  crontab: |
+    RETENTION_DAYS=45
+    BUCKET_PATH=/data/loki
+    # min hour dom month dow  command
+    0 3 * * *  /usr/local/bin/retention-cleanup.sh >> /proc/1/fd/1 2>&1
