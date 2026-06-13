@@ -79,7 +79,7 @@ spec:
         # versitygw-retention-config ConfigMap - this image has no
         # versitygw-specific logic baked in.
         - name: retention-cron
-          image: ghcr.io/stefanabl/cron:20260613161249
+          image: ghcr.io/stefanabl/cron:20260613162018
           volumeMounts:
             - name: data
               mountPath: /data
