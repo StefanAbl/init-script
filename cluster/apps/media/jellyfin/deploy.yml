@@ -36,7 +36,7 @@ spec:
           emptyDir: {}
         - name: transcode
           emptyDir:
-            sizeLimit: 16Gi
+            sizeLimit: 32Gi
         - name: config
           persistentVolumeClaim:
             claimName: jellyfin-config-v1
