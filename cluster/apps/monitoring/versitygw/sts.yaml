@@ -41,7 +41,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: versitygw
-          image: ghcr.io/versity/versitygw:v1.6.0
+          image: ghcr.io/versity/versitygw:v1.7.0
           args:
             - posix
             - /data
