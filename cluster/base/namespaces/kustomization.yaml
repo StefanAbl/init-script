@@ -11,4 +11,3 @@ resources:
   - ip-updater.yml
   - nextcloud.yml
   - cloudflare-tunnel.yml
-  - mobivey.yml
