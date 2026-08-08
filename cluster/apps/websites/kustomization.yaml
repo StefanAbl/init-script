@@ -6,4 +6,5 @@ resources:
   - blog
   - tphc
   - studi-conf
-  - ../../policies/allow-from-ingress.yml
+  # blog, tphc and studi-conf all serve from the external gateway now.
+  - ../../policies/allow-from-external-ingress.yml

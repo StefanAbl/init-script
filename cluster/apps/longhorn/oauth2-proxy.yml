@@ -80,10 +80,16 @@ spec:
     - Ingress
     - Egress
   ingress:
+    # Scoped to the internal Gateway's data-plane pods: longhorn is internal-only,
+    # so the external gateway must not be able to reach oauth2-proxy even though
+    # both gateways share this namespace.
     - from:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: nginx-gateway
+          podSelector:
+            matchLabels:
+              gateway.networking.k8s.io/gateway-name: nginx-internal
       ports:
         - port: 4180
           protocol: TCP

@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: default
 resources:
   - allow-scraping.yml
+  - allow-lb-unifi.yml
   - combined-sts.yaml
   - route.yml
   - lb-service.yml

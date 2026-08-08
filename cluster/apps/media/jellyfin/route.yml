@@ -11,11 +11,45 @@ spec:
   hostnames:
     - stream.${DOMAIN}
   rules:
+    # The old proxy answered /metrics with `return 404` so Jellyfin's metrics
+    # endpoint could never be scraped from the internet. A rule with no
+    # backendRefs is NGF's equivalent: it wires the location to the built-in
+    # invalid-backend-ref upstream, which answers 500 rather than the old 404.
+    # Different status code, same outcome — the request never reaches Jellyfin.
+    # PathPrefix matches on path segments, so this covers /metrics and
+    # /metrics/... but not /metricsfoo (the old nginx prefix caught that too).
+    # Longer prefixes win in Gateway API, so this takes precedence over / below.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /metrics
     # Long timeouts for media streaming / transcoding (was proxy-*-timeout: 7200).
     # Websockets are handled natively by NGF (no annotation needed).
     - timeouts:
         request: "7200s"
         backendRequest: "7200s"
+      filters:
+        # Standard header set, as on the other public routes.
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            set:
+              - name: Strict-Transport-Security
+                value: "max-age=63072000; includeSubDomains"
+              - name: X-Content-Type-Options
+                value: nosniff
+              - name: Referrer-Policy
+                value: same-origin
+              - name: X-XSS-Protection
+                value: "1; mode=block"
+              - name: X-Frame-Options
+                value: SAMEORIGIN
+              # Jellyfin-specific CSP, carried over verbatim from the proxy's
+              # per-vhost extras. The whitelisted script sources are required for
+              # Chromecast (cast_sender.js) and YouTube trailer embeds. Note that
+              # frame-ancestors here supersedes X-Frame-Options in modern
+              # browsers; both are kept, as the old config had both.
+              - name: Content-Security-Policy
+                value: "default-src https: data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://www.gstatic.com/cv/js/sender/v1/cast_sender.js https://www.youtube.com/iframe_api https://s.ytimg.com blob:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; frame-ancestors 'self' http://localhost:* file:"
       backendRefs:
         - name: jellyfin
           port: 8096

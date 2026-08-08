@@ -11,6 +11,23 @@ spec:
   hostnames:
     - grafana.${DOMAIN}
   rules:
-    - backendRefs:
+    - filters:
+        # Restores the headers the removed external proxy applied to every public
+        # vhost (ansible/roles/external_proxy/files/ssl.conf). `set` overwrites,
+        # matching that config's proxy_hide_header + add_header pairing.
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            set:
+              - name: Strict-Transport-Security
+                value: "max-age=63072000; includeSubDomains"
+              - name: X-Content-Type-Options
+                value: nosniff
+              - name: Referrer-Policy
+                value: same-origin
+              - name: X-XSS-Protection
+                value: "1; mode=block"
+              - name: X-Frame-Options
+                value: SAMEORIGIN
+      backendRefs:
         - name: grafana
           port: 80

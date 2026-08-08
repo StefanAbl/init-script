@@ -9,7 +9,22 @@ metadata:
   namespace: nginx-gateway
 spec:
   kubernetes:
+    # Matches the replicaCount: 3 the retired ingress-nginx controllers ran.
+    # NGF defaults to a single data-plane pod per Gateway, which would make any
+    # node reboot an ingress outage. The soft spread keeps the replicas on
+    # separate nodes without blocking a rollout while a node is cordoned.
+    deployment:
+      replicas: 3
+      pod:
+        topologySpreadConstraints:
+          - maxSkew: 1
+            topologyKey: kubernetes.io/hostname
+            whenUnsatisfiable: ScheduleAnyway
+            labelSelector:
+              matchLabels:
+                gateway.networking.k8s.io/gateway-name: nginx-internal
     service:
+      externalTrafficPolicy: Cluster
       type: LoadBalancer
       # NOTE: use-forwarded-headers / rewriteClientIP is intentionally NOT set.
       # The out-of-cluster proxy is gone, so there is no trusted proxy in front
@@ -94,6 +109,19 @@ metadata:
   namespace: nginx-gateway
 spec:
   kubernetes:
+    # See internal-proxy. Spreading matters more here: externalTrafficPolicy
+    # Local means MetalLB only announces .35 from nodes holding a ready
+    # data-plane pod, so co-locating the replicas would leave no failover target.
+    deployment:
+      replicas: 3
+      pod:
+        topologySpreadConstraints:
+          - maxSkew: 1
+            topologyKey: kubernetes.io/hostname
+            whenUnsatisfiable: ScheduleAnyway
+            labelSelector:
+              matchLabels:
+                gateway.networking.k8s.io/gateway-name: nginx-external
     service:
       type: LoadBalancer
       patches:
