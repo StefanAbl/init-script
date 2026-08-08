@@ -1,0 +1,53 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+spec:
+  parentRefs:
+    - name: nginx-external
+      namespace: nginx-gateway
+      sectionName: https
+  hostnames:
+    - cloud.${DOMAIN}
+  rules:
+    - backendRefs:
+        - name: nextcloud-external
+          port: 443
+---
+# backend-protocol: HTTPS -> speak TLS to the Nextcloud backend (10.13.2.101:443).
+# The backend cert is FreeIPA-issued (CN=nextcloud.i.stabl.one, via ipa-getcert);
+# it is validated against the FreeIPA CA provided in the nextcloud-backend-ca
+# ConfigMap. The verification host must match the cert's SAN, not the public
+# hostname, so it is nextcloud.i.stabl.one (NOT cloud.${DOMAIN}).
+apiVersion: gateway.networking.k8s.io/v1alpha3
+kind: BackendTLSPolicy
+metadata:
+  name: nextcloud-external
+  namespace: nextcloud
+spec:
+  targetRefs:
+    - group: ""
+      kind: Service
+      name: nextcloud-external
+  validation:
+    caCertificateRefs:
+      - group: ""
+        kind: ConfigMap
+        name: nextcloud-backend-ca
+    hostname: nextcloud.i.stabl.one
+---
+# proxy-body-size equivalent: allow arbitrarily large uploads (was 100 GB on the
+# old proxy). "0" disables the client body size limit.
+apiVersion: gateway.nginx.org/v1alpha1
+kind: ClientSettingsPolicy
+metadata:
+  name: nextcloud-body-size
+  namespace: nextcloud
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: nextcloud
+  body:
+    maxSize: "0"

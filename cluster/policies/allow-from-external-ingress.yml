@@ -10,4 +10,6 @@ spec:
   - from:
     - namespaceSelector:
         matchLabels:
-          kubernetes.io/metadata.name: external-ingress
+          # Repointed from external-ingress to the NGINX Gateway Fabric data plane.
+          # Both gateways share the nginx-gateway namespace.
+          kubernetes.io/metadata.name: nginx-gateway

@@ -33,6 +33,10 @@ spec:
             defaultMode: 0755   # Script must be executable
 
       # -----------------------------------------------------------------------
+      # UniFi serves its own self-signed cert (generated in-pod, persisted in
+      # the PVC). NGF's BackendTLSPolicy pins that cert directly, so no cert is
+      # injected here — see route.yml.
+      # -----------------------------------------------------------------------
       # Container 1: MongoDB
       #   - Runs first; UniFi will reconnect once it is ready.
       #   - Init script is only executed on a fresh (empty) data directory.

@@ -1,0 +1,58 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: unifi
+  namespace: default
+spec:
+  parentRefs:
+    - name: nginx-external
+      namespace: nginx-gateway
+      sectionName: https
+  hostnames:
+    - unifi.${DOMAIN}
+  rules:
+    - backendRefs:
+        - name: unifi
+          port: 8443
+---
+# proxy-body-size: "0" -> allow arbitrarily large UniFi backup uploads.
+apiVersion: gateway.nginx.org/v1alpha1
+kind: ClientSettingsPolicy
+metadata:
+  name: unifi-body-size
+  namespace: default
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: unifi
+  body:
+    maxSize: "0"
+---
+# backend-protocol: HTTPS -> the UniFi UI is HTTPS-only on :8443. The UniFi
+# container generates its own self-signed cert in the PVC (it cannot be given
+# an external CA-issued cert), and NGF has no skip-verify. So this policy pins
+# that exact self-signed cert as the trust anchor (unifi-backend-ca ConfigMap).
+#
+# The served cert is self-signed with subject/issuer CN=unifi and SAN DNS:unifi
+# (confirmed via `openssl s_client -connect 127.0.0.1:8443`). nginx verifies the
+# backend name against the SAN, so `hostname: unifi` matches. The leaf is its own
+# root, so it is pinned directly as the trust anchor (unifi-backend-ca ConfigMap).
+# NOTE(migration): if UniFi ever regenerates its cert (e.g. data reset), the
+# pinned PEM in unifi-backend-ca.pem must be re-captured.
+apiVersion: gateway.networking.k8s.io/v1alpha3
+kind: BackendTLSPolicy
+metadata:
+  name: unifi
+  namespace: default
+spec:
+  targetRefs:
+    - group: ""
+      kind: Service
+      name: unifi
+  validation:
+    caCertificateRefs:
+      - group: ""
+        kind: ConfigMap
+        name: unifi-backend-ca
+    hostname: unifi

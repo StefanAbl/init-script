@@ -1,6 +1,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: nginx-gateway
 resources:
-  - basic-auth-secret.yml
-  - route.yml
   - helm-release.yml
+  - gateways.yml
+  - certificates.yml
+  - redirect-routes.yml

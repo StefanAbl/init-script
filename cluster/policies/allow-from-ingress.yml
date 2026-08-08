@@ -10,4 +10,5 @@ spec:
   - from:
     - namespaceSelector:
         matchLabels:
-          kubernetes.io/metadata.name: ingress-nginx
+          # Repointed from ingress-nginx to the NGINX Gateway Fabric data plane.
+          kubernetes.io/metadata.name: nginx-gateway

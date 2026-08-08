@@ -1,0 +1,21 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: jellyfin-external
+  namespace: media
+spec:
+  parentRefs:
+    - name: nginx-external
+      namespace: nginx-gateway
+      sectionName: https
+  hostnames:
+    - stream.${DOMAIN}
+  rules:
+    # Long timeouts for media streaming / transcoding (was proxy-*-timeout: 7200).
+    # Websockets are handled natively by NGF (no annotation needed).
+    - timeouts:
+        request: "7200s"
+        backendRequest: "7200s"
+      backendRefs:
+        - name: jellyfin
+          port: 8096
