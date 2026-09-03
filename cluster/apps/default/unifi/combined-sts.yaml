@@ -39,7 +39,7 @@ spec:
       # -----------------------------------------------------------------------
       containers:
         - name: mongodb
-          image: docker.io/mongo:7.0   # ← Pin to a specific major version
+          image: docker.io/mongo:8.3   # ← Pin to a specific major version
           env:
             # Root / admin user (used only during init)
             - name: MONGO_INITDB_ROOT_USERNAME
