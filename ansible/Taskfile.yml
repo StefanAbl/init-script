@@ -6,9 +6,6 @@ includes:
     dir: ./
 
 tasks:
-  proxy:
-    cmds:
-      - ansible-playbook -i hosts --ask-vault-pass -K proxy.yml
   jellyfin:
     cmds:
       - ansible-playbook -i hosts --ask-vault-pass jellyfin.yml

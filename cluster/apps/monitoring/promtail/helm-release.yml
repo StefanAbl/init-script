@@ -43,6 +43,11 @@ spec:
     config:
       clients:
       - url: http://loki-loki-distributed-gateway/loki/api/v1/push
+        # Loki's gateway now enforces basic-auth; must match an entry in the
+        # loki-basic-auth htpasswd secret.
+        basic_auth:
+          username: ${LOKI_BASIC_AUTH_USER}
+          password: ${LOKI_BASIC_AUTH_PASS}
       snippets:
         extraRelabelConfigs:
           - target_label: host

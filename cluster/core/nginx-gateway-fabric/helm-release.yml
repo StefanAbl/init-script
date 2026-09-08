@@ -1,0 +1,27 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nginx-gateway-fabric
+  namespace: nginx-gateway
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=oci://ghcr.io/nginx/charts
+      chart: nginx-gateway-fabric
+      version: 2.6.6
+      sourceRef:
+        kind: HelmRepository
+        name: nginx-gateway-fabric
+        namespace: flux-system
+      interval: 5m
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
+  values:
+    nginxGateway:
+      gatewayClassName: nginx
+      # Snippets are intentionally left DISABLED (chart default): the migration
+      # re-expresses every ingress-nginx annotation with native Gateway API /
+      # NGF policies instead of raw nginx snippets.

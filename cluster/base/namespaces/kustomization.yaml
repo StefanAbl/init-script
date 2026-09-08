@@ -1,14 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ingress-nginx.yml
   - metallb-system.yml
   - cert-manager.yml
   - websites.yml
   - monitoring.yml
   - security.yml
   - media.yml
-  - external-ingress.yml
+  - nginx-gateway.yml
+  - ip-updater.yml
   - nextcloud.yml
   - cloudflare-tunnel.yml
-  - mobivey.yml

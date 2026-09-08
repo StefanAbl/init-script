@@ -7,6 +7,8 @@ spec:
   interval: 10m
   path: ./cluster/core
   prune: true
+  dependsOn:
+    - name: gateway-api
   decryption:
     provider: sops
     secretRef:

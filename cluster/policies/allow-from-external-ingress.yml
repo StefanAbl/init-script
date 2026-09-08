@@ -8,6 +8,12 @@ spec:
   podSelector: {}
   ingress:
   - from:
+    # See allow-from-ingress: scoped to the external Gateway's data-plane pods
+    # so that admitting public traffic does not also admit the internal gateway
+    # (and vice versa). namespaceSelector + podSelector in a single peer is an AND.
     - namespaceSelector:
         matchLabels:
-          kubernetes.io/metadata.name: external-ingress
+          kubernetes.io/metadata.name: nginx-gateway
+      podSelector:
+        matchLabels:
+          gateway.networking.k8s.io/gateway-name: nginx-external

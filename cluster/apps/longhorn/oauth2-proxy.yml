@@ -1,0 +1,127 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oauth2-proxy
+  namespace: longhorn
+  labels:
+    app: oauth2-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oauth2-proxy
+  template:
+    metadata:
+      labels:
+        app: oauth2-proxy
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: oauth2-proxy
+          image: quay.io/oauth2-proxy/oauth2-proxy:v7.13.0
+          args:
+            - --provider=oidc
+            - --oidc-issuer-url=https://auth.${DOMAIN}
+            - --client-id=longhorn
+            - --redirect-url=https://longhorn.k3s.i.${DOMAIN}/oauth2/callback
+            # Reverse-proxy longhorn-frontend once authenticated (upstream mode).
+            - --upstream=http://longhorn-frontend:80
+            - --http-address=0.0.0.0:4180
+            - --reverse-proxy=true
+            - --cookie-secure=true
+            - --email-domain=*
+            - --skip-provider-button=true
+            - --set-xauthrequest=true
+          envFrom:
+            - secretRef:
+                name: oauth2-proxy
+          ports:
+            - containerPort: 4180
+              name: http
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 2000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oauth2-proxy
+  namespace: longhorn
+spec:
+  selector:
+    app: oauth2-proxy
+  ports:
+    - name: http
+      port: 4180
+      targetPort: 4180
+---
+# Allow the internal gateway data plane to reach oauth2-proxy, and oauth2-proxy
+# to reach longhorn-frontend (same ns) and Authelia (security ns) + DNS.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: oauth2-proxy
+  namespace: longhorn
+spec:
+  podSelector:
+    matchLabels:
+      app: oauth2-proxy
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Scoped to the internal Gateway's data-plane pods: longhorn is internal-only,
+    # so the external gateway must not be able to reach oauth2-proxy even though
+    # both gateways share this namespace.
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: nginx-gateway
+          podSelector:
+            matchLabels:
+              gateway.networking.k8s.io/gateway-name: nginx-internal
+      ports:
+        - port: 4180
+          protocol: TCP
+  egress:
+    # longhorn-frontend (same namespace)
+    - to:
+        - podSelector: {}
+      ports:
+        - port: 80
+          protocol: TCP
+    # Authelia OIDC (security namespace)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: security
+      ports:
+        - port: 80
+          protocol: TCP
+    # DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Reaching auth.${DOMAIN} back-channel may hairpin via the external IP.
+    - to:
+        - ipBlock:
+            cidr: 10.13.2.35/32
+      ports:
+        - port: 443
+          protocol: TCP

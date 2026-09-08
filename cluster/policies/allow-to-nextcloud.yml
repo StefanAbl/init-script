@@ -8,10 +8,14 @@ spec:
   podSelector: {}
   egress:
   - to:
+    # The Nextcloud VM directly.
     - ipBlock:
         cidr: 10.13.2.101/32
+    # cloud.${DOMAIN} resolves to the external Gateway (see the coredns
+    # Corefile split horizon), so pods reaching Nextcloud by name hairpin via
+    # that IP. Was 10.13.2.20, the retired external proxy.
     - ipBlock:
-        cidr: 10.13.2.20/32
+        cidr: 10.13.2.35/32
     ports:
     - protocol: TCP
       port: 443
