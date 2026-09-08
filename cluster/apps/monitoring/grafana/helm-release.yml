@@ -79,7 +79,10 @@ spec:
         enabled: true
         host: mail.${DOMAIN}:587
         from_address: svc_grafana@${DOMAIN}
-        ehlo_identity: "grafana.k3s.i.${DOMAIN}"
+        # Was grafana.k3s.i.${DOMAIN}; that name loses its DNS record with the
+        # internal listeners, and an unresolvable EHLO identity gets rejected by
+        # MTAs that do a forward-confirmed lookup.
+        ehlo_identity: "grafana.${DOMAIN}"
     dashboardProviders:
       dashboardproviders.yaml:
         apiVersion: 1

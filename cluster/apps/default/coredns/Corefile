@@ -6,17 +6,34 @@ i.${DOMAIN} {
 }
 
 ${DOMAIN} {
+  # Split horizon: keep LAN traffic for the public hosts inside the network
+  # instead of hairpinning out through the router. This used to point at the
+  # external proxy (10.13.2.20); that host is retired, so it now points at the
+  # nginx-external Gateway's MetalLB address.
+  #
+  # All nine public hosts are pinned, not just the four the proxy era listed.
+  # docsrv/unifi/blog/tphc/studi-conf previously fell through to public DNS and
+  # relied on the router's NAT loopback; pinning them removes that dependency.
+  # These are also the names in-cluster back-channel calls use now that the
+  # *.k3s.i.${DOMAIN} listeners are gone (Grafana and oauth2-proxy both reach
+  # Authelia over https://auth.${DOMAIN}).
   hosts {
-    10.13.2.20  cloud.${DOMAIN}
-    10.13.2.20  grafana.${DOMAIN}
-    10.13.2.20  auth.${DOMAIN}
-    10.13.2.20  stream.${DOMAIN}
+    10.13.2.35  cloud.${DOMAIN}
+    10.13.2.35  grafana.${DOMAIN}
+    10.13.2.35  auth.${DOMAIN}
+    10.13.2.35  stream.${DOMAIN}
+    10.13.2.35  docsrv.${DOMAIN}
+    10.13.2.35  unifi.${DOMAIN}
+    10.13.2.35  blog.${DOMAIN}
+    10.13.2.35  tphc.${DOMAIN}
+    10.13.2.35  studi-conf.${DOMAIN}
     reload 1s
     fallthrough   # unknown ${DOMAIN} hosts fall through to forward below
   }
-  # Return NXDOMAIN for AAAA queries on the four local hosts so dual-stack
-  # clients don't attempt to reach them over IPv6.
-  template IN AAAA cloud.${DOMAIN}. grafana.${DOMAIN}. auth.${DOMAIN}. stream.${DOMAIN}. {
+  # Return NXDOMAIN for AAAA queries on the pinned hosts so dual-stack clients
+  # don't attempt to reach them over IPv6. Must list the same hosts as above,
+  # otherwise the added names leak a public AAAA and bypass the split horizon.
+  template IN AAAA cloud.${DOMAIN}. grafana.${DOMAIN}. auth.${DOMAIN}. stream.${DOMAIN}. docsrv.${DOMAIN}. unifi.${DOMAIN}. blog.${DOMAIN}. tphc.${DOMAIN}. studi-conf.${DOMAIN}. {
     rcode NXDOMAIN
   }
   forward . 10.13.2.100

@@ -21,7 +21,10 @@ spec:
         - ip: "127.0.0.1"
           hostnames:
             - localhost
-            - jellyfin.k3s.i.${DOMAIN}
+            # Jellyfin's public name. Was jellyfin.k3s.i.${DOMAIN}, which no
+            # longer has a listener now that the internal gateway only serves
+            # longhorn/influxdb2/loki.
+            - stream.${DOMAIN}
       # affinity:
       #   nodeAffinity:
       #     requiredDuringSchedulingIgnoredDuringExecution:
