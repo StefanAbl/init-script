@@ -8,6 +8,65 @@ metadata:
   name: internal-proxy
   namespace: nginx-gateway
 spec:
+  # Restores the json_analytics access log that BOTH the retired external proxy
+  # (ansible/roles/external_proxy/files/nginx.conf) and the old external-ingress
+  # controller (core/external-ingress helm-release log-format-upstream) emitted.
+  # Without it NGF falls back to nginx's default plain-text combined format,
+  # losing request_time, all upstream_* timings, request_id, TLS details and the
+  # JSON structure the Grafana dashboards query. NginxProxy supports this
+  # natively, so no snippets are required.
+  #
+  # The nginx variables use the bare $var form deliberately: Flux postBuild
+  # envsubst only substitutes the dollar-brace form, so bare $var passes through
+  # untouched. Do not rewrite these with braces or they become empty strings.
+  #
+  # Written as a folded scalar (>-) purely for readability: YAML folds each line
+  # break back into a single space, so the stored value is one line with no
+  # newlines, which the CRD's pattern requires. When editing, keep every line at
+  # the same indentation, leave no blank lines, and keep the comma at end-of-line
+  # (the fold supplies the following space). A blank or more-indented line would
+  # embed a real newline and the CRD would reject the object.
+  logging:
+    accessLog:
+      escape: json
+      format: >-
+        {"msec": "$msec",
+        "connection": "$connection",
+        "connection_requests": "$connection_requests",
+        "pid": "$pid",
+        "request_id": "$request_id",
+        "request_length": "$request_length",
+        "remote_addr": "$remote_addr",
+        "remote_user": "$remote_user",
+        "remote_port": "$remote_port",
+        "time_local": "$time_local",
+        "time_iso8601": "$time_iso8601",
+        "request": "$request",
+        "request_uri": "$request_uri",
+        "args": "$args",
+        "status": "$status",
+        "body_bytes_sent": "$body_bytes_sent",
+        "bytes_sent": "$bytes_sent",
+        "http_referer": "$http_referer",
+        "http_user_agent": "$http_user_agent",
+        "http_x_forwarded_for": "$http_x_forwarded_for",
+        "http_host": "$http_host",
+        "server_name": "$server_name",
+        "request_time": "$request_time",
+        "upstream": "$upstream_addr",
+        "upstream_connect_time": "$upstream_connect_time",
+        "upstream_header_time": "$upstream_header_time",
+        "upstream_response_time": "$upstream_response_time",
+        "upstream_response_length": "$upstream_response_length",
+        "upstream_cache_status": "$upstream_cache_status",
+        "ssl_protocol": "$ssl_protocol",
+        "ssl_cipher": "$ssl_cipher",
+        "scheme": "$scheme",
+        "request_method": "$request_method",
+        "server_protocol": "$server_protocol",
+        "pipe": "$pipe",
+        "gzip_ratio": "$gzip_ratio",
+        "http_cf_ray": "$http_cf_ray"}
   kubernetes:
     # Matches the replicaCount: 3 the retired ingress-nginx controllers ran.
     # NGF defaults to a single data-plane pod per Gateway, which would make any
@@ -108,6 +167,65 @@ metadata:
   name: external-proxy
   namespace: nginx-gateway
 spec:
+  # Restores the json_analytics access log that BOTH the retired external proxy
+  # (ansible/roles/external_proxy/files/nginx.conf) and the old external-ingress
+  # controller (core/external-ingress helm-release log-format-upstream) emitted.
+  # Without it NGF falls back to nginx's default plain-text combined format,
+  # losing request_time, all upstream_* timings, request_id, TLS details and the
+  # JSON structure the Grafana dashboards query. NginxProxy supports this
+  # natively, so no snippets are required.
+  #
+  # The nginx variables use the bare $var form deliberately: Flux postBuild
+  # envsubst only substitutes the dollar-brace form, so bare $var passes through
+  # untouched. Do not rewrite these with braces or they become empty strings.
+  #
+  # Written as a folded scalar (>-) purely for readability: YAML folds each line
+  # break back into a single space, so the stored value is one line with no
+  # newlines, which the CRD's pattern requires. When editing, keep every line at
+  # the same indentation, leave no blank lines, and keep the comma at end-of-line
+  # (the fold supplies the following space). A blank or more-indented line would
+  # embed a real newline and the CRD would reject the object.
+  logging:
+    accessLog:
+      escape: json
+      format: >-
+        {"msec": "$msec",
+        "connection": "$connection",
+        "connection_requests": "$connection_requests",
+        "pid": "$pid",
+        "request_id": "$request_id",
+        "request_length": "$request_length",
+        "remote_addr": "$remote_addr",
+        "remote_user": "$remote_user",
+        "remote_port": "$remote_port",
+        "time_local": "$time_local",
+        "time_iso8601": "$time_iso8601",
+        "request": "$request",
+        "request_uri": "$request_uri",
+        "args": "$args",
+        "status": "$status",
+        "body_bytes_sent": "$body_bytes_sent",
+        "bytes_sent": "$bytes_sent",
+        "http_referer": "$http_referer",
+        "http_user_agent": "$http_user_agent",
+        "http_x_forwarded_for": "$http_x_forwarded_for",
+        "http_host": "$http_host",
+        "server_name": "$server_name",
+        "request_time": "$request_time",
+        "upstream": "$upstream_addr",
+        "upstream_connect_time": "$upstream_connect_time",
+        "upstream_header_time": "$upstream_header_time",
+        "upstream_response_time": "$upstream_response_time",
+        "upstream_response_length": "$upstream_response_length",
+        "upstream_cache_status": "$upstream_cache_status",
+        "ssl_protocol": "$ssl_protocol",
+        "ssl_cipher": "$ssl_cipher",
+        "scheme": "$scheme",
+        "request_method": "$request_method",
+        "server_protocol": "$server_protocol",
+        "pipe": "$pipe",
+        "gzip_ratio": "$gzip_ratio",
+        "http_cf_ray": "$http_cf_ray"}
   kubernetes:
     # See internal-proxy. Spreading matters more here: externalTrafficPolicy
     # Local means MetalLB only announces .35 from nodes holding a ready
