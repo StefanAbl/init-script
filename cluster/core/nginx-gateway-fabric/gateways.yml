@@ -1,0 +1,285 @@
+####################################################################
+# Internal gateway — replaces core/ingress-nginx (class "nginx").
+# LoadBalancer IP 10.13.2.30 (first-pool), internal *.k3s.i.${DOMAIN}.
+####################################################################
+apiVersion: gateway.nginx.org/v1alpha2
+kind: NginxProxy
+metadata:
+  name: internal-proxy
+  namespace: nginx-gateway
+spec:
+  # Restores the json_analytics access log that BOTH the retired external proxy
+  # (ansible/roles/external_proxy/files/nginx.conf) and the old external-ingress
+  # controller (core/external-ingress helm-release log-format-upstream) emitted.
+  # Without it NGF falls back to nginx's default plain-text combined format,
+  # losing request_time, all upstream_* timings, request_id, TLS details and the
+  # JSON structure the Grafana dashboards query. NginxProxy supports this
+  # natively, so no snippets are required.
+  #
+  # The nginx variables use the bare $var form deliberately: Flux postBuild
+  # envsubst only substitutes the dollar-brace form, so bare $var passes through
+  # untouched. Do not rewrite these with braces or they become empty strings.
+  #
+  # Written as a folded scalar (>-) purely for readability: YAML folds each line
+  # break back into a single space, so the stored value is one line with no
+  # newlines, which the CRD's pattern requires. When editing, keep every line at
+  # the same indentation, leave no blank lines, and keep the comma at end-of-line
+  # (the fold supplies the following space). A blank or more-indented line would
+  # embed a real newline and the CRD would reject the object.
+  logging:
+    accessLog:
+      escape: json
+      format: >-
+        {"msec": "$msec",
+        "connection": "$connection",
+        "connection_requests": "$connection_requests",
+        "pid": "$pid",
+        "request_id": "$request_id",
+        "request_length": "$request_length",
+        "remote_addr": "$remote_addr",
+        "remote_user": "$remote_user",
+        "remote_port": "$remote_port",
+        "time_local": "$time_local",
+        "time_iso8601": "$time_iso8601",
+        "request": "$request",
+        "request_uri": "$request_uri",
+        "args": "$args",
+        "status": "$status",
+        "body_bytes_sent": "$body_bytes_sent",
+        "bytes_sent": "$bytes_sent",
+        "http_referer": "$http_referer",
+        "http_user_agent": "$http_user_agent",
+        "http_x_forwarded_for": "$http_x_forwarded_for",
+        "http_host": "$http_host",
+        "server_name": "$server_name",
+        "request_time": "$request_time",
+        "upstream": "$upstream_addr",
+        "upstream_connect_time": "$upstream_connect_time",
+        "upstream_header_time": "$upstream_header_time",
+        "upstream_response_time": "$upstream_response_time",
+        "upstream_response_length": "$upstream_response_length",
+        "upstream_cache_status": "$upstream_cache_status",
+        "ssl_protocol": "$ssl_protocol",
+        "ssl_cipher": "$ssl_cipher",
+        "scheme": "$scheme",
+        "request_method": "$request_method",
+        "server_protocol": "$server_protocol",
+        "pipe": "$pipe",
+        "gzip_ratio": "$gzip_ratio",
+        "http_cf_ray": "$http_cf_ray"}
+  kubernetes:
+    # Matches the replicaCount: 3 the retired ingress-nginx controllers ran.
+    # NGF defaults to a single data-plane pod per Gateway, which would make any
+    # node reboot an ingress outage. The soft spread keeps the replicas on
+    # separate nodes without blocking a rollout while a node is cordoned.
+    deployment:
+      replicas: 3
+      pod:
+        topologySpreadConstraints:
+          - maxSkew: 1
+            topologyKey: kubernetes.io/hostname
+            whenUnsatisfiable: ScheduleAnyway
+            labelSelector:
+              matchLabels:
+                gateway.networking.k8s.io/gateway-name: nginx-internal
+    service:
+      externalTrafficPolicy: Cluster
+      type: LoadBalancer
+      # NOTE: use-forwarded-headers / rewriteClientIP is intentionally NOT set.
+      # The out-of-cluster proxy is gone, so there is no trusted proxy in front
+      # and trusting client-supplied X-Forwarded-For would be a spoofing risk.
+      patches:
+        - type: StrategicMerge
+          value:
+            metadata:
+              annotations:
+                # Pin the historical internal ingress IP so LAN clients / UniFi
+                # devices / DNS keep working. Shared with the L4 LoadBalancer
+                # Services (UniFi STUN/inform, CoreDNS) via allow-shared-ip.
+                metallb.universe.tf/loadBalancerIPs: 10.13.2.30
+                metallb.universe.tf/allow-shared-ip: k3s-internal
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: nginx-internal
+  namespace: nginx-gateway
+spec:
+  gatewayClassName: nginx
+  infrastructure:
+    parametersRef:
+      group: gateway.nginx.org
+      kind: NginxProxy
+      name: internal-proxy
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: "*.k3s.i.${DOMAIN}"
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: longhorn-https
+      protocol: HTTPS
+      port: 443
+      hostname: longhorn.k3s.i.${DOMAIN}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: longhorn-internal-cert
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: influxdb2-https
+      protocol: HTTPS
+      port: 443
+      hostname: influxdb2.k3s.i.${DOMAIN}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: influxdb2-internal-cert
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: loki-https
+      protocol: HTTPS
+      port: 443
+      hostname: loki.k3s.i.${DOMAIN}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: loki-internal-cert
+      allowedRoutes:
+        namespaces:
+          from: All
+---
+####################################################################
+# External gateway — replaces core/external-ingress.
+# LoadBalancer IP 10.13.2.35 (external-ingress-address), public *.${DOMAIN}.
+# externalTrafficPolicy: Local preserves the real client source IP.
+####################################################################
+apiVersion: gateway.nginx.org/v1alpha2
+kind: NginxProxy
+metadata:
+  name: external-proxy
+  namespace: nginx-gateway
+spec:
+  # Restores the json_analytics access log that BOTH the retired external proxy
+  # (ansible/roles/external_proxy/files/nginx.conf) and the old external-ingress
+  # controller (core/external-ingress helm-release log-format-upstream) emitted.
+  # Without it NGF falls back to nginx's default plain-text combined format,
+  # losing request_time, all upstream_* timings, request_id, TLS details and the
+  # JSON structure the Grafana dashboards query. NginxProxy supports this
+  # natively, so no snippets are required.
+  #
+  # The nginx variables use the bare $var form deliberately: Flux postBuild
+  # envsubst only substitutes the dollar-brace form, so bare $var passes through
+  # untouched. Do not rewrite these with braces or they become empty strings.
+  #
+  # Written as a folded scalar (>-) purely for readability: YAML folds each line
+  # break back into a single space, so the stored value is one line with no
+  # newlines, which the CRD's pattern requires. When editing, keep every line at
+  # the same indentation, leave no blank lines, and keep the comma at end-of-line
+  # (the fold supplies the following space). A blank or more-indented line would
+  # embed a real newline and the CRD would reject the object.
+  logging:
+    accessLog:
+      escape: json
+      format: >-
+        {"msec": "$msec",
+        "connection": "$connection",
+        "connection_requests": "$connection_requests",
+        "pid": "$pid",
+        "request_id": "$request_id",
+        "request_length": "$request_length",
+        "remote_addr": "$remote_addr",
+        "remote_user": "$remote_user",
+        "remote_port": "$remote_port",
+        "time_local": "$time_local",
+        "time_iso8601": "$time_iso8601",
+        "request": "$request",
+        "request_uri": "$request_uri",
+        "args": "$args",
+        "status": "$status",
+        "body_bytes_sent": "$body_bytes_sent",
+        "bytes_sent": "$bytes_sent",
+        "http_referer": "$http_referer",
+        "http_user_agent": "$http_user_agent",
+        "http_x_forwarded_for": "$http_x_forwarded_for",
+        "http_host": "$http_host",
+        "server_name": "$server_name",
+        "request_time": "$request_time",
+        "upstream": "$upstream_addr",
+        "upstream_connect_time": "$upstream_connect_time",
+        "upstream_header_time": "$upstream_header_time",
+        "upstream_response_time": "$upstream_response_time",
+        "upstream_response_length": "$upstream_response_length",
+        "upstream_cache_status": "$upstream_cache_status",
+        "ssl_protocol": "$ssl_protocol",
+        "ssl_cipher": "$ssl_cipher",
+        "scheme": "$scheme",
+        "request_method": "$request_method",
+        "server_protocol": "$server_protocol",
+        "pipe": "$pipe",
+        "gzip_ratio": "$gzip_ratio",
+        "http_cf_ray": "$http_cf_ray"}
+  kubernetes:
+    # See internal-proxy. Spreading matters more here: externalTrafficPolicy
+    # Local means MetalLB only announces .35 from nodes holding a ready
+    # data-plane pod, so co-locating the replicas would leave no failover target.
+    deployment:
+      replicas: 3
+      pod:
+        topologySpreadConstraints:
+          - maxSkew: 1
+            topologyKey: kubernetes.io/hostname
+            whenUnsatisfiable: ScheduleAnyway
+            labelSelector:
+              matchLabels:
+                gateway.networking.k8s.io/gateway-name: nginx-external
+    service:
+      type: LoadBalancer
+      patches:
+        - type: StrategicMerge
+          value:
+            metadata:
+              annotations:
+                metallb.universe.tf/address-pool: external-ingress-address
+            spec:
+              externalTrafficPolicy: Local
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: nginx-external
+  namespace: nginx-gateway
+spec:
+  gatewayClassName: nginx
+  infrastructure:
+    parametersRef:
+      group: gateway.nginx.org
+      kind: NginxProxy
+      name: external-proxy
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: "*.${DOMAIN}"
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: "*.${DOMAIN}"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: wildcard-stabl-one-cert
+      allowedRoutes:
+        namespaces:
+          from: All

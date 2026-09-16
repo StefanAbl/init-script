@@ -104,25 +104,13 @@ spec:
           proxy_connect_timeout 600s;
           proxy_send_timeout 600s;
           send_timeout 600s;
-      # ingress:
-      #   enabled: true
-      #   ingressClassName: nginx
-      #   annotations:
-      #     cert-manager.io/issuer: freeipa-issuer
-      #     cert-manager.io/issuer-group: certmanager.freeipa.org
-      #     cert-manager.io/issuer-kind: ClusterIssuer
-      #     cert-manager.io/common-name: loki.k3s.i.${DOMAIN}
-      #     nignx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      #   hosts:
-      #   - "loki.k3s.i.${DOMAIN}"
-      #   tls:
-      #   - secretName: loki-tls
-      #     hosts:
-      #     - "loki.k3s.i.${DOMAIN}"
-      # basicAuth:
-      #   enabled: true
-      #   username: ${LOKI_BASIC_AUTH_USER}
-      #   password:  ${LOKI_BASIC_AUTH_PASS}
+      # Basic-auth is now terminated by Loki's own nginx gateway (replaces the
+      # ingress-nginx auth-map annotations). existingSecret holds a multi-user
+      # .htpasswd file. NOTE: this now also applies to internal clients — Promtail
+      # push and the Grafana Loki datasource must send credentials.
+      basicAuth:
+        enabled: true
+        existingSecret: loki-basic-auth
 
     loki:
       containerSecurityContext:

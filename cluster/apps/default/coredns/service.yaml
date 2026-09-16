@@ -2,7 +2,15 @@ apiVersion: v1
 kind: Service
 metadata:
   name: coredns
+  annotations:
+    # L4 DNS previously exposed via the ingress-nginx udp configmap on 10.13.2.30.
+    # NGF is HTTP(S)-only, so expose CoreDNS directly via MetalLB, keeping the same
+    # IP (shared with the internal gateway) so LAN DNS clients keep working.
+    metallb.universe.tf/loadBalancerIPs: 10.13.2.30
+    metallb.universe.tf/allow-shared-ip: k3s-internal
 spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Cluster
   selector:
     app: coredns
   ports:

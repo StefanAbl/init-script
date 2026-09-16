@@ -79,7 +79,10 @@ spec:
         enabled: true
         host: mail.${DOMAIN}:587
         from_address: svc_grafana@${DOMAIN}
-        ehlo_identity: "grafana.k3s.i.${DOMAIN}"
+        # Was grafana.k3s.i.${DOMAIN}; that name loses its DNS record with the
+        # internal listeners, and an unresolvable EHLO identity gets rejected by
+        # MTAs that do a forward-confirmed lookup.
+        ehlo_identity: "grafana.${DOMAIN}"
     dashboardProviders:
       dashboardproviders.yaml:
         apiVersion: 1
@@ -109,6 +112,11 @@ spec:
           type: loki
           access: proxy
           url: http://loki-loki-distributed-gateway
+          # Loki's gateway now enforces basic-auth (gateway.basicAuth).
+          basicAuth: true
+          basicAuthUser: ${LOKI_BASIC_AUTH_USER}
+          secureJsonData:
+            basicAuthPassword: ${LOKI_BASIC_AUTH_PASS}
     plugins:
       - marcusolsson-json-datasource
       - speakyourcode-button-panel
@@ -182,18 +190,7 @@ spec:
       datasources:
         enabled: true
         searchNamespace: ALL
+    # Ingress replaced by an external HTTPRoute (route.yml) on the nginx-external
+    # gateway; Grafana is reached at grafana.${DOMAIN} via the wildcard cert.
     ingress:
-      enabled: true
-      ingressClassName: nginx
-      annotations:
-        cert-manager.io/issuer: freeipa-issuer
-        cert-manager.io/issuer-group: certmanager.freeipa.org
-        cert-manager.io/issuer-kind: ClusterIssuer
-        cert-manager.io/common-name: grafana.k3s.i.${DOMAIN}
-        nignx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      hosts:
-      - "grafana.k3s.i.${DOMAIN}"
-      tls:
-      - secretName: grafana-tls
-        hosts:
-        - "grafana.k3s.i.${DOMAIN}"
+      enabled: false

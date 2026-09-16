@@ -1,0 +1,24 @@
+# CoreDNS moved off the ingress-nginx udp configmap onto its own MetalLB
+# LoadBalancer, so DNS queries now arrive straight from LAN clients (or SNATed
+# from a node under externalTrafficPolicy: Cluster) rather than from the ingress
+# controller's namespace. The namespace-wide allow-from-*-ingress policy no
+# longer covers that path, so allow the LB port explicitly — same pattern as
+# docsrv's allow-lb-ingress.
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-lb-coredns
+  namespace: default
+spec:
+  policyTypes:
+  - Ingress
+  podSelector:
+    matchLabels:
+      app: coredns
+  ingress:
+  - from: []
+    ports:
+      # Matches the LoadBalancer Service, which exposes UDP only — as the old
+      # ingress-nginx udp configmap did.
+      - protocol: UDP
+        port: 53

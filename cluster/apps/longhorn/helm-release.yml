@@ -34,19 +34,8 @@ spec:
         concurrentReplicaRebuildPerNodeLimit: "1"
         fastReplicaRebuildEnabled: "true"
         snapshotDataIntegrity: fast-check
+    # Ingress replaced by oauth2-proxy (Authelia OIDC) + an internal HTTPRoute.
+    # The old nginx forward-auth annotations are re-expressed as an OIDC login
+    # in front of longhorn-frontend; see apps/longhorn/oauth2-proxy.yml.
     ingress:
-      enabled: true
-      ingressClassName: nginx
-      host: longhorn.k3s.i.${DOMAIN}
-      tls: true
-      annotations:
-        cert-manager.io/issuer: freeipa-issuer
-        cert-manager.io/issuer-group: certmanager.freeipa.org
-        cert-manager.io/issuer-kind: ClusterIssuer
-        cert-manager.io/common-name: longhorn.k3s.i.${DOMAIN}
-        nginx.ingress.kubernetes.io/auth-method: GET
-        nginx.ingress.kubernetes.io/auth-url: http://authelia.security.svc.cluster.local/api/verify
-        nginx.ingress.kubernetes.io/auth-signin: https://authelia.k3s.i.${DOMAIN}?rm=$request_method
-        nginx.ingress.kubernetes.io/auth-response-headers: Remote-User,Remote-Name,Remote-Groups,Remote-Email
-        # nginx.ingress.kubernetes.io/auth-snippet: |
-        #   proxy_set_header X-Forwarded-Method $request_method;
+      enabled: false

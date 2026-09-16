@@ -1,0 +1,26 @@
+# L4 forwards that previously rode on the ingress-nginx tcp/udp configmaps.
+# NGF is HTTP(S)-only, so UniFi STUN (3478/udp) and device inform (8080/tcp) are
+# exposed directly via a MetalLB LoadBalancer. The IP is shared with the internal
+# gateway (10.13.2.30) via allow-shared-ip so adopted devices keep their address.
+apiVersion: v1
+kind: Service
+metadata:
+  name: unifi-l4
+  namespace: default
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: 10.13.2.30
+    metallb.universe.tf/allow-shared-ip: k3s-internal
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Cluster
+  selector:
+    app: unifi
+  ports:
+    - name: inform
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+    - name: stun
+      port: 3478
+      targetPort: 3478
+      protocol: UDP

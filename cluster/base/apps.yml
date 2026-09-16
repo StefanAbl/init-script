@@ -7,6 +7,9 @@ spec:
   interval: 10m
   path: ./cluster/apps
   prune: true
+  dependsOn:
+    - name: gateway-api
+    - name: core
   sourceRef:
     kind: GitRepository
     name: flux-system

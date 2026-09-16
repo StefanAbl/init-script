@@ -27,18 +27,10 @@ spec:
       enabled: true
       useExisting: true
       name: influxdb2-longhorn
+    # Ingress replaced by an internal HTTPRoute (route.yml) on the nginx-internal
+    # gateway; TLS/cert handled by the gateway's influxdb2-https listener.
     ingress:
-      enabled: true
-      className: nginx
-      hostname: influxdb2.k3s.i.${DOMAIN}
-      tls: true
-      secretName: influxdb2-cert
-      annotations:
-        cert-manager.io/issuer: freeipa-issuer
-        cert-manager.io/issuer-group: certmanager.freeipa.org
-        cert-manager.io/issuer-kind: ClusterIssuer
-        cert-manager.io/common-name: influxdb2.k3s.i.${DOMAIN}
-        nignx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      enabled: false
     resources:
       limits:
         memory: 1024Mi

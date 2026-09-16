@@ -1,0 +1,65 @@
+# TLS certificates for the gateway listeners. Secrets are created in the
+# nginx-gateway namespace so the Gateway listeners can reference them directly
+# (no ReferenceGrant needed).
+
+# External gateway: single wildcard cert for all public *.${DOMAIN} hosts.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-stabl-one
+  namespace: nginx-gateway
+spec:
+  secretName: wildcard-stabl-one-cert
+  commonName: "*.${DOMAIN}"
+  dnsNames:
+    - "*.${DOMAIN}"
+    - "${DOMAIN}"
+  issuerRef:
+    name: letsencrypt-dns01-issuer
+    kind: ClusterIssuer
+---
+# Internal gateway: per-host FreeIPA certs (one Certificate per listener host).
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: longhorn-internal
+  namespace: nginx-gateway
+spec:
+  secretName: longhorn-internal-cert
+  commonName: longhorn.k3s.i.${DOMAIN}
+  dnsNames:
+    - longhorn.k3s.i.${DOMAIN}
+  issuerRef:
+    name: freeipa-issuer
+    kind: ClusterIssuer
+    group: certmanager.freeipa.org
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: influxdb2-internal
+  namespace: nginx-gateway
+spec:
+  secretName: influxdb2-internal-cert
+  commonName: influxdb2.k3s.i.${DOMAIN}
+  dnsNames:
+    - influxdb2.k3s.i.${DOMAIN}
+  issuerRef:
+    name: freeipa-issuer
+    kind: ClusterIssuer
+    group: certmanager.freeipa.org
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: loki-internal
+  namespace: nginx-gateway
+spec:
+  secretName: loki-internal-cert
+  commonName: loki.k3s.i.${DOMAIN}
+  dnsNames:
+    - loki.k3s.i.${DOMAIN}
+  issuerRef:
+    name: freeipa-issuer
+    kind: ClusterIssuer
+    group: certmanager.freeipa.org

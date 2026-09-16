@@ -6,7 +6,9 @@ resources:
   - docsrv
   - unifi
   - coredns
-  - ../../policies/allow-from-ingress.yml
+  # docsrv and unifi both serve from the external gateway now; nothing in this
+  # namespace is routed via nginx-internal.
+  - ../../policies/allow-from-external-ingress.yml
   - ../../policies/allow-to-dns.yml
   - ../../policies/allow-to-internet.yml
   - ../../policies/allow-to-ipa-dns.yml

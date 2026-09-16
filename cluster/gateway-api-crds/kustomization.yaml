@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Gateway API CRDs, pinned to the version bundled/validated by NGINX Gateway Fabric.
+# The "standard" channel already includes BackendTLSPolicy as of Gateway API v1.4
+# (bundled by NGF 2.x), so the experimental channel is not required.
+# renovate: depName=nginx/nginx-gateway-fabric
+resources:
+  - https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v2.6.6

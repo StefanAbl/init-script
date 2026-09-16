@@ -4,7 +4,7 @@ namespace: security
 resources:
   - deploy.yaml
   - service.yaml
-  - ingress.yaml
+  - route.yml
   - secret.yml
   - authelia-db-secret.yml
   - ../../../policies/allow-to-db.yml

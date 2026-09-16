@@ -8,6 +8,14 @@ spec:
   podSelector: {}
   ingress:
   - from:
+    # Both gateways share the nginx-gateway namespace, so the namespace alone no
+    # longer distinguishes internal from external traffic the way the separate
+    # ingress-nginx / external-ingress namespaces used to. NGF labels every
+    # data-plane pod with the Gateway that provisioned it, so scope to that.
+    # namespaceSelector + podSelector in a single peer is an AND.
     - namespaceSelector:
         matchLabels:
-          kubernetes.io/metadata.name: ingress-nginx
+          kubernetes.io/metadata.name: nginx-gateway
+      podSelector:
+        matchLabels:
+          gateway.networking.k8s.io/gateway-name: nginx-internal

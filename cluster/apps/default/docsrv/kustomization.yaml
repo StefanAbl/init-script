@@ -3,6 +3,6 @@ kind: Kustomization
 resources:
   - deploy.yml
   - service.yml
-  - ingress.yml
+  - route.yml
   - secret.yml
   - allow-lb-ingress.yml

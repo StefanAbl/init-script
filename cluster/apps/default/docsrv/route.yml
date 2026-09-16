@@ -1,0 +1,33 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: document-server
+  namespace: default
+spec:
+  parentRefs:
+    - name: nginx-external
+      namespace: nginx-gateway
+      sectionName: https
+  # The request Host is already docsrv.${DOMAIN}, which NGF forwards to the
+  # backend unchanged — this replaces the old upstream-vhost annotation.
+  hostnames:
+    - docsrv.${DOMAIN}
+  rules:
+    - filters:
+        # Restores the headers the removed external proxy applied to every public
+        # vhost (ansible/roles/external_proxy/files/ssl.conf). `set` overwrites,
+        # matching that config's proxy_hide_header + add_header pairing.
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            set:
+              - name: Strict-Transport-Security
+                value: "max-age=63072000; includeSubDomains"
+              - name: X-Content-Type-Options
+                value: nosniff
+              - name: Referrer-Policy
+                value: same-origin
+              - name: X-XSS-Protection
+                value: "1; mode=block"
+      backendRefs:
+        - name: document-server
+          port: 80

@@ -1,0 +1,24 @@
+# UniFi device inform (8080/tcp) and STUN (3478/udp) moved off the ingress-nginx
+# tcp/udp configmaps onto the unifi-l4 MetalLB LoadBalancer, so this traffic now
+# arrives straight from the devices instead of from the ingress controller's
+# namespace. The namespace-wide allow-from-*-ingress policy no longer covers it.
+# The web UI (8443) is not listed here: it is served through the external
+# gateway and is already covered by allow-from-external-ingress.
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-lb-unifi
+  namespace: default
+spec:
+  policyTypes:
+  - Ingress
+  podSelector:
+    matchLabels:
+      app: unifi
+  ingress:
+  - from: []
+    ports:
+      - protocol: TCP
+        port: 8080
+      - protocol: UDP
+        port: 3478

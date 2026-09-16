@@ -6,3 +6,6 @@ resources:
   #- fs-trim-job.yml
   - allow-scraping.yml
   - namespace.yml
+  - oauth2-proxy.yml
+  - oauth2-proxy-secret.yml
+  - route.yml

@@ -3,8 +3,10 @@ kind: Kustomization
 namespace: default
 resources:
   - allow-scraping.yml
+  - allow-lb-unifi.yml
   - combined-sts.yaml
-  - ingress.yml
+  - route.yml
+  - lb-service.yml
   - mongo-secret.yaml
   - pvc.yaml
   - pvc-old.yml
@@ -19,3 +21,11 @@ configMapGenerator:
       # No vars: block — Kustomize variable substitution is never triggered without one
       annotations:
         kustomize.toolkit.fluxcd.io/substitute: disabled  # Tells Flux to skip envsubst on this ConfigMap
+  - name: unifi-backend-ca
+    namespace: default
+    files:
+      - ca.crt=unifi-backend-ca.pem
+    options:
+      disableNameSuffixHash: true
+      annotations:
+        kustomize.toolkit.fluxcd.io/substitute: disabled
