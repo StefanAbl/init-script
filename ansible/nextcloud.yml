@@ -3,9 +3,9 @@
 - hosts: nextcloud.i.stabl.one
   roles:
     # - role: ../roles/zsh
-    # - role: ../roles/docker
-    #   vars:
-    #     docker_compose_version: v2.4.1
+    - role: ../roles/docker
+      vars:
+        docker_compose_version: v2.4.1
     - role: ../roles/nextcloud_compose
     - role: ../roles/docker_promtail
   tasks:

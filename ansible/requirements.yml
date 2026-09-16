@@ -2,6 +2,8 @@
 collections:
   - name: nginxinc.nginx_core
     version: 0.3.0
+  - name: community.docker
+    version: ">=3.6.0"
 roles:
 - name  : xanmanning.k3s
   version: v3.4.4

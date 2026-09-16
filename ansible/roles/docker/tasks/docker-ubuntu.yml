@@ -1,12 +1,7 @@
 
-- name: Install aptitude using apt
-  apt: name=aptitude state=latest update_cache=true force_apt_get=true
-  become: true
-  become_method: sudo
-
 - name: Install required system packages
   apt: name={{ item }} state=latest update_cache=true
-  loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
+  loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-docker', 'python3-setuptools']
 
 - name: Add Docker GPG apt Key
   apt_key:
@@ -17,28 +12,14 @@
 
 - name: Add Docker Repository
   apt_repository:
-    repo: deb https://download.docker.com/linux/ubuntu focal stable
+    repo: "deb https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
     state: present
   become: true
   become_method: sudo
 
 - name: Update apt and install docker-ce
-  apt: update_cache=true name=docker-ce state=latest
-  become: true
-  become_method: sudo
-
-- name: Make sure old docker module is absent
-  pip:
-    name:
-      - docker-py
-    state: absent
-  become: true
-  become_method: sudo
-
-- name: Install Docker Module for Python
-  pip:
-    name:
-      - docker
+  apt: update_cache=true name={{ item }} state=latest
+  loop: [ 'docker-ce', 'docker-compose-plugin' ]
   become: true
   become_method: sudo
 
@@ -67,11 +48,5 @@
     ( docker_compose_current_version is not defined
     or docker_compose_current_version == ""
     or docker_compose_current_version is version(docker_compose_version, '<') )
-  become: true
-  become_method: sudo
-- name: Install Docker Module for Docker Compose
-  pip:
-    name:
-      - docker-compose
   become: true
   become_method: sudo
