@@ -15,10 +15,13 @@ spec:
         name: nginx-gateway-fabric
         namespace: flux-system
       interval: 5m
+  # CRDs are owned by the gateway-api Kustomization (cluster/gateway-api-crds),
+  # which must install them before core can be dry-run. Skip here so helm-controller
+  # and kustomize-controller don't both manage the same CRDs.
   install:
-    crds: CreateReplace
+    crds: Skip
   upgrade:
-    crds: CreateReplace
+    crds: Skip
   values:
     nginxGateway:
       gatewayClassName: nginx

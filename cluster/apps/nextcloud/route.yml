@@ -37,7 +37,7 @@ spec:
 # it is validated against the FreeIPA CA provided in the nextcloud-backend-ca
 # ConfigMap. The verification host must match the cert's SAN, not the public
 # hostname, so it is nextcloud.i.stabl.one (NOT cloud.${DOMAIN}).
-apiVersion: gateway.networking.k8s.io/v1alpha3
+apiVersion: gateway.networking.k8s.io/v1
 kind: BackendTLSPolicy
 metadata:
   name: nextcloud-external

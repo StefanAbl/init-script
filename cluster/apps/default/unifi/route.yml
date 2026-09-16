@@ -57,7 +57,7 @@ spec:
 # root, so it is pinned directly as the trust anchor (unifi-backend-ca ConfigMap).
 # NOTE(migration): if UniFi ever regenerates its cert (e.g. data reset), the
 # pinned PEM in unifi-backend-ca.pem must be re-captured.
-apiVersion: gateway.networking.k8s.io/v1alpha3
+apiVersion: gateway.networking.k8s.io/v1
 kind: BackendTLSPolicy
 metadata:
   name: unifi

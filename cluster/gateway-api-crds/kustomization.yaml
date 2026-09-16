@@ -3,6 +3,15 @@ kind: Kustomization
 # Gateway API CRDs, pinned to the version bundled/validated by NGINX Gateway Fabric.
 # The "standard" channel already includes BackendTLSPolicy as of Gateway API v1.4
 # (bundled by NGF 2.x), so the experimental channel is not required.
+#
+# NGF's own CRDs (NginxProxy, ClientSettingsPolicy, ...) are installed here too, not
+# by the HelmRelease. core contains both the HelmRelease and NginxProxy objects, and
+# Flux dry-runs every object in a Kustomization before applying any of them, so a
+# chart-installed CRD can never exist in time: core deadlocks on
+# `no matches for kind "NginxProxy"`. core and apps both dependsOn this Kustomization.
+# Keep both refs in lockstep with the chart version in
+# core/nginx-gateway-fabric/helm-release.yml.
 # renovate: depName=nginx/nginx-gateway-fabric
 resources:
   - https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v2.6.6
+  - https://github.com/nginx/nginx-gateway-fabric/config/crd?ref=v2.6.6
