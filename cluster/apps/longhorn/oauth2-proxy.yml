@@ -16,6 +16,16 @@ spec:
         app: oauth2-proxy
     spec:
       automountServiceAccountToken: false
+      # Server-side OIDC calls (discovery, token redeem, JWKS) go to auth.${DOMAIN}.
+      # Cluster DNS forwards to the nodes' resolver, which returns the public IP,
+      # not the LAN split horizon, so those calls would hairpin out through the
+      # router, and the NetworkPolicy below does not allow internet egress.
+      # Pin the name to the external Gateway so the calls stay in-cluster. TLS
+      # still validates: the gateway serves the *.${DOMAIN} wildcard for this SNI.
+      hostAliases:
+        - ip: 10.13.2.35
+          hostnames:
+            - auth.${DOMAIN}
       containers:
         - name: oauth2-proxy
           image: quay.io/oauth2-proxy/oauth2-proxy:v7.13.0
@@ -118,10 +128,18 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
-    # Reaching auth.${DOMAIN} back-channel may hairpin via the external IP.
+    # auth.${DOMAIN} via the external Gateway (see hostAliases above).
+    # Selects the data-plane pods, not ipBlock 10.13.2.35: kube-proxy DNATs the
+    # LoadBalancer IP to a pod IP before k3s' kube-router evaluates egress policy,
+    # so an ipBlock on the LB address never matches. Port 443 is the pods'
+    # containerPort (the Service's targetPort), which is what is checked post-DNAT.
     - to:
-        - ipBlock:
-            cidr: 10.13.2.35/32
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: nginx-gateway
+          podSelector:
+            matchLabels:
+              gateway.networking.k8s.io/gateway-name: nginx-external
       ports:
         - port: 443
           protocol: TCP
