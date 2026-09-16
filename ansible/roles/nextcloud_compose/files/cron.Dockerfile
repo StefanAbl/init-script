@@ -1,4 +1,4 @@
-FROM nextcloud:33.0.9-fpm
+FROM nextcloud:34.0.4-fpm
 
 RUN set -ex; \
     echo '0 */2 * * * php -f /var/www/html/occ preview:pre-generate' >> /var/spool/cron/crontabs/www-data
