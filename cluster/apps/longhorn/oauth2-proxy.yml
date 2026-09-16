@@ -104,11 +104,15 @@ spec:
         - port: 4180
           protocol: TCP
   egress:
-    # longhorn-frontend (same namespace)
+    # longhorn-frontend (same namespace). Port 8000 is the UI pods' containerPort
+    # (the Service's `http` targetPort), not the Service port 80: kube-router
+    # evaluates egress after kube-proxy DNAT.
     - to:
-        - podSelector: {}
+        - podSelector:
+            matchLabels:
+              app: longhorn-ui
       ports:
-        - port: 80
+        - port: 8000
           protocol: TCP
     # Authelia OIDC (security namespace)
     - to:
@@ -142,4 +146,27 @@ spec:
               gateway.networking.k8s.io/gateway-name: nginx-external
       ports:
         - port: 443
+          protocol: TCP
+---
+# allow-scraping selects every pod in this namespace with policyType Ingress,
+# which isolates longhorn-ui: without this, only Prometheus (on 9500) may connect
+# and oauth2-proxy's upstream requests time out (502 from oauth2-proxy).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: longhorn-ui-from-oauth2-proxy
+  namespace: longhorn
+spec:
+  podSelector:
+    matchLabels:
+      app: longhorn-ui
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: oauth2-proxy
+      ports:
+        - port: 8000
           protocol: TCP
