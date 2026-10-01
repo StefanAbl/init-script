@@ -1,4 +1,4 @@
-FROM nextcloud:33.0.9-fpm
+FROM nextcloud:35.0.1-fpm
 RUN apt-get update && apt-get install -y ffmpeg
 RUN echo '#!/bin/bash \ntaskset -c 0,2 ffmpeg "$@" ' > /custom-ffmpeg.sh
 RUN chmod a+rx /custom-ffmpeg.sh
