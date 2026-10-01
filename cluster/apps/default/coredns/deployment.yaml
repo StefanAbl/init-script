@@ -22,7 +22,7 @@ spec:
       # ── Init container ──────────────────────────────────────────────────────
       initContainers: # ◀ NEW
         - name: blocklist-downloader                                 # ◀ NEW
-          image: alpine:3.19                                         # ◀ NEW
+          image: alpine:3.24                                         # ◀ NEW
           # Run as non-root; only needs network + write access to the volume.
           securityContext: # ◀ NEW
             runAsNonRoot: true                                       # ◀ NEW
