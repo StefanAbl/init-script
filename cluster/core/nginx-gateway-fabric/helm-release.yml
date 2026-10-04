@@ -9,7 +9,7 @@ spec:
     spec:
       # renovate: registryUrl=oci://ghcr.io/nginx/charts
       chart: nginx-gateway-fabric
-      version: 2.6.6
+      version: 2.7.2
       sourceRef:
         kind: HelmRepository
         name: nginx-gateway-fabric
