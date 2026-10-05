@@ -13,5 +13,5 @@ kind: Kustomization
 # core/nginx-gateway-fabric/helm-release.yml.
 # renovate: depName=nginx/nginx-gateway-fabric
 resources:
-  - https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v2.6.6
-  - https://github.com/nginx/nginx-gateway-fabric/config/crd?ref=v2.6.6
+  - https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v2.7.2
+  - https://github.com/nginx/nginx-gateway-fabric/config/crd?ref=v2.7.2
