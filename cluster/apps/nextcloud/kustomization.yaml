@@ -4,6 +4,9 @@ resources:
   - service.yml
   - route.yml
   - endpoint.yml
+# Maintenance mode (static 503 page). Comment out / remove to restore Nextcloud.
+components:
+  - maintenance
 configMapGenerator:
   - name: nextcloud-backend-ca
     namespace: nextcloud

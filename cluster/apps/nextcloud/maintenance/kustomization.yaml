@@ -1,0 +1,35 @@
+# Maintenance mode for cloud.${DOMAIN}: serves a static "offline" page with HTTP 503
+# and points the nextcloud HTTPRoute at it instead of the Nextcloud VM.
+# Enabled/disabled via the `components:` entry in ../kustomization.yaml.
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+resources:
+  - deploy.yml
+configMapGenerator:
+  # Hash suffix kept on purpose: editing the page/config rolls the Deployment.
+  - name: nextcloud-maintenance-html
+    namespace: nextcloud
+    files:
+      - index.html
+    options:
+      annotations:
+        kustomize.toolkit.fluxcd.io/substitute: disabled
+  - name: nextcloud-maintenance-nginx
+    namespace: nextcloud
+    files:
+      - default.conf
+    options:
+      annotations:
+        kustomize.toolkit.fluxcd.io/substitute: disabled
+patches:
+  # Swap only the backend; the security-header filter on the rule stays in place.
+  - target:
+      group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: nextcloud
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/backendRefs
+        value:
+          - name: nextcloud-maintenance
+            port: 80
