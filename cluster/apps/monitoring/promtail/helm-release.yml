@@ -49,6 +49,19 @@ spec:
           username: ${LOKI_BASIC_AUTH_USER}
           password: ${LOKI_BASIC_AUTH_PASS}
       snippets:
+        # Overrides the chart default, so the cri stage must be kept first.
+        pipelineStages:
+          - cri: {}
+          # nginx-gateway-fabric writes JSON access logs (see
+          # core/nginx-gateway-fabric/gateways.yml); expose server_name as a label.
+          - match:
+              selector: '{instance="nginx-gateway-fabric"}'
+              stages:
+                - json:
+                    expressions:
+                      server_name: server_name
+                - labels:
+                    server_name:
         extraRelabelConfigs:
           - target_label: host
             replacement: k3s.i.${DOMAIN}
