@@ -1,0 +1,36 @@
+# Reject brotli-encoded request bodies on both gateways (CVE-2026-111497).
+#
+# nginx itself never decodes request bodies; the risk is in backends whose
+# brotli decoders may share the flaw. Refusing `Content-Encoding: br` at the
+# edge means no backend ever receives a brotli payload from a client. Responses
+# are unaffected: clients may still send `Accept-Encoding: br`.
+#
+# This is a deliberate, narrow exception to the no-snippets rule (see
+# helm-release.yml): Gateway API and NGF have no native way to deny a request by
+# header (AccessPolicy only matches client IPs), and a SnippetsPolicy is the only
+# gateway-wide mechanism, so new routes are covered automatically. Keep it to
+# this one directive.
+#
+# `if` + `return` at server level is one of the safe uses of `if`. The regex
+# matches the `br` token anywhere in a coding list (e.g. "gzip, br"),
+# case-insensitively. 415 is the status RFC 7694 prescribes for an unsupported
+# content coding. Bare $var / ($|...) forms are untouched by Flux envsubst.
+apiVersion: gateway.nginx.org/v1alpha1
+kind: SnippetsPolicy
+metadata:
+  name: deny-brotli-requests
+  namespace: nginx-gateway
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: nginx-internal
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: nginx-external
+  snippets:
+    - context: http.server
+      value: |
+        if ($http_content_encoding ~* "(^|[\s,])br\s*($|[,;])") {
+          return 415;
+        }

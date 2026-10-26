@@ -25,6 +25,8 @@ spec:
   values:
     nginxGateway:
       gatewayClassName: nginx
-      # Snippets are intentionally left DISABLED (chart default): the migration
-      # re-expresses every ingress-nginx annotation with native Gateway API /
-      # NGF policies instead of raw nginx snippets.
+      # Snippets are enabled ONLY for the gateway-wide brotli request deny in
+      # snippets-policy.yml, which has no native equivalent. Everything else
+      # uses native Gateway API / NGF policies; do not add further snippets.
+      snippets:
+        enable: true
