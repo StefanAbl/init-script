@@ -25,7 +25,7 @@ spec:
             - --metrics
             - 0.0.0.0:2000
             - run
-          image: cloudflare/cloudflared:2026.10.5
+          image: cloudflare/cloudflared:2026.10.6
           name: cloudflared
           envFrom:
             - secretRef:
