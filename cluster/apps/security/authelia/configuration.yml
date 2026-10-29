@@ -39,16 +39,16 @@ storage:
     username: authelia
 notifier:
   smtp:
-    host: mail.${DOMAIN}
+    host: mail.your-server.de
     port: 587
     timeout: 5s
     # configured in secret
     # username: test
     # password: password
-    sender: "Authelia <svc_authelia@${DOMAIN}>"
+    sender: "Authelia <noreply@${DOMAIN}>"
     identifier: auth.${DOMAIN}
     subject: "[Authelia] {title}"
-    startup_check_address: svc_authelia@${DOMAIN}
+    startup_check_address: noreply@${DOMAIN}
     disable_require_tls: true
     disable_starttls: false
     disable_html_emails: false

@@ -24,6 +24,16 @@ spec:
       retries: 7
   values:
     replicas: 2
+    # Server-side OIDC calls (token_url, api_url) go to auth.${DOMAIN}. Cluster DNS
+    # returns the public IP, so without this they hairpin out through the router
+    # and depend on its NAT loopback. Pin the name to the external Gateway so they
+    # stay in-cluster; the gateway serves the *.${DOMAIN} wildcard, so TLS still
+    # validates. No NetworkPolicy change needed: nothing in monitoring restricts
+    # Grafana's egress. Same fix as apps/longhorn/oauth2-proxy.yml.
+    hostAliases:
+      - ip: 10.13.2.35
+        hostnames:
+          - auth.${DOMAIN}
     imageRenderer:
       enabled: true
     env:
@@ -77,8 +87,8 @@ spec:
         enabled: false
       smtp:
         enabled: true
-        host: mail.${DOMAIN}:587
-        from_address: svc_grafana@${DOMAIN}
+        host: mail.your-server.de:587
+        from_address: noreply@${DOMAIN}
         # Was grafana.k3s.i.${DOMAIN}; that name loses its DNS record with the
         # internal listeners, and an unresolvable EHLO identity gets rejected by
         # MTAs that do a forward-confirmed lookup.
