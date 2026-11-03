@@ -4,6 +4,8 @@ collections:
     version: 0.3.0
   - name: community.docker
     version: ">=3.6.0"
+  - name: ansible.posix
+    version: ">=1.5.0"
 roles:
 - name  : xanmanning.k3s
   version: v3.4.4

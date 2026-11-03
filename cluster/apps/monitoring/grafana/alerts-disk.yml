@@ -1,0 +1,130 @@
+# Disk usage alerts for hosts scraped by prometheus-external (node-exporter-ipa job).
+# Picked up by the Grafana alerts sidecar via the grafana_alert label.
+# tmpfs is deliberately included: /run filling up has taken down IPA before.
+# Only read-only image filesystems (always 100% full) are filtered out.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-alerts-disk
+  namespace: monitoring
+  labels:
+    grafana_alert: "1"
+data:
+  disk-alerts.yaml: |
+    apiVersion: 1
+    contactPoints:
+      - orgId: 1
+        name: homelab-email
+        receivers:
+          - uid: homelab-email
+            type: email
+            settings:
+              addresses: st.ablassmeier@protonmail.com
+              singleEmail: true
+    groups:
+      - orgId: 1
+        name: host-disks
+        folder: Homelab
+        interval: 1m
+        rules:
+          - uid: host-fs-almost-full
+            title: Filesystem almost full
+            condition: C
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: prometheus-external
+                model:
+                  refId: A
+                  instant: true
+                  expr: >-
+                    100 * (1 - node_filesystem_avail_bytes{job="node-exporter-ipa",fstype!~"squashfs|iso9660"}
+                    / node_filesystem_size_bytes{job="node-exporter-ipa",fstype!~"squashfs|iso9660"})
+              - refId: B
+                datasourceUid: __expr__
+                model: { refId: B, type: reduce, expression: A, reducer: last }
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  refId: C
+                  type: threshold
+                  expression: B
+                  conditions:
+                    - evaluator: { type: gt, params: [85] }
+            # Also fires when the exporter stops reporting
+            noDataState: Alerting
+            execErrState: Error
+            for: 15m
+            labels:
+              severity: warning
+            annotations:
+              summary: '{{ .Labels.host }}: {{ .Labels.mountpoint }} ({{ .Labels.fstype }}) is {{ printf "%.1f" (index .Values "B").Value }}% full'
+            notification_settings:
+              receiver: homelab-email
+
+          - uid: host-fs-inodes-almost-full
+            title: Filesystem inodes almost full
+            condition: C
+            data:
+              - refId: A
+                relativeTimeRange: { from: 600, to: 0 }
+                datasourceUid: prometheus-external
+                model:
+                  refId: A
+                  instant: true
+                  expr: >-
+                    100 * (1 - node_filesystem_files_free{job="node-exporter-ipa",fstype!~"squashfs|iso9660"}
+                    / (node_filesystem_files{job="node-exporter-ipa",fstype!~"squashfs|iso9660"} > 0))
+              - refId: B
+                datasourceUid: __expr__
+                model: { refId: B, type: reduce, expression: A, reducer: last }
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  refId: C
+                  type: threshold
+                  expression: B
+                  conditions:
+                    - evaluator: { type: gt, params: [85] }
+            noDataState: OK
+            execErrState: Error
+            for: 15m
+            labels:
+              severity: warning
+            annotations:
+              summary: '{{ .Labels.host }}: {{ .Labels.mountpoint }} ({{ .Labels.fstype }}) has used {{ printf "%.1f" (index .Values "B").Value }}% of its inodes'
+            notification_settings:
+              receiver: homelab-email
+
+          - uid: host-fs-fills-in-24h
+            title: Filesystem will fill within 24h
+            condition: C
+            data:
+              - refId: A
+                relativeTimeRange: { from: 21600, to: 0 }
+                datasourceUid: prometheus-external
+                model:
+                  refId: A
+                  instant: true
+                  expr: >-
+                    predict_linear(node_filesystem_avail_bytes{job="node-exporter-ipa",fstype!~"squashfs|iso9660"}[6h], 24 * 3600)
+              - refId: B
+                datasourceUid: __expr__
+                model: { refId: B, type: reduce, expression: A, reducer: last }
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  refId: C
+                  type: threshold
+                  expression: B
+                  conditions:
+                    - evaluator: { type: lt, params: [0] }
+            noDataState: OK
+            execErrState: Error
+            for: 30m
+            labels:
+              severity: warning
+            annotations:
+              summary: '{{ .Labels.host }}: {{ .Labels.mountpoint }} ({{ .Labels.fstype }}) is predicted to be full within 24h'
+            notification_settings:
+              receiver: homelab-email

@@ -83,6 +83,16 @@ scrape_configs:
     scrape_interval: 60s
     static_configs:
       - targets: ['proxmox0.i.${DOMAIN}:19999']
+  - job_name: node-exporter-ipa
+    scrape_interval: 60s
+    static_configs:
+      - targets:
+          - 'ipa0.i.${DOMAIN}:9100'
+          - 'ipa1.i.${DOMAIN}:9100'
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: '([^.]+)\..*'
+        target_label: host
   - job_name: speedtest-exporter
     scrape_interval: 1h
     scrape_timeout: 5m

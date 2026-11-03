@@ -4,3 +4,4 @@ resources:
   - helm-release.yml
   - route.yml
   - secret.yml
+  - alerts-disk.yml

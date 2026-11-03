@@ -1,0 +1,5 @@
+---
+node_exporter_version: "1.12.1"
+node_exporter_port: 9100
+# Extra command line flags for node_exporter
+node_exporter_args: []

@@ -1,0 +1,64 @@
+- name: Create group
+  become: true
+  group:
+    name: node_exporter
+    system: yes
+    state: present
+- name: Add user "node_exporter"
+  become: true
+  user:
+    name: node_exporter
+    group: node_exporter
+    system: yes
+    shell: /sbin/nologin
+    create_home: no
+    comment: "Prometheus node exporter nologin User"
+    state: present
+
+- name: Check installed node_exporter version
+  command: /usr/local/bin/node_exporter --version
+  register: node_exporter_installed
+  changed_when: false
+  failed_when: false
+- name: Download and unpack node_exporter
+  become: true
+  when: node_exporter_version not in (node_exporter_installed.stderr | default('') + node_exporter_installed.stdout | default(''))
+  block:
+    - name: Download node_exporter
+      get_url:
+        url: "https://github.com/prometheus/node_exporter/releases/download/v{{node_exporter_version}}/node_exporter-{{node_exporter_version}}.linux-amd64.tar.gz"
+        dest: /tmp/node_exporter.tar.gz
+    - name: Unpack node_exporter
+      unarchive:
+        src: /tmp/node_exporter.tar.gz
+        dest: /usr/local/bin/
+        include: ["node_exporter-{{node_exporter_version}}.linux-amd64/node_exporter"]
+        extra_opts: ["--strip-components=1"]
+        mode: "0755"
+        remote_src: true
+      notify: restart node_exporter
+
+- name: copy systemd service file
+  become: true
+  template:
+    src: node_exporter.service
+    dest: /etc/systemd/system/
+  notify: restart node_exporter
+- name: enable and start node_exporter
+  become: true
+  systemd:
+    name: node_exporter
+    state: started
+    enabled: true
+    daemon_reload: yes
+
+- name: Gather service facts
+  service_facts:
+- name: Open node_exporter port in firewalld
+  become: true
+  when: ansible_facts.services['firewalld.service'] is defined and ansible_facts.services['firewalld.service'].state == 'running'
+  ansible.posix.firewalld:
+    port: "{{node_exporter_port}}/tcp"
+    permanent: true
+    immediate: true
+    state: enabled
