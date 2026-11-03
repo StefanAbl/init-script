@@ -11,8 +11,8 @@
     owner: root
     mode: '0750'
   vars:
-    syncoid_backup_mail_user: svc_grafana
-    syncoid_backup_mail_user_password: "{{logging.grafana.bind_user.password}}"
+    syncoid_backup_mail_user: noreply
+    syncoid_backup_mail_user_password: "{{hetzner_mail_pw}}"
 - name: Copy systemd files
   become: yes
   copy:

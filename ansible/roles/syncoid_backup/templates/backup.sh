@@ -107,7 +107,7 @@ mail_file="$(mktemp)"
   fi
 } >>"$mail_file"
 
-curl --url 'smtp://mail.stabl.one:587' --ssl-reqd \
+curl --url 'smtp://mail.your-server.de:587' --ssl-reqd \
   --mail-from "$mail_account" --mail-rcpt "$mail_dest" \
   --upload-file "$mail_file" --user "$mail_account:$mail_pw"
 
