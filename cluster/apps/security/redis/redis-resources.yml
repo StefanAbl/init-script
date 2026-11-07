@@ -18,35 +18,10 @@ data:
     loglevel notice
     databases 16
     save ""
-    stop-writes-on-bgsave-error no
-    rdbcompression no
-    rdbchecksum no
-    dbfilename dump.rdb
+    appendonly no
     dir /data
-    replica-read-only yes
-    repl-diskless-sync no
 
 ---
-# Headless Service for Redis StatefulSet
-apiVersion: v1
-kind: Service
-metadata:
-  name: redis-headless
-  namespace: security
-spec:
-  clusterIP: None
-  ports:
-    - port: 6379
-      targetPort: 6379
-      name: redis
-    - port: 26379
-      targetPort: 26379
-      name: sentinel
-  selector:
-    app: redis
-
----
-# Service for Redis access
 apiVersion: v1
 kind: Service
 metadata:
@@ -58,22 +33,25 @@ spec:
     - port: 6379
       targetPort: 6379
       name: redis
-    - port: 26379
-      targetPort: 26379
-      name: sentinel
   selector:
     app: redis
 
 ---
-# StatefulSet for Redis instances with Sentinel sidecars
+# Single instance on purpose: Redis only holds Authelia sessions and nothing is
+# persisted, so a restart just logs users out. The hand-rolled Sentinel setup
+# this replaces split-brained (redis-0 re-elected itself after a failover).
+# A Deployment (not a StatefulSet) is used so the pod gets rescheduled when its
+# node goes unreachable instead of waiting for the old pod to be confirmed gone.
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: redis
   namespace: security
 spec:
-  serviceName: redis-headless
-  replicas: 3
+  replicas: 1
+  strategy:
+    # Never run two instances side by side behind the Service.
+    type: Recreate
   selector:
     matchLabels:
       app: redis
@@ -82,16 +60,17 @@ spec:
       labels:
         app: redis
     spec:
+      # Evict from a dead node after 30s instead of the default 300s.
+      tolerations:
+        - key: node.kubernetes.io/unreachable
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 30
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 30
       affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: app
-                    operator: In
-                    values:
-                      - redis
-              topologyKey: kubernetes.io/hostname
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
@@ -102,47 +81,6 @@ spec:
                       - worker01.i.stabl.one
                       - worker02.i.stabl.one
                       - worker03.i.stabl.one
-      initContainers:
-        - name: init-redis
-          image: redis:7-alpine
-          command:
-            - sh
-            - -c
-            - |
-              set -ex
-              # Copy redis config file
-              cp /mnt/redis-config/redis.conf /etc/redis/redis.conf
-
-              # Get the IP of redis-0
-              # For redis-0 itself, use its own pod IP. For others, resolve redis-0's hostname
-              if [ "$(hostname)" = "redis-0" ]; then
-                MASTER_IP=$(hostname -i)
-              else
-                # Wait for redis-0 DNS to be available
-                until MASTER_IP=$(getent hosts redis-0.redis-headless.security.svc.cluster.local | awk '{print $1}' | head -n1); do
-                  echo "Waiting for redis-0 DNS..."
-                  sleep 2
-                done
-                echo "replicaof $MASTER_IP 6379" >> /etc/redis/redis.conf
-              fi
-
-              echo "Master IP: $MASTER_IP"
-
-              # Create initial sentinel config with IP address
-              cat > /etc/redis/sentinel.conf <<EOF
-              bind 0.0.0.0
-              port 26379
-              dir /tmp
-              sentinel monitor mymaster $MASTER_IP 6379 2
-              sentinel down-after-milliseconds mymaster 5000
-              sentinel parallel-syncs mymaster 1
-              sentinel failover-timeout mymaster 10000
-              EOF
-          volumeMounts:
-            - name: redis-config
-              mountPath: /mnt/redis-config
-            - name: config
-              mountPath: /etc/redis
       containers:
         - name: redis
           image: redis:7-alpine
@@ -153,7 +91,7 @@ spec:
             - containerPort: 6379
               name: redis
           volumeMounts:
-            - name: config
+            - name: redis-config
               mountPath: /etc/redis
             - name: data
               mountPath: /data
@@ -169,45 +107,9 @@ spec:
                 - ping
             initialDelaySeconds: 5
             periodSeconds: 5
-        - name: sentinel
-          image: redis:7-alpine
-          command:
-            - sh
-            - -c
-            - |
-              # Wait for Redis to be ready
-              until redis-cli -h localhost ping; do
-                echo "Waiting for Redis to be ready..."
-                sleep 1
-              done
-
-              # Start Sentinel
-              redis-sentinel /etc/redis/sentinel.conf
-          ports:
-            - containerPort: 26379
-              name: sentinel
-          volumeMounts:
-            - name: config
-              mountPath: /etc/redis
-          livenessProbe:
-            tcpSocket:
-              port: 26379
-            initialDelaySeconds: 15
-            periodSeconds: 5
-          readinessProbe:
-            exec:
-              command:
-                - redis-cli
-                - -p
-                - "26379"
-                - ping
-            initialDelaySeconds: 5
-            periodSeconds: 5
       volumes:
         - name: redis-config
           configMap:
             name: redis-config
-        - name: config
-          emptyDir: {}
         - name: data
           emptyDir: {}
