@@ -83,7 +83,7 @@ spec:
                       - worker03.i.stabl.one
       containers:
         - name: redis
-          image: redis:7-alpine
+          image: redis:8-alpine
           command:
             - redis-server
             - /etc/redis/redis.conf
