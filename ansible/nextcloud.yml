@@ -8,4 +8,5 @@
         docker_compose_version: v2.4.1
     - role: ../roles/nextcloud_compose
     - role: ../roles/docker_promtail
+    - role: ../roles/node_exporter
   tasks:

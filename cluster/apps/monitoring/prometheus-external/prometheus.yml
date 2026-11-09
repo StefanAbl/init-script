@@ -89,6 +89,7 @@ scrape_configs:
       - targets:
           - 'ipa0.i.${DOMAIN}:9100'
           - 'ipa1.i.${DOMAIN}:9100'
+          - 'nextcloud.i.${DOMAIN}:9100'
     relabel_configs:
       - source_labels: [__address__]
         regex: '([^.]+)\..*'
