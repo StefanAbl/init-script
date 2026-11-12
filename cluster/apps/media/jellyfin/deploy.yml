@@ -81,7 +81,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: *app
-        image: "ghcr.io/stefanabl/jf-custom:10.11.11"
+        image: "ghcr.io/stefanabl/jf-custom:12.4"
         env:
         - name: TZ
           value: EUROPE/BERLIN
