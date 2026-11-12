@@ -56,7 +56,7 @@
     {
       "matchUpdateTypes": ["patch"],
       "matchCurrentVersion": "!/^0/",
-      "matchDatasources": ["helm"],
+      "matchDatasources": ["helm", "kustomization"],
       "ignoreTests": true,
       "matchPackageNames": [
         "node-feature-discovery",
@@ -65,7 +65,7 @@
         "redis",
         "postgresql",
         "node-problem-detector",
-        "reloader"
+        "nginx-gateway-fabric"
       ],
       "automerge": true
     },
@@ -74,7 +74,9 @@
       "matchCurrentVersion": "!/^0/",
       "matchDatasources": ["helm"],
       "ignoreTests": true,
-      "matchPackageNames": ["node-feature-discovery", "reloader", "prometheus-blackbox-exporter", "grafana"],
+      "matchPackageNames": [
+        "node-feature-discovery", "reloader", "prometheus-blackbox-exporter", "grafana", "reloader"
+      ],
       "automerge": true
     },
     {
@@ -88,7 +90,8 @@
         "golift/unifi-poller",
         "cloudflare/cloudflared",
         "coredns/coredns",
-        "docker.io/intel/intel-gpu-plugin"
+        "docker.io/intel/intel-gpu-plugin",
+        "quay.io/oauth2-proxy/oauth2-proxy"
       ],
       "automerge": true
     },
@@ -99,7 +102,8 @@
       "ignoreTests": true,
       "matchPackageNames": [
         "ghcr.io/stefanabl/jf-custom",
-        "ghcr.io/authelia/authelia"
+        "ghcr.io/authelia/authelia",
+        "lscr.io/linuxserver/unifi-network-application"
       ],
       "automerge": true
     }
